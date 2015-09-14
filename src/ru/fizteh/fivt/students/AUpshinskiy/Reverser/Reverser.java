@@ -9,15 +9,15 @@ public class Reverser {
      * There is a main function.
      */
     public static void main(final String[] args) {
-
         for (int i = args.length - 1; i >= 0; --i) {
-            String[] numbers = args[i].split("\\D");
+            String[] numbers = args[i].split("\\s+");
 
             for (int j = numbers.length - 1; j >= 0; --j) {
                 System.out.print(numbers[j] + " ");
             }
         }
-        System.out.print("\n");
+
+        System.out.println();
     }
 
     /**
