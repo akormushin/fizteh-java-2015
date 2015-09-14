@@ -6,7 +6,7 @@ public class Main {
         for(int i = args.length - 1; i >= 0; i--) {
             String[] arg = args[i].split("\\s+");
             for (int j = arg.length - 1; j >= 0; j--) {
-                arg[j] = arg[j].replaceAll("\\D", "");
+                arg[j] = arg[j].replaceAll("[^\\d\\.-]", "");
                 System.out.print(arg[j] + ' ');
             }
         }
