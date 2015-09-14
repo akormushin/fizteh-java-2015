@@ -16,6 +16,12 @@ public class ReverseArgumentPrinter {
             if (res.get(i).matches("\\d+")) {
                 System.out.print(res.get(i) + ' ');
             }
+            if (res.get(i).matches("-\\d+")) {
+                System.out.print(res.get(i) + ' ');
+            }
+            if (res.get(i).matches("\\+\\d+")) {
+                System.out.print(res.get(i) + ' ');
+            }
         }
     }
 }
