@@ -6,7 +6,7 @@ package ru.fizteh.fivt.students.egorovaan.reverser;
 public class reverser {
     public static void main(String[] s){
         for(int i = s.length-1; i != -1; i--){
-            String[] some = s[i].split("\\D");
+            String[] some = s[i].split("\\s+");
             for(int j = some.length - 1; j != -1; j--){
                 System.out.print(some[j] + " ");
             }
