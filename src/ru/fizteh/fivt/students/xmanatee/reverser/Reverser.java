@@ -19,7 +19,7 @@ final class Reverser {
      */
     public static void main(final String... args) {
         for (int i = args.length - 1; i >= 0; i--) {
-            String[] tokens = args[i].split("\\W");
+            String[] tokens = args[i].split("\\s+");
             for (int j = tokens.length - 1; j >= 0; j--) {
                 System.out.print(tokens[j] + " ");
             }
