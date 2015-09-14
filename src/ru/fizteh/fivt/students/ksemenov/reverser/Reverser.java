@@ -22,7 +22,7 @@ public final class Reverser {
     public static void main(final String[] args) {
         boolean firstArg = true;
         for (int i = args.length - 1; i >= 0; --i) {
-            String[] splitted = args[i].split("\\s");
+            String[] splitted = args[i].trim().split("\\s+");
             for (int j = splitted.length - 1; j >= 0; --j) {
                 if (firstArg) {
                     firstArg = false;
