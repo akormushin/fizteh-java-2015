@@ -10,7 +10,7 @@ public class Reverser {
         for (int i = args.length - 1; i >= 0; i--) {
             String[] words = args[i].replaceAll("[^\\d\\.\\-\\s]", "").split("\\s+");
             for (int j = words.length - 1; j >= 0; j--) {
-                System.out.print(words[j] + "\n");
+                System.out.print(words[j] + " ");
             }
         }
     }
