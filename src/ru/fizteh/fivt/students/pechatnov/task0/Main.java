@@ -5,7 +5,7 @@ import java.util.*;
 public class Main {
 
     public static void main(String[] args) {
-	    List<String> listOfArgs = Arrays.asList(String.join(" ", args).replace("\\", "").split("\\s+"));
+        List<String> listOfArgs = Arrays.asList(String.join(" ", args).split("\\s+"));
         Collections.reverse(listOfArgs);
         System.out.println(String.join(" ", listOfArgs));
     }
