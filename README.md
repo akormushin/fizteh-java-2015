@@ -1,18 +1,14 @@
-﻿# Программирование на языке JAVA
+# Программирование на языке JAVA
 
 Курс лекций и семинаров для студентов второго курса ФизТеха, факультет
 [ФИВТ](http://fivt.fizteh.ru) на 2015 год.
 
 ## Семинары
-В папке [tasks](tasks) будут появляться описания заданий на
-семинары. Для написания программ необходимо руководствоваться [соглашениями
-по оформлению кода](http://www.oracle.com/technetwork/java/codeconvtoc-136057.html)
-от Oracle (Code Conventions).
+В папке [tasks](tasks) будут появляться описания заданий на семинары. 
 
-В документе [github-workflow](github-workflow.md) описаны
-общие правила по ведению задач на github, а также упрощение жизни с помощью утилиты
-[checkstyle](http://checkstyle.sourceforge.net/), которая проверяет код на соответствие
-Code Conventions.
+В документе [github-workflow](github-workflow.md) описаны общие правила по ведению задач на github.
+
+Таблица успеваемости - https://docs.google.com/spreadsheets/d/1LhwKlMmQbG2aIBT0FmUS8HMmd5pcpWr0bnlDw7Ypkt4/edit?usp=sharing
 
 ## Лекции
 1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
@@ -33,3 +29,4 @@ Code Conventions.
 по многопоточности в Java)
 * [Спецификации по JVM и JLS](http://docs.oracle.com/javase/specs/index.html)
 * [Code Conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html)
+
