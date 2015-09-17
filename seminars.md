@@ -8,7 +8,7 @@
 * Система контроля версий (самостоятельно)
     * [Git tutorial](http://git-scm.com/docs/gittutorial)
     * [Atlassian Git tutorial](https://www.atlassian.com/git/tutorials/)
-* [Как сдавать задания](github-workflow.md)
+* [Как сдавать задания](/github-workflow.md)
 * Задание на дом: [Reverser](/tasks/00-Reverser.md)
 
 ## Семинар 2: Сборка проекта
@@ -22,4 +22,11 @@
 * Задание на дом: [TwitterStream](/tasks/01-TwitterStream.md)
 
 ## Семинар 3: Модульное тестирование
-[TBD]
+* Аннотации
+    * [Lesson: Annotations](https://docs.oracle.com/javase/tutorial/java/annotations/)
+* Модульное тестирование
+* Инструменты
+    * [JUnit](http://junit.org)
+    * [Mockito](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html)
+* Задание на дом: [TBD](/tasks)
+
