@@ -1,9 +1,10 @@
 # Семинары
 
 ## Семинар 1: Вводный
-* Hello World
+* Введение в java
     * [The Java™ Tutorials](https://docs.oracle.com/javase/tutorial/)
     * [JDK Tools and Utilities](http://docs.oracle.com/javase/7/docs/technotes/tools/#basic)
+    * [Java Coding Style Guide (by Google)](https://google.github.io/styleguide/javaguide.html) 
 * Система контроля версий (самостоятельно)
     * [Git tutorial](http://git-scm.com/docs/gittutorial)
     * [Atlassian Git tutorial](https://www.atlassian.com/git/tutorials/)
