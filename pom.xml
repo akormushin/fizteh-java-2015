@@ -21,6 +21,7 @@
 
     <modules>
         <module>akormushin</module>
+        <module>zakharovas</module>
         <!--Add you module here-->
     </modules>
 
