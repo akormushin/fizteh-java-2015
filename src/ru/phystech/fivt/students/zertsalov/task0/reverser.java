@@ -11,6 +11,7 @@ public class reverser {
             String[] curr = args[i].split("\\s+");
             for (int j = curr.length - 1; j >= 0; j--){
                 System.out.print(curr[j] + " ");
+
             }
         }
     }
