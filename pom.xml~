@@ -21,7 +21,7 @@
 
     <modules>
         <module>akormushin</module>
-        <module>cache-nez</module>
+        <!--Add you module here-->
     </modules>
 
     <dependencies>
