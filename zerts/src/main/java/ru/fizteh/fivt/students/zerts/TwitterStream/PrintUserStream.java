@@ -3,8 +3,13 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
         import com.beust.jcommander.JCommander;
         import com.beust.jcommander.ParameterException;
         import twitter4j.*;
+
+        import java.io.*;
         import java.net.UnknownHostException;
+        import java.util.ArrayList;
         import java.util.List;
+        import java.util.Scanner;
+
         import static java.lang.Thread.*;
 
 public class PrintUserStream {
@@ -53,7 +58,7 @@ public class PrintUserStream {
             System.exit(0);
         }
     }
-    public static void main(String[] args) throws UnknownHostException {
+    public static void main(String[] args) throws IOException {
         ArgsParser argsPars = new ArgsParser();
         try {
             new JCommander(argsPars, args);
@@ -62,6 +67,15 @@ public class PrintUserStream {
             System.exit(-1);
         }
         //System.out.print(argsPars.place + "\n");
+        if (argsPars.helpMode) {
+            BufferedReader in = new BufferedReader(new FileReader("./zerts/src/main/java/ru/fizteh/fivt/students/zerts/TwitterStream/help.txt"));
+            String currentLine = in.readLine();
+            while(currentLine != null){
+                System.out.println(currentLine);
+                currentLine = in.readLine();
+            }
+            System.exit(0);
+        }
         Twitter twitter = new TwitterFactory().getInstance();
         if (argsPars.place == null && argsPars.query == null) {
             try {
