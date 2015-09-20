@@ -10,10 +10,11 @@ import twitter4j.*;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
 import java.util.List;
-
-
 
 public class TwitterStream {
 
@@ -24,9 +25,9 @@ public class TwitterStream {
             = "Problem while location definition";
 
     static final String DEFAULT_LOCATION = "nearby";
-
-    static final double radius = 5;
-    static final String radiusUnit = "km";
+    static final int MAX_NUMBER_OF_TRIES = 20;
+    static final double RADIUS = 10;
+    static final String RADIUS_UNIT = "km";
 
     private static String googleMapsKey;
 
@@ -45,7 +46,7 @@ public class TwitterStream {
         private boolean stream = false;
 
         @Parameter(names = {"--hideRetweets"}, description = "hide retweets")
-        private boolean hideRetweers = false;
+        private boolean hideRetweets = false;
 
         @Parameter(names = {"--limit", "-l"}, description = "limit of tweets")
         private Integer limit = Integer.MAX_VALUE;
@@ -65,8 +66,8 @@ public class TwitterStream {
             return stream;
         }
 
-        public boolean isHideRetweers() {
-            return hideRetweers;
+        public boolean isHideRetweets() {
+            return hideRetweets;
         }
 
         public Integer getLimit() {
@@ -153,7 +154,7 @@ public class TwitterStream {
 
     static Location getCurrentLocation() {
         int numberOfTries = 0;
-        final int MAX_NUMBER_OF_TRIES = 20;
+
         do {
             URL whatIsMyCity;
             try {
@@ -197,7 +198,7 @@ public class TwitterStream {
 
     static Location resolvePlaceLocation(String nameOfLocation) {
         int numberOfTries = 0;
-        final int MAX_NUMBER_OF_TRIES = 20;
+
         do {
             URL googleMapsURL;
             try {
@@ -260,7 +261,47 @@ public class TwitterStream {
         return result;
     }
 
-    public static void main(String[] args) {
+    static String formatTime(long currentTime, long timeToFormat) {
+
+        final int MILLISECONDS_IN_SECOND = 1000;
+        final int MILLISECONDS_IN_MINUTE = 60 * MILLISECONDS_IN_SECOND;
+        final int MILLISECONDS_IN_HOUR = 60 * MILLISECONDS_IN_MINUTE;
+        final int MILLISECONDS_IN_DAY = 24 * MILLISECONDS_IN_HOUR;
+
+        if (currentTime - timeToFormat < 2 * MILLISECONDS_IN_MINUTE) {
+            return "Только что";
+        }
+        if (currentTime - timeToFormat < MILLISECONDS_IN_HOUR) {
+            return String.valueOf(
+                    ((currentTime - timeToFormat) / MILLISECONDS_IN_MINUTE))
+                    + " минут назад";
+        }
+
+        SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyy");
+
+        if (formatter.format(currentTime).equals(
+                formatter.format(timeToFormat))) {
+            return String.valueOf(
+                    (currentTime - timeToFormat) / MILLISECONDS_IN_HOUR
+            ) + " часов назад";
+        }
+
+        Calendar currentCalendar = Calendar.getInstance();
+        currentCalendar.setTimeInMillis(currentTime);
+        Calendar givenCalendar = Calendar.getInstance();
+        givenCalendar.setTimeInMillis(timeToFormat);
+
+        currentCalendar.add(Calendar.DAY_OF_MONTH, -1);
+        if (formatter.format(currentCalendar.getTimeInMillis()).equals(
+                formatter.format(givenCalendar.getTimeInMillis()))) {
+            return "вчера";
+        }
+        return String.valueOf(
+                (currentTime - timeToFormat) / MILLISECONDS_IN_DAY
+        ) + " дней назад";
+    }
+
+    public static void main(String[] args) throws InterruptedException {
         init();
 
         JCommanderSetting jCommanderSettings = new JCommanderSetting();
@@ -280,46 +321,95 @@ public class TwitterStream {
             return;
         }
 
-        Location currentLocation = resolveLocation(jCommanderSettings.getLocation());
+        Location currentLocation = resolveLocation(
+                jCommanderSettings.getLocation()
+        );
 
-        try {
-            Twitter twitter = TwitterFactory.getSingleton();
+        long currentMaxId = 0;
 
-            String queryString = String.join(" ",
-                    jCommanderSettings.getQueries());
-            Query query = new Query(queryString).geoCode(new GeoLocation(
-                    currentLocation.getLatitude(),
-                    currentLocation.getLongitude()), radius, radiusUnit);
+        String queryString = String.join(" ",
+                jCommanderSettings.getQueries());
 
-            System.out.println("Твиты по запросу "
-                    + queryString + " для " + currentLocation.getName());
+        System.out.println("Твиты по запросу "
+                + queryString + " для "
+                + currentLocation.getName());
 
-            QueryResult result = twitter.search(query);
-            printSeparator();
-            for (Status status : result.getTweets()) {
+        printSeparator();
 
-                if (status.isRetweet()) {
-                    System.out.print("RETWEET");
+        do {
+            int numberOfTries = 0;
+            do {
+                try {
+                    Twitter twitter = TwitterFactory.getSingleton();
+
+
+                    Query query = new Query(queryString).geoCode(
+                            new GeoLocation(
+                            currentLocation.getLatitude(),
+                            currentLocation.getLongitude()), RADIUS,
+                            RADIUS_UNIT);
+                    query.setCount(jCommanderSettings.getLimit());
+
+                    query.setSinceId(currentMaxId);
+
+
+
+                    QueryResult result = twitter.search(query);
+
+
+                    long currentTime = System.currentTimeMillis();
+
+                    List<Status> tweets = result.getTweets();
+                    Collections.reverse(tweets);
+
+                    if (tweets.size() == 0
+                            && !jCommanderSettings.isStream()) {
+                        System.out.println("Не найдено ни одного твита");
+                        printSeparator();
+                    }
+
+                    for (Status status : tweets) {
+                        currentMaxId = Long.max(currentMaxId, status.getId());
+                        if (!status.isRetweet()
+                                || !jCommanderSettings.isHideRetweets()) {
+
+                            System.out.print("[" + formatTime(currentTime,
+                                    status.getCreatedAt().getTime()) + "]");
+
+                            System.out.print(" @" + ANSI_BLUE
+                                    + status.getUser().getScreenName()
+                                    + ": " + ANSI_RESET);
+
+                            System.out.print(status.getText());
+
+                            if (status.getRetweetCount() != 0) {
+                                System.out.print(" ("
+                                        + status.getRetweetCount() + " "
+                                        + retweetDeclension(
+                                        status.getRetweetCount()
+                                )
+                                        + ")");
+                            }
+
+                            System.out.println();
+                            printSeparator();
+                        }
+                    }
+                    numberOfTries = MAX_NUMBER_OF_TRIES;
+                } catch (TwitterException te) {
+                    ++numberOfTries;
+                    if (numberOfTries == MAX_NUMBER_OF_TRIES) {
+                        System.out.println(te.getMessage());
+                        System.err.println("Something went terribly wrong, "
+                                + "probably - connection + error");
+                        System.exit(1);
+                    }
                 }
-                System.out.print("[" + status.getCreatedAt() + "]"
-                        + "@" + ANSI_BLUE  + status.getUser().getScreenName()
-                        + ": " + ANSI_RESET + status.getText());
-                if (status.getRetweetCount() != 0) {
-                    System.out.print(" ("
-                            + status.getRetweetCount() + " "
-                            + retweetDeclension(status.getRetweetCount())
-                            + ")");
-                }
-                System.out.println();
-                printSeparator();
-            }
+            } while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
-        } catch (TwitterException te) {
-            //te.printStackTrace();
-            System.err.println("Failed to get tweets: "
-                    + te.getMessage() + " " + te.getStatusCode());
-            System.exit(-1);
-        }
+            Thread.sleep(1000);
+
+        } while (jCommanderSettings.isStream());
     }
 
 }
