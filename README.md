@@ -4,11 +4,10 @@
 [ФИВТ](http://fivt.fizteh.ru) на 2015 год.
 
 ## Семинары
-В папке [tasks](tasks) будут появляться описания заданий на семинары. 
-
-В документе [github-workflow](github-workflow.md) описаны общие правила по ведению задач на github.
-
-Таблица успеваемости - https://docs.google.com/spreadsheets/d/1LhwKlMmQbG2aIBT0FmUS8HMmd5pcpWr0bnlDw7Ypkt4/edit?usp=sharing
+* [Темы семинаров и список литературы для самостоятельной подготовки](seminars.md)
+* [Общие правила по ведению задач на github](github-workflow.md) 
+* [Зачёт](exam.md)
+* [Журнал успеваемости](https://docs.google.com/spreadsheets/d/1LhwKlMmQbG2aIBT0FmUS8HMmd5pcpWr0bnlDw7Ypkt4/edit?usp=sharing)
 
 ## Лекции
 1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
@@ -27,6 +26,5 @@
 * Брюс Эккель &mdash; Философия Java  (Thinking in Java)
 * Brian Goetz &mdash; Java Concurrency in Practive (продвинутая книжка
 по многопоточности в Java)
-* [Спецификации по JVM и JLS](http://docs.oracle.com/javase/specs/index.html)
-* [Code Conventions](http://www.oracle.com/technetwork/java/codeconv-138413.html)
+* [The Java™ Tutorials](https://docs.oracle.com/javase/tutorial/)
 
