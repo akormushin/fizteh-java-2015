@@ -8,7 +8,7 @@ public class ArgsParser {
     @Parameter(names = {"-s", "--stream"}, description = "stream output")
     public boolean streamMode;
     @Parameter(names = {"-q", "--query"}, description = "query output")
-    public String[] queries;
+    public String query;
     @Parameter(names = {"-p", "--place"}, description = "place output")
     public String place;
     @Parameter(names = "--hideRetweets", description = "no retweets output")

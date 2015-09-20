@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
  * Created by User on 20.09.2015.
  */
 public class TimeParcer {
-    private static void rightDatePrinting(long goneTime, long mode)
+    public static void rightWordPrinting(long goneTime, long mode)
     {
         System.out.print(goneTime + " ");
         if (goneTime % 10 >= 5 || goneTime % 10 == 0 || (goneTime % 100 > 10 && goneTime % 100 < 20)) {
@@ -20,6 +20,8 @@ public class TimeParcer {
                 System.out.print("часов");
             if (mode == 3)
                 System.out.print("дней");
+            if (mode == 4)
+                System.out.print("ретвитов");
         }
         else if(goneTime % 10 == 1) {
             if (mode == 0)
@@ -30,6 +32,8 @@ public class TimeParcer {
                 System.out.print("час");
             if (mode == 3)
                 System.out.print("день");
+            if (mode == 4)
+                System.out.print("ретвит");
         }
         else
         {
@@ -41,8 +45,11 @@ public class TimeParcer {
                 System.out.print("часа");
             if (mode == 3)
                 System.out.print("дня");
+            if (mode == 4)
+                System.out.print("ретвита");
         }
-        System.out.print(" назад ");
+        if (mode < 4)
+            System.out.print(" назад ");
     }
     public static void printGoneDate(Date givenDate) {
         Date date = new Date();
@@ -58,22 +65,22 @@ public class TimeParcer {
             return;
         }
         if (goneTime < 60) {
-            rightDatePrinting(goneTime, 0);
+            rightWordPrinting(goneTime, 0);
             return;
         }
         if (goneTime < 3600) {
-            rightDatePrinting(goneTime / 60, 1);
+            rightWordPrinting(goneTime / 60, 1);
             return;
         }
         if (goneTime < 3600 * 24 && givenDate.getTime() >= todayTime) {
-            rightDatePrinting(goneTime / 3600, 2);
+            rightWordPrinting(goneTime / 3600, 2);
             return;
         }
         if (givenDate.getTime() < todayTime && givenDate.getTime() >= todayTime - (60 * 60 * 24 * 1000)) {
             System.out.print("Вчера ");
             return;
         }
-        rightDatePrinting((todayTime - givenDate.getTime()) / (1000 * 3600 * 24), 3);
+        rightWordPrinting((todayTime - givenDate.getTime()) / (1000 * 3600 * 24), 3);
         return;
     }
 }
