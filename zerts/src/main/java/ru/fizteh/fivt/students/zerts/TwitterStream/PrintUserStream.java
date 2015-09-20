@@ -60,14 +60,13 @@ public class PrintUserStream {
             System.err.print("Invalid Paramters:\n" + pe.getMessage());
             System.exit(-1);
         }
-        System.out.print(argsPars.place + "\n");
+        //System.out.print(argsPars.place + "\n");
         Twitter twitter = new TwitterFactory().getInstance();
         if (argsPars.place == null && argsPars.query == null) {
             try {
                 int currPage = 1;
                 User user = twitter.verifyCredentials();
                 do {
-                    //System.out.print("Hey!\n");
                     Paging p = new Paging(currPage);
                     List<Status> tweets = twitter.getHomeTimeline(p);
                     System.out.println("\nShowing @" + user.getScreenName() + "'s home timeline.\n");
