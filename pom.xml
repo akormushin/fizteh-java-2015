@@ -21,6 +21,7 @@
 
     <modules>
         <module>akormushin</module>
+        <module>zemen</module>
         <!--Add you module here-->
     </modules>
 
