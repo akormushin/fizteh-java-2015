@@ -9,6 +9,7 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 
 public class PrintUserStream {
     private static int printedTweets = 0;
+
     public static void printTweet(Status tweet, ArgsParser argsPars) {
         if (tweet.isRetweet()) {
             if (argsPars.noRetweetMode) {
