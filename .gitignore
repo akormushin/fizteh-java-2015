@@ -3,7 +3,6 @@
 *.jar
 *.war
 *.ear
-*.class
 hs_err_pid*
 .idea
 *.iml
@@ -15,6 +14,7 @@ target
 .classpath
 .project
 workbench.xmi
+twitter4j.properties
 *.swp
 .settings
 .checkstyle
