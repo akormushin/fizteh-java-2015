@@ -11,7 +11,8 @@ import static java.lang.Thread.*;
 public class TwitterReader {
     private static int printedTweets = 0;
     static final int MILLS_PER_PER = 1000, LOCATE_RADIUS = 5, RT_MODE = 4;
-    public static void printTweet(Status tweet, ArgsParser argsPars) {
+    public static void printTweet(Status tweet, ArgsParser argsPars,
+                                  boolean streamMode) {
         if (tweet.isRetweet()) {
             if (argsPars.isNoRetweetMode()) {
                 return;
@@ -22,8 +23,10 @@ public class TwitterReader {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        TimeParser timePars = new TimeParser();
-        TimeParser.printGoneDate(tweet.getCreatedAt());
+        if (!streamMode) {
+            TimeParser timePars = new TimeParser();
+            TimeParser.printGoneDate(tweet.getCreatedAt());
+        }
         printedTweets++;
         System.out.print("@" + tweet.getUser().getScreenName() + ": ");
         int start = 0;
@@ -78,7 +81,7 @@ public class TwitterReader {
             System.exit(0);
         }
         Twitter twitter = new TwitterFactory().getInstance();
-        if (argsPars.getPlace() == null && argsPars.getQuery() == null) {
+        if (argsPars.getQuery() == null) {
             try {
                 int currPage = 1;
                 User user = twitter.verifyCredentials();
@@ -88,7 +91,7 @@ public class TwitterReader {
                     System.out.println("\nShowing @" + user.getScreenName()
                             + "'s home timeline.\n");
                     for (Status tweet : tweets) {
-                        printTweet(tweet, argsPars);
+                        printTweet(tweet, argsPars, true);
                     }
                     currPage++;
                 } while (true);
@@ -98,8 +101,7 @@ public class TwitterReader {
                         + te.getMessage());
                 System.exit(-1);
             }
-        }
-        if (argsPars.getQuery() != null) {
+        } else {
             try {
                 Query query;
                 if (argsPars.getPlace() != null) {
@@ -124,7 +126,7 @@ public class TwitterReader {
                         System.exit(0);
                     }
                     for (Status tweet : tweets) {
-                        printTweet(tweet, argsPars);
+                        printTweet(tweet, argsPars, false);
                     }
                     query = result.nextQuery();
                 } while (query != null);
