@@ -1,28 +1,20 @@
 .DS_Store
 *.class
-
-# Mobile Tools for Java (J2ME)
-.mtj.tmp/
-
-# Package Files #
+*.jar
 *.war
 *.ear
 *.class
-
 hs_err_pid*
-
 .idea
 *.iml
+*.ipr
 out
-jars
-/bin
-
+build
+bin
+target
 .classpath
 .project
 workbench.xmi
 *.swp
-
 .settings
 .checkstyle
-/MultiFileHashMap/nbproject/private/
-/MultiFileHashMap/build/
