@@ -6,16 +6,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandLineArgs {
+    static final int DEFAULT_LIMIT = 100;
     @Parameter(names = {"--query", "-q"}, variableArity = true)
-    public List<String> stringForQuery = new ArrayList<>();
+    private List<String> stringForQuery = new ArrayList<>();
     @Parameter(names = {"--help", "-h"}, help = true)
-    public Boolean help = false;
+    private Boolean help = false;
     @Parameter(names = {"--stream", "-s"})
-    public Boolean streamMode = false;
-    @Parameter(names = {"--place", "-p"}, variableArity = true)
-    public List<String> location = new ArrayList<>();
+    private Boolean streamMode = false;
+    /*@Parameter(names = {"--place", "-p"}, variableArity = true)
+    private List<String> location = new ArrayList<>();*/
     @Parameter(names = {"--hideRetweets"})
-    public Boolean hideRetweets = false;
+    private Boolean hideRetweets = false;
     @Parameter(names = {"--limits", "-l"})
-    public Integer limit = 100;
+    private Integer limit = DEFAULT_LIMIT;
+
+    public final List<String> getStringForQuery() {
+        return stringForQuery;
+    }
+
+    public final Boolean getHelp() {
+        return help;
+    }
+
+    public final Boolean getStreamMode() {
+        return streamMode;
+    }
+
+    /*public final List<String> getLocation() {
+        return location;
+    }*/
+
+    public final Boolean getHideRetweets() {
+        return hideRetweets;
+    }
+
+    public final Integer getLimit() {
+        return limit;
+    }
+
 }
