@@ -38,15 +38,14 @@ public class StringFormater {
     }
 
     public static String tweetForOutput(Status tweet) {
-        String formatedTweet = StringFormater.
-                dateFormater(tweet.getCreatedAt());
+        String formatedTweet = dateFormater(tweet.getCreatedAt());
         if (!tweet.isRetweet()) {
             formatedTweet += COLOR_BLUE
                     + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
                     + tweet.getText();
             if (tweet.getRetweetCount() > 0) {
                 formatedTweet += "(" + tweet.getRetweetCount() + " "
-                + StringFormater.retweetFormat(tweet.getRetweetCount()) + ")";
+                + retweetFormat(tweet.getRetweetCount()) + ")";
             }
         } else {
             formatedTweet += COLOR_BLUE
