@@ -105,7 +105,7 @@ public class TwitterReader {
                 if (argsPars.getPlace() != null) {
                     query = new Query(
                             argsPars.getQuery()).
-                            geoCode(new GeoParser().getCoordinates(
+                            geoCode(GeoParser.getCoordinates(
                                     argsPars.getPlace()), LOCATE_RADIUS, "km");
                 } else {
                     query = new Query(argsPars.getQuery());
@@ -119,6 +119,10 @@ public class TwitterReader {
                         System.out.print(" near " + argsPars.getPlace());
                     }
                     System.out.print(":\n\n");
+                    if (tweets.isEmpty()) {
+                        System.out.println("Sorry, no tweets found :(");
+                        System.exit(0);
+                    }
                     for (Status tweet : tweets) {
                         printTweet(tweet, argsPars);
                     }
