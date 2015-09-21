@@ -10,9 +10,6 @@ import java.util.List;
 
 public class TwitterStream {
 
-    private static final String COLOR_BLUE = "\u001B[34m";
-    private static final String COLOR_RESET = "\u001B[0m";
-
     public static void main(String[] args) {
         String[] separatedArgs = ArgumentSepatator.separateArguments(args);
         CommandLineArgs commandLineArgs = new CommandLineArgs();
@@ -60,30 +57,9 @@ public class TwitterStream {
             }
         }
         for (Status tweet : tweetsForOutput) {
-            System.out.println(tweetForOutput(tweet));
+            System.out.println(StringFormater.tweetForOutput(tweet));
         }
 
-    }
-
-    private static String tweetForOutput(Status tweet) {
-        String formatedTweet = StringFormater.
-                dateFormater(tweet.getCreatedAt());
-        if (!tweet.isRetweet()) {
-             formatedTweet += COLOR_BLUE
-                    + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
-                    + tweet.getText();
-            if (tweet.getRetweetCount() > 0) {
-                formatedTweet += "(" + tweet.getRetweetCount() + " "
-             + StringFormater.retweetFormat(tweet.getRetweetCount()) + ")";
-            }
-        } else {
-            formatedTweet += COLOR_BLUE
-            + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
-            + "ретвитнул " + COLOR_BLUE + "@"
-            + tweet.getRetweetedStatus().getUser().getName() + COLOR_RESET
-            + ": " + tweet.getRetweetedStatus().getText();
-        }
-        return formatedTweet;
     }
 
     private static void helpMode() {
