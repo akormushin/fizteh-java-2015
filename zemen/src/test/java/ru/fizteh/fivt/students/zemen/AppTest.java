@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students;
+package ru.fizteh.fivt.students.zemen;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

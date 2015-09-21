@@ -33,4 +33,15 @@
       <version>1.48</version>
     </dependency>
   </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>exec-maven-plugin</artifactId>
+        <configuration>
+          <mainClass>ru.fizteh.fivt.students.zemen.TwitterStream</mainClass>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>
