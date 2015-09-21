@@ -172,8 +172,8 @@ public class Twittster {
 
     public static ConfigurationBuilder getOAuthConfigurationBuilder() {
 
-        String consumerKey = "Oe8eSwYAHhHIYV9Qrd5vxg1bt";
-        String consumerSecret = "SfzUoQ7xijRjl3i25AjAF5GKhjWQCZNmGSvk4j5LVcSMTsRf7Q";
+        String consumerKey = "";
+        String consumerSecret = "";
         OAuth2Token token;
         token = getOAuth2Token(consumerKey, consumerSecret);
         ConfigurationBuilder cb = new ConfigurationBuilder();
@@ -188,10 +188,10 @@ public class Twittster {
 */
     public static ConfigurationBuilder getOAuthConfigurationBuilder() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        String consumerKey = "lw3SBY42kUCsirCzkqJmPzoxi";
-        String consumerSecret = "r9LbRQzxEIsd2DF58okAnf0IQ0JCu2KkPr5gTtldJFVqsJVhZr";
-        String accessToken = "206791653-7OnLR50ao89oSa7ITWC2mZjygOWjTVU6KRlhDGnv";
-        String accessSecret = "gqIiXPLtblfTiqt0YXyKVpWqrGqN3Q1PbJeoQCsgEHrRU";
+        String consumerKey = "1111111111111111111111111";
+        String consumerSecret = "111111111111111111111111111111111";
+        String accessToken = "11111111111111111111111111111111111";
+        String accessSecret = "11111111111111111111111111111111111";
         cb.setOAuthConsumerKey(consumerKey);
         cb.setOAuthConsumerSecret(consumerSecret);
         cb.setOAuthAccessToken(accessToken);
