@@ -4,11 +4,10 @@ package ru.fizteh.fivt.students.zakharovas.TwitterStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class TwitterStream {
+public class TwitterStreamMain {
 
     public static void main(String[] args) {
         String[] separatedArgs = ArgumentSepatator.separateArguments(args);
@@ -30,6 +29,48 @@ public class TwitterStream {
     }
 
     private static void streamMode(CommandLineArgs commandLineArgs) {
+        twitter4j.TwitterStream twitterStream =
+                TwitterStreamFactory.getSingleton();
+        StatusListener listener = new StatusListener() {
+            @Override
+            public void onStatus(Status tweet) {
+                if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
+                    System.out.println(StringFormater.tweetForOutput(tweet));
+                }
+
+            }
+
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice
+                                                 statusDeletionNotice) {
+
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int i) {
+
+            }
+
+            @Override
+            public void onScrubGeo(long l, long l1) {
+
+            }
+
+            @Override
+            public void onStallWarning(StallWarning stallWarning) {
+
+            }
+
+            @Override
+            public void onException(Exception e) {
+                e.getMessage();
+                System.exit(1);
+
+            }
+        };
+        twitterStream.addListener(listener);
+        twitterStream.filter(String.join(" ", commandLineArgs.
+                                        getStringForQuery()));
 
     }
 

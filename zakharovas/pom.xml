@@ -32,6 +32,11 @@
       <artifactId>twitter4j-core</artifactId>
       <version>[4.0,)</version>
     </dependency>
+      <dependency>
+          <groupId>org.twitter4j</groupId>
+          <artifactId>twitter4j-stream</artifactId>
+          <version>4.0.4</version>
+      </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -42,7 +47,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>ru.fizteh.fivt.students.zakharovas.TwitterStream.TwitterStream</mainClass>
+              <mainClass>ru.fizteh.fivt.students.zakharovas.TwitterStream.TwitterStreamMain</mainClass>
             </manifest>
           </archive>
         </configuration>
