@@ -22,7 +22,8 @@
     <modules>
         <module>akormushin</module>
         <module>thefacetakt</module>
-  </modules>
+        <module>loulett</module>
+    </modules>
 
     <dependencies>
         <dependency>
