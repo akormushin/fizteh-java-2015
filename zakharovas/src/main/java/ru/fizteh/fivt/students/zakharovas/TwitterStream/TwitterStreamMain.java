@@ -12,15 +12,17 @@ public class TwitterStreamMain {
     public static void main(String[] args) {
         String[] separatedArgs = ArgumentSepatator.separateArguments(args);
         CommandLineArgs commandLineArgs = new CommandLineArgs();
+        JCommander jCommander = null;
         try {
-            new JCommander(commandLineArgs, separatedArgs);
+            jCommander = new JCommander(commandLineArgs, separatedArgs);
         } catch (ParameterException pe) {
             System.err.println(pe.getMessage());
+            jCommander.usage();
             System.exit(1);
         }
-        checkArguments(commandLineArgs);
+        checkArguments(commandLineArgs, jCommander);
         if (commandLineArgs.getHelp()) {
-            helpMode();
+            helpMode(jCommander);
         } else if (commandLineArgs.getStreamMode()) {
             streamMode(commandLineArgs);
         } else {
@@ -71,7 +73,6 @@ public class TwitterStreamMain {
         twitterStream.addListener(listener);
         twitterStream.filter(String.join(" ", commandLineArgs.
                                         getStringForQuery()));
-
     }
 
     private static void twitterWork(CommandLineArgs commandLineArgs) {
@@ -88,6 +89,7 @@ public class TwitterStreamMain {
             System.err.println(te.getMessage());
             System.exit(1);
         }
+        System.out.println(tweets.size());
         List<Status> tweetsForOutput = new ArrayList<>();
         for (Status tweet : tweets) {
             if (tweetsForOutput.size() == commandLineArgs.getLimit()) {
@@ -103,16 +105,18 @@ public class TwitterStreamMain {
 
     }
 
-    private static void helpMode() {
-        System.out.println("No help now");
+    private static void helpMode(JCommander jCommander) {
+        jCommander.usage();
         System.exit(0);
     }
 
 
-    private static void checkArguments(CommandLineArgs commandLineArgs) {
+    private static void checkArguments(CommandLineArgs commandLineArgs,
+                                       JCommander jCommander) {
         if (commandLineArgs.getStreamMode()
                 && commandLineArgs.getLimit()
                 != commandLineArgs.DEFAULT_LIMIT) {
+            jCommander.usage();
             System.err.println("Stream mode does not have limits");
             System.exit(1);
         }

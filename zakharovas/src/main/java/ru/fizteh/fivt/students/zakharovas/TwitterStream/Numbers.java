@@ -1,0 +1,12 @@
+package ru.fizteh.fivt.students.zakharovas.TwitterStream;
+
+public class Numbers {
+    public static final int ZERO = 0;
+    public static final int ONE = 1;
+    public static final int TWO = 2;
+    public static final int FOUR = 4;
+    public static final int FIVE = 5;
+    public static final int TEN = 10;
+    public static final int ELEVEN = 11;
+    public static final int NINETEEN = 19;
+}

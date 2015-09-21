@@ -6,18 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CommandLineArgs {
-    static final int DEFAULT_LIMIT = 100;
-    @Parameter(names = {"--query", "-q"}, variableArity = true)
+    static final int DEFAULT_LIMIT = 1000;
+    @Parameter(names = {"--query", "-q"}, description = "Keyword for search",
+            variableArity = true)
     private List<String> stringForQuery = new ArrayList<>();
-    @Parameter(names = {"--help", "-h"}, help = true)
+    @Parameter(names = {"--help", "-h"}, help = true,
+    description = "Activates HelpMode")
     private Boolean help = false;
-    @Parameter(names = {"--stream", "-s"})
+    @Parameter(names = {"--stream", "-s"},
+    description = "Activates StreamMode")
     private Boolean streamMode = false;
     /*@Parameter(names = {"--place", "-p"}, variableArity = true)
     private List<String> location = new ArrayList<>();*/
-    @Parameter(names = {"--hideRetweets"})
+    @Parameter(names = {"--hideRetweets"},
+    description = "HidesRetweets")
     private Boolean hideRetweets = false;
-    @Parameter(names = {"--limits", "-l"})
+    @Parameter(names = {"--limits", "-l"},
+    description = "Set limit or query. Not compatible with StreamMode")
     private Integer limit = DEFAULT_LIMIT;
 
     public final List<String> getStringForQuery() {
