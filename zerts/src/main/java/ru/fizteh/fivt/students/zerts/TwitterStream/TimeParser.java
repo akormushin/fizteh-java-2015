@@ -7,7 +7,8 @@ import java.util.GregorianCalendar;
 /**
  * Created by User on 20.09.2015.
  */
-public class TimeParcer {
+
+public class TimeParser {
     public static void rightWordPrinting(long goneTime, long mode)
     {
         System.out.print(goneTime + " ");
@@ -81,6 +82,6 @@ public class TimeParcer {
             return;
         }
         rightWordPrinting((todayTime - givenDate.getTime()) / (1000 * 3600 * 24), 3);
-        return;
     }
 }
+

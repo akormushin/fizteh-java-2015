@@ -1,18 +1,14 @@
 package ru.fizteh.fivt.students.zerts.TwitterStream;
 
-        import com.beust.jcommander.JCommander;
-        import com.beust.jcommander.ParameterException;
-        import twitter4j.*;
+import com.beust.jcommander.JCommander;
+import com.beust.jcommander.ParameterException;
+import twitter4j.*;
 
-        import java.io.*;
-        import java.net.UnknownHostException;
-        import java.util.ArrayList;
-        import java.util.List;
-        import java.util.Scanner;
+import java.io.*;
+import java.util.List;
+import static java.lang.Thread.*;
 
-        import static java.lang.Thread.*;
-
-public class PrintUserStream {
+public class TwitterReader {
     private static int printedTweets = 0;
 
     public static void printTweet(Status tweet, ArgsParser argsPars) {
@@ -26,8 +22,8 @@ public class PrintUserStream {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        TimeParcer timeParc = new TimeParcer();
-        TimeParcer.printGoneDate(tweet.getCreatedAt());
+        TimeParser timePars = new TimeParser();
+        TimeParser.printGoneDate(tweet.getCreatedAt());
         printedTweets++;
         System.out.print("@" + tweet.getUser().getScreenName() + ": ");
         int start = 0;
@@ -50,7 +46,7 @@ public class PrintUserStream {
         }
         if (!tweet.isRetweet()) {
             System.out.print(" (");
-            TimeParcer.rightWordPrinting(tweet.getRetweetCount(), 4);
+            TimeParser.rightWordPrinting(tweet.getRetweetCount(), 4);
             System.out.print(")");
         }
         System.out.print("\n\n");
@@ -61,7 +57,8 @@ public class PrintUserStream {
     public static void main(String[] args) throws IOException {
         ArgsParser argsPars = new ArgsParser();
         try {
-            new JCommander(argsPars, args);
+            JCommander jComm = new JCommander(argsPars, args);
+            //jComm.usage();
         } catch (ParameterException pe) {
             System.err.print("Invalid Paramters:\n" + pe.getMessage());
             System.exit(-1);
@@ -96,7 +93,7 @@ public class PrintUserStream {
                 System.exit(-1);
             }
         }
-        if (argsPars.query != null) {
+        if (argsPars.query != null && argsPars.place == null) {
             try {
                 Query query = new Query(argsPars.query);
                 QueryResult result;
@@ -112,6 +109,27 @@ public class PrintUserStream {
             } catch (TwitterException te) {
                 te.printStackTrace();
                 System.err.println("Failed to search tweets: " + te.getMessage());
+                System.exit(-1);
+            }
+        }
+        if (argsPars.query != null && argsPars.place != null) {
+            try {
+                //System.out.println(InetAddress.getLocalHost().getHostAddress());
+
+                Query query = new Query(argsPars.query).geoCode(new GeoParser().getCoordinates(argsPars.place), 5, "km");
+                QueryResult result;
+                do {
+                    result = twitter.search(query);
+                    List<Status> tweets = result.getTweets();
+                    System.out.print("Tweets near " + argsPars.place + " with " + argsPars.query + ":\n\n");
+                    for (Status tweet : tweets) {
+                        printTweet(tweet, argsPars);
+                    }
+                } while ((query = result.nextQuery()) != null);
+                System.exit(0);
+            } catch (TwitterException te) {
+                te.printStackTrace();
+                System.out.println("Failed to retrieve places: " + te.getMessage());
                 System.exit(-1);
             }
         }
