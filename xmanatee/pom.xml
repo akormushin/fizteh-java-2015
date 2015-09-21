@@ -84,7 +84,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.fizteh.fivt.students.xmanatee.TwitCatcher.TwitCatcher</mainClass>
+                            <mainClass>ru.fizteh.fivt.students.xmanatee.Twittster.Twittster</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
