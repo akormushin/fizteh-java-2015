@@ -6,15 +6,39 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 public class ArgsParser {
     //public int argMode = new int(0);
     @Parameter(names = {"-s", "--stream"}, description = "stream output")
-    public boolean streamMode;
+    private boolean streamMode;
     @Parameter(names = {"-q", "--query"}, description = "query output")
-    public String query;
+    private String query;
     @Parameter(names = {"-p", "--place"}, description = "place output")
-    public String place;
+    private String place;
     @Parameter(names = "--hideRetweets", description = "no retweets output")
-    public boolean noRetweetMode;
+    private boolean noRetweetMode;
     @Parameter(names = {"-l", "--limit"}, description = "limited output")
-    public int numberOfTweets;
+    private int numberOfTweets;
     @Parameter(names = {"-h", "--help"}, description = "help output")
-    public boolean helpMode;
+    private boolean helpMode;
+
+    public final boolean isStreamMode() {
+        return streamMode;
+    }
+
+    public final String getQuery() {
+        return query;
+    }
+
+    public final String getPlace() {
+        return place;
+    }
+
+    public final boolean isNoRetweetMode() {
+        return noRetweetMode;
+    }
+
+    public final int getNumberOfTweets() {
+        return numberOfTweets;
+    }
+
+    public final boolean isHelpMode() {
+        return helpMode;
+    }
 }

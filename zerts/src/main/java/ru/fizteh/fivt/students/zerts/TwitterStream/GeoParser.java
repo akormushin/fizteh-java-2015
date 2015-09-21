@@ -14,18 +14,23 @@ import static java.lang.Double.parseDouble;
  */
 public class GeoParser {
     public static GeoLocation getCoordinates(String place) throws IOException {
-        URL getTheLL = new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place);
-        BufferedReader in = new BufferedReader(new InputStreamReader(getTheLL.openStream()));
+        URL getTheLL =
+                new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place);
+        BufferedReader in =
+                new BufferedReader(
+                        new InputStreamReader(getTheLL.openStream()));
 
         String xmlParse = "a";
         while (xmlParse != null) {
             xmlParse = in.readLine();
-            if (xmlParse.contains("<pos>"))
+            if (xmlParse.contains("<pos>")) {
                 break;
+            }
         }
         int i = 0;
-        while(xmlParse.charAt(i) != '>')
+        while (xmlParse.charAt(i) != '>') {
             i++;
+        }
         i++;
         String currLattitude = "", currLongtitude = "";
         while (xmlParse.charAt(i) != ' ') {
@@ -38,6 +43,7 @@ public class GeoParser {
             i++;
         }
         System.out.println(currLattitude + " " + currLongtitude);
-        return new GeoLocation(parseDouble(currLattitude), parseDouble(currLongtitude));
+        return new GeoLocation(
+                parseDouble(currLattitude), parseDouble(currLongtitude));
     }
 }
