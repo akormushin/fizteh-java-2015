@@ -5,7 +5,7 @@ import twitter4j.*;
 /**
  * Created by kormushin on 15.09.15.
  */
-public class TwitterStream {
+public class TwitterTweets {
 
     public static void main(String[] args) throws TwitterException {
         TwitterFactory.getSingleton()
