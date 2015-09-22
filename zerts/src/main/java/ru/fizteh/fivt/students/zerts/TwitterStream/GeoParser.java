@@ -12,6 +12,7 @@ import static java.lang.Double.parseDouble;
 /**
  * Created by User on 21.09.2015.
  */
+
 public class GeoParser {
     public static GeoLocation getCoordinates(String place) throws IOException {
         URL getTheLL =
@@ -20,13 +21,13 @@ public class GeoParser {
                 new BufferedReader(
                         new InputStreamReader(getTheLL.openStream()));
 
-        String xmlParse = "a";
-        while (xmlParse != null) {
+        String xmlParse;
+        do {
             xmlParse = in.readLine();
             if (xmlParse.contains("<pos>")) {
                 break;
             }
-        }
+        } while (xmlParse != null);
         int i = 0;
         while (xmlParse.charAt(i) != '>') {
             i++;
