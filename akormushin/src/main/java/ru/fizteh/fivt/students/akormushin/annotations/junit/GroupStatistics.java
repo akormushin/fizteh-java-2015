@@ -16,7 +16,8 @@ public class GroupStatistics {
         this.database = database;
     }
 
-    public Map<String, Integer> getStudentsByGroup() throws IllegalAccessException {
+    public Map<String, Integer> getStudentsByGroup()
+            throws IllegalAccessException {
         Map<String, Integer> studentsByGroup = new HashMap<>();
         for (Group group : database.select()) {
             studentsByGroup.put(group.getName(), group.getStudents().size());

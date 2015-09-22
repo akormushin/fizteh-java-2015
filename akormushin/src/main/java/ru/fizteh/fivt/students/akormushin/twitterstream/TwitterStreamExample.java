@@ -12,7 +12,8 @@ public class TwitterStreamExample {
         twitterStream.addListener(new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
-                System.out.println(status.getUser().getName() + " : " + status.getText());
+                System.out.println(
+                        status.getUser().getName() + " : " + status.getText());
             }
 
             @Override

@@ -4,7 +4,6 @@ package ru.fizteh.fivt.students.akormushin.annotations.xml;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
 
 /**
  * Created by kormushin on 22.09.15.
@@ -12,7 +11,8 @@ import javax.xml.bind.Unmarshaller;
 public class XmlMarshalling {
 
     public static void main(String[] args) throws JAXBException {
-        JAXBContext jaxbContext = JAXBContext.newInstance(Student.class, Group.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(
+                Student.class, Group.class);
         Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 

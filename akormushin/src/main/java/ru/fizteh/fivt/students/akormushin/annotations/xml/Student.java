@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.akormushin.annotations.xml;
 
 import javax.xml.bind.annotation.*;
-import java.util.Objects;
 
 /**
  * Created by kormushin on 22.09.15.
@@ -43,9 +42,9 @@ public class Student {
 
     @Override
     public String toString() {
-        return "Student{" +
-                "firstName='" + firstName + '\'' +
-                ", secondName='" + secondName + '\'' +
-                '}';
+        return "Student{"
+                + "firstName='" + getFirstName() + '\''
+                + ", secondName='" + getSecondName() + '\''
+                + '}';
     }
 }
