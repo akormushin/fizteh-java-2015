@@ -5,7 +5,7 @@ package main.java.ru.fizteh.fivt.students.helloworld;
  *
  */
 public class App {
-    public static void main(String[] args) xw{
+    public static void main(String[] args) {
         System.out.println("Hello World!");
     }
 }
