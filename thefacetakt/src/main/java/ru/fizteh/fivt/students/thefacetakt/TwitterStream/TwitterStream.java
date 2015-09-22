@@ -73,13 +73,13 @@ class PlaceLocationResolver {
     static void init() {
         try {
             BufferedReader mapsKeyFile = new BufferedReader(
-                    new FileReader("src/geo.properties")
+                    new FileReader("src/main/resources/geo.properties")
             );
             googleMapsKey = mapsKeyFile.readLine();
             yandexMapsKey = mapsKeyFile.readLine();
             mapsKeyFile.close();
         } catch (IOException e) {
-            System.err.println("Something went terribly wrong: no google maps "
+            System.err.println("Something went terribly wrong: no maps "
                     + "key found");
             System.exit(1);
         }
@@ -706,7 +706,6 @@ public class TwitterStream {
         );
 
         String queryString = String.join(" ", jCommanderSettings.getQueries());
-
         System.out.println("Твиты по запросу "
                 + queryString + " для "
                 + currentLocation.getName());
