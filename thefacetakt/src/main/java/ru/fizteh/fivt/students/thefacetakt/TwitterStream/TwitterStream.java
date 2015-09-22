@@ -671,6 +671,16 @@ public class TwitterStream {
         twitterStream.filter(new FilterQuery(0, followArray , trackArray));
     }
 
+    static void readUntilCtrlD() {
+        Scanner scanner = new Scanner(System.in);
+        while (scanner.hasNext()) {
+            int checkstyleWantAtLeastOneStatement = 0;
+            // waiting for end of input
+        }
+        scanner.close();
+        System.exit(0);
+    }
+
     public static void main(String[] args) throws InterruptedException {
         PlaceLocationResolver.init();
 
@@ -706,6 +716,7 @@ public class TwitterStream {
             printTweetsOnce(jCommanderSettings, currentLocation, queryString);
         } else {
             printTwitterStream(jCommanderSettings, currentLocation);
+            readUntilCtrlD();
         }
     }
 
