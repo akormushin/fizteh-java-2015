@@ -31,6 +31,6 @@
         <groupId>org.twitter4j</groupId>
         <artifactId>twitter4j-stream</artifactId>
         <version>4.0.4</version>
-    </dependency>git
+    </dependency>
   </dependencies>
 </project>
