@@ -73,7 +73,7 @@ class PlaceLocationResolver {
     static void init() {
         try {
             BufferedReader mapsKeyFile = new BufferedReader(
-                    new FileReader("thefacetakt/src/geo.properties")
+                    new FileReader("src/geo.properties")
             );
             googleMapsKey = mapsKeyFile.readLine();
             yandexMapsKey = mapsKeyFile.readLine();
@@ -128,7 +128,6 @@ class PlaceLocationResolver {
                     throw new QueryLimitException("Google");
                 }
                 if (!status.equals("OK")) {
-                    System.out.println(locationInfo.toString());
                     throw new InvalidLocationException("Unknown place");
                 }
 
