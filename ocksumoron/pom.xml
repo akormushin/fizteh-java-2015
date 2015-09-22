@@ -27,5 +27,10 @@
         <artifactId>jcommander</artifactId>
         <version>1.48</version>
     </dependency>
+    <dependency>
+        <groupId>org.twitter4j</groupId>
+        <artifactId>twitter4j-stream</artifactId>
+        <version>4.0.4</version>
+    </dependency>git
   </dependencies>
 </project>
