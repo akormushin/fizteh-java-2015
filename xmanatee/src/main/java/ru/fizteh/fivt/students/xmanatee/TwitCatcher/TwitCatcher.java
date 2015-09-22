@@ -17,7 +17,7 @@ public class TwitCatcher {
     static final String ACC_TOKEN_SECRET =
             "h8nh2yLpQZ2egkdLJ7C0MiWm4ujdvF7HJRw25VqbeCRQJ";
 
-    static final String TWEET_ID = "645950334880350208";
+    static final String TWEET_ID = "645958092161720320";
 
     public static void main(String[] args) {
         ConfigurationBuilder cb = new ConfigurationBuilder();

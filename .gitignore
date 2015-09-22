@@ -18,3 +18,5 @@ workbench.xmi
 *.swp
 .settings
 .checkstyle
+*.properties
+
