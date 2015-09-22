@@ -23,7 +23,6 @@
         <module>akormushin</module>
         <module>ocksumoron</module>
         <!--Add you module here-->
-    <module>ocksumoron</module>
   </modules>
 
     <dependencies>
