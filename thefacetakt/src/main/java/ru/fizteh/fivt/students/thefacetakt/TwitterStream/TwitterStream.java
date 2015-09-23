@@ -592,7 +592,7 @@ public class TwitterStream {
 
     static void printTwitterStream(JCommanderSetting jCommanderSetting,
                                    Location currentLocation) {
-        StatusListener listener = new StatusListener() {
+        StatusListener listener = new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
 
@@ -630,31 +630,6 @@ public class TwitterStream {
                     printTweet(status);
                     printSeparator();
                 }
-            }
-
-            @Override
-            public void onDeletionNotice(
-                    StatusDeletionNotice statusDeletionNotice) {
-
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-
-            }
-
-            @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
-
-            }
-
-            @Override
-            public void onStallWarning(StallWarning warning) {
-
-            }
-
-            @Override
-            public void onException(Exception ex) {
             }
         };
 
