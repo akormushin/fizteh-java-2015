@@ -1,13 +1,19 @@
-package ru.fizteh.fivt.students.w4r10ck1337.TwitterStream;
+package ru.fizteh.fivt.students.w4r10ck1337.twitterstream;
 
+import com.beust.jcommander.JCommander;
 import twitter4j.*;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import com.beust.jcommander.Parameter;
+
 
 public class TwitterStream {
+
+
     private static final double DEFAULT_RADIUS = 15;
     private static final double MILES = 34.5;
     private static final int SECOND = 1000;
@@ -24,13 +30,48 @@ public class TwitterStream {
     private static final int FUCKING_3 = 3;
     private static final int FUCKING_11 = 11;
     private static final int FUCKING_10 = 10;
-    private static String place = "nearby";
-    private static String query = null;
     private static Twitter twitter = null;
-    private static boolean stream = false;
-    private static boolean hideRetweets = false;
-    private static int limit = INF;
-    private static boolean help = false;
+
+    private static class Parameters {
+        @Parameter
+        private List<String> parameters = new ArrayList<>();
+
+        @Parameter(
+                names = {"-q", "--query"},
+                description = "Искать по запросу <query>")
+        private String query = null;
+
+        @Parameter(
+                names = {"-p", "--place"},
+                description = "Искать по региону, если значение равно 'nearby'"
+                        + " или отсутствует, искать по ip")
+        private String place = "nearby";
+
+        @Parameter(
+                names = {"-s", "--stream"},
+                description = "Приложение непрерывно с задержкой в 1 секунду"
+                        + " печатает твиты на экран")
+        private boolean stream = false;
+
+        @Parameter(
+                names = "--hideRetweets",
+                description = "Не показывать ретвиты")
+        private boolean hideRetweets = false;
+
+        @Parameter(
+                names = {"-l", "--limit"},
+                description = "Выводить не более <tweet> твитов (не в стриме)")
+        private int limit = INF;
+
+
+        @Parameter(
+                names = {"-h", "--help"},
+                description = "Показать помощь",
+                help = true)
+        private boolean help = false;
+    }
+    private static Parameters parameters;
+
 
     private static String blue(String text) {
         return text.replaceAll(
@@ -38,71 +79,46 @@ public class TwitterStream {
                 (char) FUCKING_27 + "[34m" + "$1" + (char) FUCKING_27 + "[0m");
     }
 
-    private static String niceMinutes(long minutes) {
-        if (minutes % FUCKING_100 >= FUCKING_11
-            && minutes % FUCKING_100 <= FUCKING_19) {
-            return minutes + " минут назад";
+    private static String timeToString(long time, String[] variants) {
+        if (time % FUCKING_100 >= FUCKING_11
+                && time % FUCKING_100 <= FUCKING_19) {
+            return time + " " + variants[0] + " назад";
         }
-        if (minutes % FUCKING_10 == 1) {
-            return minutes + " минуту назад";
+        if (time % FUCKING_10 == 1) {
+            return time + " " + variants[1] + " назад";
         }
-        if (minutes % FUCKING_10 >= 2 && minutes % FUCKING_10 <= FUCKING_4) {
-            return minutes + " минуты назад";
+        if (time % FUCKING_10 >= 2 && time % FUCKING_10 <= FUCKING_4) {
+            return time + " " + variants[2] + " назад";
         }
-        return minutes + " минут назад";
-    }
-
-    private static String niceHours(long hours) {
-        if (hours % FUCKING_100 >= FUCKING_11
-            && hours % FUCKING_100 <= FUCKING_19) {
-            return hours + " часов назад";
-        }
-        if (hours % FUCKING_10 == 1) {
-            return hours + " час назад";
-        }
-        if (hours % FUCKING_10 >= 2 && hours % FUCKING_10 <= FUCKING_4) {
-            return hours + " часа назад";
-        }
-        return hours + " часов назад";
-    }
-
-    private static String niceDays(long days) {
-        if (days % FUCKING_100 >= FUCKING_11
-            && days % FUCKING_100 <= FUCKING_19) {
-            return days + " дней назад";
-        }
-        if (days % FUCKING_10 == 1) {
-            return days + " день назад";
-        }
-        if (days % FUCKING_10 >= 2 && days % FUCKING_10 <= FUCKING_4) {
-            return days + " дня назад";
-        }
-        return days + " дней назад";
+        return time + " " + variants[0] + " назад";
     }
 
     private static String niceTime(Date date) {
         if (System.currentTimeMillis() - date.getTime() < MINUTE * 2) {
             return "Только что";
         } else if (System.currentTimeMillis() - date.getTime() < HOUR) {
-            return niceMinutes(
-                    (System.currentTimeMillis() - date.getTime()) / MINUTE);
+            return timeToString(
+                    (System.currentTimeMillis() - date.getTime()) / MINUTE,
+                    new String[]{"минут", "минуту", "минуты"});
         } else if (System.currentTimeMillis() - date.getTime() < DAY) {
-            return niceHours(
-                    (System.currentTimeMillis() - date.getTime()) / HOUR);
+            return timeToString(
+                    (System.currentTimeMillis() - date.getTime()) / HOUR,
+                    new String[]{"часов", "час", "часа"});
         } else if (System.currentTimeMillis() - date.getTime() < DAY * 2) {
             return "Вчера";
         } else {
-            return niceDays(
-                    (System.currentTimeMillis() - date.getTime()) / DAY);
+            return timeToString(
+                    (System.currentTimeMillis() - date.getTime()) / DAY,
+                    new String[]{"дней", "день", "дня"});
         }
     }
 
     private static void printTweet(Status status) {
         if (status.isRetweet()) {
-            if (hideRetweets) {
+            if (parameters.hideRetweets) {
                 return;
             }
-            if (!stream) {
+            if (!parameters.stream) {
                 System.out.print("[" + niceTime(status.getCreatedAt()) + "] ");
             }
             System.out.println(
@@ -110,7 +126,7 @@ public class TwitterStream {
                              + " ретвитнул "
                              + status.getText().substring(FUCKING_3)));
         } else {
-            if (!stream) {
+            if (!parameters.stream) {
                 System.out.print("[" + niceTime(status.getCreatedAt()) + "] ");
             }
             System.out.print(
@@ -127,51 +143,19 @@ public class TwitterStream {
                 + "------------------------------------------");
     }
 
-    private static void printHelp() {
-        System.out.println(
-          "Консольное приложение, выводящее на экран поток твитов.\n"
-        + "Использование: java TwitterStream [параметры]\n"
-        + "Параметры:\n"
-        + "-q,--query <query>                     Искать по запросу <query>\n"
-        + "-p,--place <location|'nearby'>         Искать по региону, если\n"
-        + "                                       значение равно <nearby> или\n"
-        + "                                       параметр отсутствует, по ip\n"
-        + "-s,--stream                            Приложение непрерывно с\n"
-        + "                                       задержкой в 1 секунду\n"
-        + "                                       печатает твиты на экран\n"
-        + "                                       (ESC для выхода)\n"
-        + "--hideRetweets                         Не показывать ретвиты\n"
-        + "-l,--limit <tweets>                    Выводить не более <tweet>\n"
-        + "                                       твитов (не для --stream)\n"
-        + "-h,--help                              Показать справку");
-    }
-
     private static void parseArgs(String[] args) {
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("-q") || args[i].equals("--query")) {
-                query = args[i + 1];
-            }
-            if (args[i].equals("-p") || args[i].equals("--place")) {
-                place = args[i + 1];
-            }
-            if (args[i].equals("-s") || args[i].equals("--stream")) {
-                stream = true;
-            }
-            if (args[i].equals("--hideRetweets")) {
-                hideRetweets = true;
-            }
-            if (args[i].equals("-l") || args[i].equals("--limit")) {
-                limit = Integer.parseInt(args[i + 1]);
-            }
-            if (args[i].equals("-h") || args[i].equals("--help")) {
-                help = true;
-            }
+        parameters = new Parameters();
+        JCommander jc = new JCommander(parameters, args);
+        jc.setProgramName("TwitterStream");
+        if (parameters.help) {
+            jc.usage();
+            return;
         }
     }
 
     private static double[] getLocation() {
         String location;
-        if (place.equals("nearby")) {
+        if (parameters.place.equals("nearby")) {
             try {
                 URL url = new URL("http://ipinfo.io/geo");
                 InputStream is = url.openStream();
@@ -196,7 +180,7 @@ public class TwitterStream {
         }
         try {
             GeoQuery geoQuery = new GeoQuery((String) null);
-            geoQuery.setQuery(place);
+            geoQuery.setQuery(parameters.place);
             List<Place> places = twitter.searchPlaces(geoQuery);
             if (places.size() == 0) {
                 System.err.println("Нет такого места");
@@ -221,9 +205,9 @@ public class TwitterStream {
     }
 
     private static Query createQuery() {
-        Query searchQuery = new Query(query);
-        searchQuery.setCount(Math.min(Q_LIMIT, limit));
-        searchQuery.setQuery(query);
+        Query searchQuery = new Query(parameters.query);
+        searchQuery.setCount(Math.min(Q_LIMIT, parameters.limit));
+        searchQuery.setQuery(parameters.query);
         double[] location = getLocation();
         while (location == null) {
             try {
@@ -240,9 +224,9 @@ public class TwitterStream {
 
     private static void printTweets() {
         Query searchQuery = createQuery();
-        while (limit > 0) {
-            searchQuery.setCount(Math.min(Q_LIMIT, limit));
-            limit -= Q_LIMIT;
+        while (parameters.limit > 0) {
+            searchQuery.setCount(Math.min(Q_LIMIT, parameters.limit));
+            parameters.limit -= Q_LIMIT;
             List<Status> tweets = null;
             boolean success = false;
             while (!success) {
@@ -301,22 +285,22 @@ public class TwitterStream {
 
     public static void main(String[] args) {
         parseArgs(args);
-        if (help) {
-            printHelp();
+        if (parameters.help) {
             return;
         }
         twitter = TwitterFactory.getSingleton();
-        if (query != null) {
+        if (parameters.query != null) {
             System.out.println(
-                    "Твиты по запросу " + query + " для " + place + ":");
+                    "Твиты по запросу " + parameters.query
+                            + " для " + parameters.place + ":");
         } else {
-            System.out.println("Твиты для " + place + ":");
+            System.out.println("Твиты для " + parameters.place + ":");
         }
         System.out.println(
                 "----------------------------------------------"
-                + "------------------------------------------");
+                        + "------------------------------------------");
 
-        if (stream) {
+        if (parameters.stream) {
             streamTweets();
         } else {
             printTweets();
