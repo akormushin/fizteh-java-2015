@@ -1,13 +1,13 @@
-package ru.fizteh.fivt.students.thefacetakt.TwitterStream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 
-import ru.fizteh.fivt.students.thefacetakt.TwitterStream
-        .Exceptions.InvalidLocationException;
-import ru.fizteh.fivt.students.thefacetakt.TwitterStream
-        .Exceptions.LocationDefinitionErrorException;
-import ru.fizteh.fivt.students.thefacetakt.TwitterStream
-        .Exceptions.NoKeyException;
-import ru.fizteh.fivt.students.thefacetakt.TwitterStream
-        .Exceptions.QueryLimitException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream
+        .exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream
+        .exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream
+        .exceptions.NoKeyException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream
+        .exceptions.QueryLimitException;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 

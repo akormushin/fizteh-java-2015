@@ -1,16 +1,16 @@
-package ru.fizteh.fivt.students.thefacetakt.TwitterStream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 
 /**
  * Created by thefacetakt on 17.09.15.
  */
 
 import com.beust.jcommander.*;
-import ru.fizteh.fivt.students.thefacetakt.TwitterStream
-        .Exceptions.InvalidLocationException;
-import ru.fizteh.fivt.students.thefacetakt.TwitterStream
-        .Exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream
+        .exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream
+        .exceptions.LocationDefinitionErrorException;
 import ru.fizteh.fivt.students.thefacetakt
-        .TwitterStream.Exceptions.NoKeyException;
+        .twitterstream.exceptions.NoKeyException;
 import twitter4j.*;
 
 import java.text.SimpleDateFormat;
@@ -283,7 +283,7 @@ public class TwitterStream {
 
         try {
             JCommander jCommander = new JCommander(jCommanderSettings, args);
-            jCommander.setProgramName("TwitterStream");
+            jCommander.setProgramName("twitterstream");
             if (jCommanderSettings.isHelp()) {
                 jCommander.usage();
                 return;
@@ -291,7 +291,7 @@ public class TwitterStream {
         } catch (ParameterException pe) {
             JCommander jCommander =
                     new JCommander(jCommanderSettings, new String[0]);
-            jCommander.setProgramName("TwitterStream");
+            jCommander.setProgramName("twitterstream");
             jCommander.usage();
             return;
         }

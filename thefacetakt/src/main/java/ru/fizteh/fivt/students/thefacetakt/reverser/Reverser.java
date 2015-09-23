@@ -2,7 +2,7 @@
 *   A solution to the /tasks/00-Reverser.md task
 */
 
-package ru.fizteh.fivt.students.thefacetakt.Reverser;
+package ru.fizteh.fivt.students.thefacetakt.reverser;
 
 /**
 *   A class with solution implementation.

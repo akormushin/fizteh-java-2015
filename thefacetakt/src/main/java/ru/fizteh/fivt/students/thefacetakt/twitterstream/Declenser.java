@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.TwitterStream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 
 /**
  * Created by thefacetakt on 23.09.15.
