@@ -591,7 +591,11 @@ public class TwitterStream {
 
     static void printTwitterStream(JCommanderSetting jCommanderSetting,
                                    Location currentLocation) {
-        StatusListener listener = new StatusAdapter() {
+
+        twitter4j.TwitterStream twitterStream =
+                new TwitterStreamFactory().getInstance();
+
+        twitterStream.addListener(new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
 
@@ -630,12 +634,7 @@ public class TwitterStream {
                     printSeparator();
                 }
             }
-        };
-
-        twitter4j.TwitterStream twitterStream =
-                new TwitterStreamFactory().getInstance();
-
-        twitterStream.addListener(listener);
+        });
 
         String[] trackArray = jCommanderSetting.getQueries().toArray(
                 new String[jCommanderSetting.getQueries().size()]
