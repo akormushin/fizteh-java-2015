@@ -22,7 +22,9 @@
     <modules>
         <module>akormushin</module>
         <module>thefacetakt</module>
-  </modules>
+        <module>riazanovskiy</module>
+        <!--Add you module here-->
+    </modules>
 
     <dependencies>
         <dependency>
@@ -101,5 +103,6 @@
         <developerConnection>scm:git:ssh://git@github.com/fizteh-java-2015.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
+
 
 </project>
