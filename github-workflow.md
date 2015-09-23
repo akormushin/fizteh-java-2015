@@ -31,7 +31,7 @@
 ## Работа над заданием
 1. Свои классы нужно добавлять в директории ```<Your github login>/src/main/java/ru/fizteh/fivt/students/<Your github login>/<task>```.
 2. Сборка модуля производится командой ```mvn package```.
-3. Запускать приложение можно прямо из maven командой ```mvn exec:java -Dexec.mainClass=<Your main class name> -Dexec.arguments=<arguments>```. Она сама добавит в classpath транзативно все необходимые библиотеки из pom.xml dependencies. 
+3. Запускать приложение можно прямо из maven командой ```mvn exec:java -Dexec.mainClass=<Fully qualified main class name> -Dexec.args="<arguments>"```. Она сама добавит в classpath транзативно все необходимые библиотеки из pom.xml dependencies. 
   
   Также можно запускать с помощью команды java. Для этого нужно: 
   1. Выполнить единожды ```mvn dependency:copy-dependencies```. Эта команда скопирует все необходимые зависимости в target/dependency.
