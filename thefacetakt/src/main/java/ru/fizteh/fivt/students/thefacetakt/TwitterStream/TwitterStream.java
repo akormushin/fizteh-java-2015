@@ -65,19 +65,16 @@ class PlaceLocationResolver {
     static final String LOCATION_DEFINITION_ERROR
             = "Problem while location definition";
 
-    private static HashMap<String, Location> cache
+    private HashMap<String, Location> cache
             = new HashMap<String, Location>();
-    private static String googleMapsKey;
-    private static String yandexMapsKey;
+    private String googleMapsKey;
+    private String yandexMapsKey;
 
-    static void init() {
-        try {
-            BufferedReader mapsKeyFile = new BufferedReader(
-                    new FileReader("src/main/resources/geo.properties")
-            );
+    PlaceLocationResolver() {
+        try (BufferedReader mapsKeyFile = new BufferedReader(
+                new FileReader("src/main/resources/geo.properties"))) {
             googleMapsKey = mapsKeyFile.readLine();
             yandexMapsKey = mapsKeyFile.readLine();
-            mapsKeyFile.close();
         } catch (IOException e) {
             System.err.println("Something went terribly wrong: no maps "
                     + "key found");
@@ -86,7 +83,7 @@ class PlaceLocationResolver {
     }
 
 
-    static Location resolvePlaceLocationGoogle(String nameOfLocation)
+    private Location resolvePlaceLocationGoogle(String nameOfLocation)
             throws InvalidLocationException, QueryLimitException {
         int numberOfTries = 0;
 
@@ -152,7 +149,7 @@ class PlaceLocationResolver {
         return null;
     }
 
-    static Location resolvePlaceLocationYandex(String nameOfLocation)
+    private Location resolvePlaceLocationYandex(String nameOfLocation)
             throws InvalidLocationException {
         int numberOfTries = 0;
 
@@ -223,7 +220,7 @@ class PlaceLocationResolver {
         return null;
     }
 
-    static Location resolvePlaceLocation(String nameOfLocation)
+    public Location resolvePlaceLocation(String nameOfLocation)
             throws InvalidLocationException {
         nameOfLocation = nameOfLocation.trim();
 
@@ -257,7 +254,7 @@ class PlaceLocationResolver {
         return cache.get(nameOfLocation);
     }
 
-    static Location resolveCurrentLocation() {
+    public Location resolveCurrentLocation() {
         int numberOfTries = 0;
 
         do {
@@ -411,7 +408,8 @@ public class TwitterStream {
     static final double RADIUS = 10;
     static final String RADIUS_UNIT = "km";
 
-
+    private static PlaceLocationResolver geoResolver
+            = new PlaceLocationResolver();
 
     static void printSeparator() {
         for (int i = 0; i < MINUSES_COUNT; ++i) {
@@ -423,11 +421,10 @@ public class TwitterStream {
     static Location resolveLocation(String passedLocation) {
         Location result = null;
         if (passedLocation == JCommanderSetting.DEFAULT_LOCATION) {
-            result = PlaceLocationResolver.resolveCurrentLocation();
+            result = geoResolver.resolveCurrentLocation();
         } else {
             try {
-                result = PlaceLocationResolver
-                        .resolvePlaceLocation(passedLocation);
+                result = geoResolver.resolvePlaceLocation(passedLocation);
                 result.setName(passedLocation);
             } catch (InvalidLocationException e) {
                 System.err.println(e.getMessage());
@@ -610,7 +607,7 @@ public class TwitterStream {
                     if (status.getUser().getLocation() != null) {
                         try {
                             tweetLocation =
-                                    PlaceLocationResolver.resolvePlaceLocation(
+                                    geoResolver.resolvePlaceLocation(
                                             status.getUser().getLocation());
                         } catch (InvalidLocationException e) {
                             return;
@@ -657,7 +654,6 @@ public class TwitterStream {
     }
 
     public static void main(String[] args) throws InterruptedException {
-        PlaceLocationResolver.init();
 
         JCommanderSetting jCommanderSettings = new JCommanderSetting();
 
