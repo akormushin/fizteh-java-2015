@@ -379,24 +379,26 @@ class Declenser {
         return cases[0];
     }
 
+    static final String[] RETWEETS_CASES = {"ретвитов", "ретвит", "ретвита"};
     static String retweetDeclension(long n) {
-        String[] cases = {"ретвитов", "ретвит", "ретвита"};
-        return declensionScheme(n, cases);
+
+        return declensionScheme(n, RETWEETS_CASES);
     }
 
+    static final String[] MINUTES_CASES = {"минут", "минуту", "минуты"};
     static String minutesDeclension(long n) {
-        String[] cases = {"минут", "минуту", "минуты"};
-        return declensionScheme(n, cases);
+
+        return declensionScheme(n, MINUTES_CASES);
     }
 
+    static final String[] HOURS_CASES = {"часов", "час", "часа"};
     static String hoursDeclension(long n) {
-        String[] cases = {"часов", "час", "часа"};
-        return declensionScheme(n, cases);
+        return declensionScheme(n, HOURS_CASES);
     }
 
+    static final String[] DAYS_CASES = {"дней", "день", "дня"};
     static String daysDeclension(long n) {
-        String[] cases = {"дней", "день", "дня"};
-        return declensionScheme(n, cases);
+        return declensionScheme(n, DAYS_CASES);
     }
 }
 
