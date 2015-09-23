@@ -65,7 +65,7 @@ class PlaceLocationResolver {
     static final String LOCATION_DEFINITION_ERROR
             = "Problem while location definition";
 
-    private HashMap<String, Location> cache
+    private Map<String, Location> cache
             = new HashMap<String, Location>();
     private String googleMapsKey;
     private String yandexMapsKey;
