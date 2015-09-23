@@ -38,5 +38,6 @@
 * Инструменты
     * [JUnit](http://junit.org)
     * [Mockito](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html)
+    * [Maven: Introduction to the Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope)
 * Задание на дом: [ModuleTests](/tasks/02-ModuleTests.md)
 
