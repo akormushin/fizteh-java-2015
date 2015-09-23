@@ -295,7 +295,7 @@ class PlaceLocationResolver {
 
         System.err.println(LOCATION_DEFINITION_ERROR);
         System.exit(1);
-        return new Location(0, 0);
+        return null;
     }
 }
 
@@ -640,9 +640,8 @@ public class TwitterStream {
         String[] trackArray = jCommanderSetting.getQueries().toArray(
                 new String[jCommanderSetting.getQueries().size()]
         );
-        long[] followArray = {};
 
-        twitterStream.filter(new FilterQuery(0, followArray , trackArray));
+        twitterStream.filter(new FilterQuery().track(trackArray));
     }
 
     static void readUntilCtrlD() {
