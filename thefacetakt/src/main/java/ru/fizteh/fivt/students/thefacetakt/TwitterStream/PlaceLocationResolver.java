@@ -1,5 +1,13 @@
 package ru.fizteh.fivt.students.thefacetakt.TwitterStream;
 
+import ru.fizteh.fivt.students.thefacetakt.TwitterStream
+        .Exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.TwitterStream
+        .Exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.TwitterStream
+        .Exceptions.NoKeyException;
+import ru.fizteh.fivt.students.thefacetakt.TwitterStream
+        .Exceptions.QueryLimitException;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
@@ -14,9 +22,6 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Created by thefacetakt on 23.09.15.
- */
 class PlaceLocationResolver {
     static final String LOCATION_DEFINITION_ERROR
             = "Problem while location definition";
@@ -26,21 +31,21 @@ class PlaceLocationResolver {
     private String googleMapsKey;
     private String yandexMapsKey;
 
-    PlaceLocationResolver() {
+    PlaceLocationResolver() throws NoKeyException {
         try (BufferedReader mapsKeyFile = new BufferedReader(
                 new FileReader("src/main/resources/geo.properties"))) {
             googleMapsKey = mapsKeyFile.readLine();
             yandexMapsKey = mapsKeyFile.readLine();
         } catch (IOException e) {
-            System.err.println("Something went terribly wrong: no maps "
+            throw new NoKeyException("Something went terribly wrong: no maps "
                     + "key found");
-            System.exit(1);
         }
     }
 
 
     private Location resolvePlaceLocationGoogle(String nameOfLocation)
-            throws InvalidLocationException, QueryLimitException {
+            throws InvalidLocationException, QueryLimitException,
+            LocationDefinitionErrorException {
         int numberOfTries = 0;
 
         do {
@@ -94,19 +99,18 @@ class PlaceLocationResolver {
                         Double.parseDouble(locationInfo.getString("lat")),
                         Double.parseDouble(locationInfo.getString("lng")));
             } catch (IOException | JSONException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
                 ++numberOfTries;
                 continue;
             }
         }
         while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
-        System.err.println(LOCATION_DEFINITION_ERROR);
-        System.exit(1);
-        return null;
+
+        throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
 
     private Location resolvePlaceLocationYandex(String nameOfLocation)
-            throws InvalidLocationException {
+            throws InvalidLocationException, LocationDefinitionErrorException {
         int numberOfTries = 0;
 
         do {
@@ -166,18 +170,17 @@ class PlaceLocationResolver {
                         Double.parseDouble(coordinates[1]),
                         Double.parseDouble(coordinates[0]));
             } catch (IOException | JSONException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
                 ++numberOfTries;
             }
         }
         while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
-        System.err.println(LOCATION_DEFINITION_ERROR);
-        System.exit(1);
-        return null;
+
+        throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
 
     public Location resolvePlaceLocation(String nameOfLocation)
-            throws InvalidLocationException {
+            throws InvalidLocationException, LocationDefinitionErrorException {
         nameOfLocation = nameOfLocation.trim();
 
         if (nameOfLocation.length() == 0) {
@@ -210,7 +213,8 @@ class PlaceLocationResolver {
         return cache.get(nameOfLocation);
     }
 
-    public Location resolveCurrentLocation() {
+    public Location resolveCurrentLocation()
+            throws LocationDefinitionErrorException {
         int numberOfTries = 0;
 
         do {
@@ -249,8 +253,6 @@ class PlaceLocationResolver {
         }
         while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
 
-        System.err.println(LOCATION_DEFINITION_ERROR);
-        System.exit(1);
-        return null;
+        throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
 }

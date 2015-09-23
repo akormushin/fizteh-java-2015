@@ -5,6 +5,12 @@ package ru.fizteh.fivt.students.thefacetakt.TwitterStream;
  */
 
 import com.beust.jcommander.*;
+import ru.fizteh.fivt.students.thefacetakt.TwitterStream
+        .Exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.TwitterStream
+        .Exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt
+        .TwitterStream.Exceptions.NoKeyException;
 import twitter4j.*;
 
 import java.text.SimpleDateFormat;
@@ -18,8 +24,16 @@ public class TwitterStream {
     static final double RADIUS = 10;
     static final String RADIUS_UNIT = "km";
 
-    private static PlaceLocationResolver geoResolver
-            = new PlaceLocationResolver();
+    private static PlaceLocationResolver geoResolver;
+
+    static {
+        try {
+            geoResolver = new PlaceLocationResolver();
+        } catch (NoKeyException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
+    }
 
     static void printSeparator() {
         for (int i = 0; i < MINUSES_COUNT; ++i) {
@@ -28,7 +42,8 @@ public class TwitterStream {
         System.out.println();
     }
 
-    static Location resolveLocation(String passedLocation) {
+    static Location resolveLocation(String passedLocation)
+            throws LocationDefinitionErrorException {
         Location result = null;
         if (passedLocation.equals(JCommanderSetting.DEFAULT_LOCATION)) {
             result = geoResolver.resolveCurrentLocation();
@@ -223,7 +238,8 @@ public class TwitterStream {
                             tweetLocation =
                                     geoResolver.resolvePlaceLocation(
                                             status.getUser().getLocation());
-                        } catch (InvalidLocationException e) {
+                        } catch (InvalidLocationException
+                                | LocationDefinitionErrorException e) {
                             return;
                         }
                     } else {
@@ -261,7 +277,7 @@ public class TwitterStream {
         System.exit(0);
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) {
 
         JCommanderSetting jCommanderSettings = new JCommanderSetting();
 
@@ -280,9 +296,15 @@ public class TwitterStream {
             return;
         }
 
-        Location currentLocation = resolveLocation(
-                jCommanderSettings.getLocation()
-        );
+        Location currentLocation = null;
+        try {
+            currentLocation = resolveLocation(
+                    jCommanderSettings.getLocation()
+            );
+        } catch (LocationDefinitionErrorException e) {
+            System.err.println(e.getMessage());
+            System.exit(1);
+        }
 
         String queryString = String.join(" ", jCommanderSettings.getQueries());
         System.out.println("Твиты по запросу "
