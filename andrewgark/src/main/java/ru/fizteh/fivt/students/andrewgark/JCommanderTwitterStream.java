@@ -10,20 +10,44 @@ public class JCommanderTwitterStream {
     private List<String> parameters = new ArrayList<>();
 
     @Parameter(names = {"--query", "-q"})
-    public List<String> keywords = new ArrayList<>();
+    private List<String> keywords = new ArrayList<>();
 
     @Parameter(names = {"--place", "-p"}, arity = 1)
-    public String location = "nearby";
+    private String location = "nearby";
 
     @Parameter(names = {"--stream", "-s"})
-    public boolean stream = false;
+    private boolean stream = false;
 
     @Parameter(names = "--hideRetweets")
-    public boolean hideRetweets = false;
+    private boolean hideRetweets = false;
 
     @Parameter(names = {"--limit", "-l"})
-    public Integer limit = Integer.MAX_VALUE;
+    private Integer limit = Integer.MAX_VALUE;
 
     @Parameter(names = {"--help", "-h"})
-    public boolean help = false;
+    private boolean help = false;
+
+    public String getLocation() {
+        return location;
+    }
+
+    public boolean isStream() {
+        return stream;
+    }
+
+    public boolean isHideRetweets() {
+        return hideRetweets;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public boolean isHelp() {
+        return help;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
 }

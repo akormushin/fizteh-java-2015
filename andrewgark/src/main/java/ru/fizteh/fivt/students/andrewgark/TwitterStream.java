@@ -21,12 +21,12 @@ public class TwitterStream {
     public static void main(String[] args) {
         JCommanderTwitterStream jcts = new JCommanderTwitterStream();
         new JCommander(jcts, args);
-        if (jcts.help) {
+        if (jcts.isHelp()) {
             System.out.println(getFile("src/main/resources/01-TwitterStream.md"));
             System.exit(0);
         }
-        if (jcts.stream) {
-            if (jcts.limit < Integer.MAX_VALUE) {
+        if (jcts.isStream()) {
+            if (jcts.getLimit() < Integer.MAX_VALUE) {
                 System.out.println("You can't have stream with limit.");
                 System.exit(-1);
             }
@@ -34,13 +34,13 @@ public class TwitterStream {
             System.exit(-1);
         } else {
             String[] keywords;
-            if (jcts.keywords.size() > 0) {
-                keywords = jcts.keywords.toArray(new String[jcts.keywords.size()]);
+            if (jcts.getKeywords().size() > 0) {
+                keywords = jcts.getKeywords().toArray(new String[jcts.getKeywords().size()]);
             } else {
                 keywords = new String[1];
                 keywords[0] = "";
             }
-            printSomeTweets(String.join(" ", keywords), jcts.location, jcts.limit, jcts.hideRetweets);
+            printSomeTweets(String.join(" ", keywords), jcts.getLocation(), jcts.getLimit(), jcts.isHideRetweets());
         }
     }
 
@@ -67,13 +67,17 @@ public class TwitterStream {
     }
 
     public static void printTweet(Status tweet, boolean isStream) {
-        String time = isStream ? "" : getTime(tweet);
+        String time;
+        if (isStream)
+            time = "";
+        else
+            time = getTime(tweet);
         String uName = tweet.getUser().getScreenName();
         String text = tweet.getText();
         Integer retweets = tweet.getRetweetCount();
         if (tweet.isRetweet()) {
-            Pattern my_pattern = Pattern.compile("RT @([^ ]*): (.*)");
-            Matcher m = my_pattern.matcher(text);
+            Pattern myPattern = Pattern.compile("RT @([^ ]*): (.*)");
+            Matcher m = myPattern.matcher(text);
             m.find();
             String uRTName = m.group(1);
             text = m.group(2);
@@ -115,20 +119,19 @@ public class TwitterStream {
     public static GeoLocation getLocation(String location) {
         if (location == "nearby") {
             String xml = getUrl("https://ipcim.com/en/?p=where");
-            Pattern my_pattern = Pattern.compile(".*LatLng\\(([0-9.]*), ([0-9.]*)\\);.*");
-            Matcher m = my_pattern.matcher(xml);
+            Pattern myPattern = Pattern.compile(".*LatLng\\(([0-9.]*), ([0-9.]*)\\);.*");
+            Matcher m = myPattern.matcher(xml);
             if (!m.find()) {
                 System.out.println("We can't find your IP.");
                 System.exit(-1);
             }
             return new GeoLocation(Double.parseDouble(m.group(2)), Double.parseDouble(m.group(1)));
-        }
-        else {
+        } else {
             String urlQuery = "https://geocode-maps.yandex.ru/1.x/?geocode=";
             String yandexKey = getFile("src/main/resources/YandexMapsAPI.properties");
             String xml = getUrl(urlQuery + location + "&key=" + yandexKey);
-            Pattern my_pattern = Pattern.compile(".*<pos>([0-9.\\-]*) ([0-9.\\-]*)<\\/pos>.*");
-            Matcher m = my_pattern.matcher(xml);
+            Pattern myPattern = Pattern.compile(".*<pos>([0-9.\\-]*) ([0-9.\\-]*)<\\/pos>.*");
+            Matcher m = myPattern.matcher(xml);
             if (!m.find()) {
                 System.out.println("We can't find this location.");
                 System.exit(-1);
@@ -149,7 +152,7 @@ public class TwitterStream {
         String s = "";
         try {
             String str;
-            while((str = fin.readLine()) != null) {
+            while ((str = fin.readLine()) != null) {
                 s += str + "\n";
             }
         } catch (IOException e) {
