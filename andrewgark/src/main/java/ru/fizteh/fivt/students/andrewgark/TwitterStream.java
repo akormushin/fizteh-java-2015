@@ -68,10 +68,11 @@ public class TwitterStream {
 
     public static void printTweet(Status tweet, boolean isStream) {
         String time;
-        if (isStream)
+        if (isStream) {
             time = "";
-        else
+        } else {
             time = getTime(tweet);
+        }
         String uName = tweet.getUser().getScreenName();
         String text = tweet.getText();
         Integer retweets = tweet.getRetweetCount();
