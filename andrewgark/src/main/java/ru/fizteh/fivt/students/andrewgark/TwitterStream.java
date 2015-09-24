@@ -1,11 +1,7 @@
 package ru.fizteh.fivt.students.andrewgark;
 
 import com.beust.jcommander.JCommander;
-import org.omg.CORBA.portable.InputStream;
 import twitter4j.*;
-import com.beust.jcommander.Parameter;
-import junit.framework.Assert;
-
 import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -15,16 +11,13 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static java.time.LocalDateTime.*;
-
 public class TwitterStream {
-    private static Double RADIUS = 30.0;
-    private static Integer NUMBER_TWEETS = 100;
+    private static final Double RADIUS = 30.0;
+    private static final Integer NUMBER_TWEETS = 100;
     public static void main(String[] args) {
         JCommanderTwitterStream jcts = new JCommanderTwitterStream();
         new JCommander(jcts, args);
@@ -41,9 +34,9 @@ public class TwitterStream {
             System.exit(-1);
         } else {
             String[] keywords;
-            if (jcts.keywords.size() > 0)
+            if (jcts.keywords.size() > 0) {
                 keywords = jcts.keywords.toArray(new String[jcts.keywords.size()]);
-            else {
+            } else {
                 keywords = new String[1];
                 keywords[0] = "";
             }
@@ -61,8 +54,9 @@ public class TwitterStream {
             result = twitter.search(query);
             List<Status> tweets = result.getTweets();
             for (Status tweet: tweets) {
-                if (!(hideRetweets && tweet.isRetweet()))
+                if (!(hideRetweets && tweet.isRetweet())) {
                     printTweet(tweet, false);
+                }
             }
             System.exit(0);
         } catch (TwitterException te) {
@@ -78,14 +72,15 @@ public class TwitterStream {
         String text = tweet.getText();
         Integer retweets = tweet.getRetweetCount();
         if (tweet.isRetweet()) {
-            Pattern MY_PATTERN = Pattern.compile("RT @([^ ]*): (.*)");
-            Matcher m = MY_PATTERN.matcher(text);
+            Pattern my_pattern = Pattern.compile("RT @([^ ]*): (.*)");
+            Matcher m = my_pattern.matcher(text);
             m.find();
             String uRTName = m.group(1);
             text = m.group(2);
             System.out.println(time + " @" + uName + ": ретвитнул @" + uRTName + ": " + text);
-        } else
-            System.out.println(time + " @" + uName + ": " + text + ((retweets > 0) ? retweetsForm(retweets) : ""));
+        } else {
+            System.out.println(time + " @" + uName + ": " + text + retweetsForm(retweets));
+        }
     }
 
     public static String getTime(Status tweet) {
@@ -94,28 +89,34 @@ public class TwitterStream {
         if (tweetDate.equals(LocalDate.now())) {
             LocalDateTime tweetDateTime = dateTime.toLocalDateTime();
             LocalDateTime now = LocalDateTime.now();
-            if (now.minusMinutes(2).isBefore(tweetDateTime))
+            if (now.minusMinutes(2).isBefore(tweetDateTime)) {
                 return "Только что";
-            if (now.minusHours(1).isBefore(tweetDateTime))
+            }
+            if (now.minusHours(1).isBefore(tweetDateTime)) {
                 return Long.toString(tweetDateTime.until(now, ChronoUnit.MINUTES)) + " минут назад";
+            }
             return Long.toString(tweetDateTime.until(now, ChronoUnit.HOURS)) + " часов назад";
         } else {
             LocalDate now = LocalDate.now();
-            if (now.minusDays(1).equals(tweetDate))
+            if (now.minusDays(1).equals(tweetDate)) {
                 return "Вчера";
+            }
             return Long.toString((tweetDate.until(now, ChronoUnit.DAYS))) + " дней назад";
         }
     }
 
     public static String retweetsForm(Integer retweets) {
+        if (retweets > 0) {
+            return "";
+        }
         return " (" + Integer.toString(retweets) + " ретвитов)";
     }
 
     public static GeoLocation getLocation(String location) {
         if (location == "nearby") {
             String xml = getUrl("https://ipcim.com/en/?p=where");
-            Pattern MY_PATTERN = Pattern.compile(".*LatLng\\(([0-9.]*), ([0-9.]*)\\);.*");
-            Matcher m = MY_PATTERN.matcher(xml);
+            Pattern my_pattern = Pattern.compile(".*LatLng\\(([0-9.]*), ([0-9.]*)\\);.*");
+            Matcher m = my_pattern.matcher(xml);
             if (!m.find()) {
                 System.out.println("We can't find your IP.");
                 System.exit(-1);
@@ -125,13 +126,9 @@ public class TwitterStream {
         else {
             String urlQuery = "https://geocode-maps.yandex.ru/1.x/?geocode=";
             String yandexKey = getFile("src/main/resources/YandexMapsAPI.properties");
-
             String xml = getUrl(urlQuery + location + "&key=" + yandexKey);
-            //System.out.println(urlQuery + location + "&key=" + yandexKey);
-            //System.exit(-1);
-
-            Pattern MY_PATTERN = Pattern.compile(".*<pos>([0-9.\\-]*) ([0-9.\\-]*)<\\/pos>.*");
-            Matcher m = MY_PATTERN.matcher(xml);
+            Pattern my_pattern = Pattern.compile(".*<pos>([0-9.\\-]*) ([0-9.\\-]*)<\\/pos>.*");
+            Matcher m = my_pattern.matcher(xml);
             if (!m.find()) {
                 System.out.println("We can't find this location.");
                 System.exit(-1);
@@ -152,8 +149,9 @@ public class TwitterStream {
         String s = "";
         try {
             String str;
-            while((str = fin.readLine()) != null)
+            while((str = fin.readLine()) != null) {
                 s += str + "\n";
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
