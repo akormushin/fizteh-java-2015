@@ -11,18 +11,18 @@ public class CommandLineArgs {
             variableArity = true)
     private List<String> stringForQuery = new ArrayList<>();
     @Parameter(names = {"--help", "-h"}, help = true,
-    description = "Activates HelpMode")
+            description = "Activates HelpMode")
     private Boolean help = false;
     @Parameter(names = {"--stream", "-s"},
-    description = "Activates StreamMode")
+            description = "Activates StreamMode")
     private Boolean streamMode = false;
     /*@Parameter(names = {"--place", "-p"}, variableArity = true)
     private List<String> location = new ArrayList<>();*/
     @Parameter(names = {"--hideRetweets"},
-    description = "HidesRetweets")
+            description = "HidesRetweets")
     private Boolean hideRetweets = false;
     @Parameter(names = {"--limits", "-l"},
-    description = "Set limit or query. Not compatible with StreamMode")
+            description = "Set limit or query. Not compatible with StreamMode")
     private Integer limit = DEFAULT_LIMIT;
 
     public final List<String> getStringForQuery() {

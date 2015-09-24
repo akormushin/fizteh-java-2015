@@ -32,23 +32,27 @@ public class StringFormater {
     }
 
     public static String tweetForOutput(Status tweet) {
-        String formatedTweet = dateFormater(tweet.getCreatedAt());
+        return dateFormater(tweet.getCreatedAt()) + tweetForOutputWithoutDate(tweet);
+
+    }
+
+    public static String tweetForOutputWithoutDate(Status tweet) {
+        String formatedTweet = "";
         if (!tweet.isRetweet()) {
             formatedTweet += COLOR_BLUE
                     + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
                     + tweet.getText();
             if (tweet.getRetweetCount() > 0) {
                 formatedTweet += "(" + tweet.getRetweetCount() + " "
-                + retweetFormat(tweet.getRetweetCount()) + ")";
+                        + retweetFormat(tweet.getRetweetCount()) + ")";
             }
         } else {
             formatedTweet += COLOR_BLUE
-             + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
-             + "ретвитнул " + COLOR_BLUE + "@"
-             + tweet.getRetweetedStatus().getUser().getName() + COLOR_RESET
-             + ": " + tweet.getRetweetedStatus().getText();
+                    + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
+                    + "ретвитнул " + COLOR_BLUE + "@"
+                    + tweet.getRetweetedStatus().getUser().getName() + COLOR_RESET
+                    + ": " + tweet.getRetweetedStatus().getText();
         }
         return formatedTweet;
     }
-
 }

@@ -4,8 +4,11 @@ package ru.fizteh.fivt.students.zakharovas.TwitterStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
+
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
 
 public class TwitterStreamMain {
 
@@ -17,7 +20,6 @@ public class TwitterStreamMain {
             jCommander = new JCommander(commandLineArgs, separatedArgs);
         } catch (ParameterException pe) {
             System.err.println(pe.getMessage());
-            jCommander.usage();
             System.exit(1);
         }
         checkArguments(commandLineArgs, jCommander);
@@ -33,12 +35,14 @@ public class TwitterStreamMain {
     private static void streamMode(CommandLineArgs commandLineArgs) {
         twitter4j.TwitterStream twitterStream =
                 TwitterStreamFactory.getSingleton();
+        Queue<Status> tweetQueue = new LinkedList<>();
         StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status tweet) {
                 if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
-                    System.out.println(StringFormater.tweetForOutput(tweet));
+                    tweetQueue.add(tweet);
                 }
+
 
             }
 
@@ -72,7 +76,17 @@ public class TwitterStreamMain {
         };
         twitterStream.addListener(listener);
         twitterStream.filter(String.join(" ", commandLineArgs.
-                                        getStringForQuery()));
+                getStringForQuery()));
+        while (true) {
+            if (!tweetQueue.isEmpty()) {
+                StringFormater.tweetForOutputWithoutDate(tweetQueue.poll());
+            }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     private static void twitterWork(CommandLineArgs commandLineArgs) {
