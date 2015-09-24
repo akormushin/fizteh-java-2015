@@ -14,7 +14,7 @@ public class StringFormater {
     private static final String[] ENDING_RETWEETS = {"ретвитов", "ретвит", "ретвита"};
     private static final String[] ENDING_DAYS = {"дней", "день", "дня"};
     private static final String[] ENDING_MUNUTES = {"минут", "минуту", "минуты"};
-    private static final String[] ENIDING_HOURS = {"часов", "час", "часа"};
+    private static final String[] ENDING_HOURS = {"часов", "час", "часа"};
 
 
     public static String fineWords(int number, String[] endings) {
@@ -66,7 +66,7 @@ public class StringFormater {
                 } else {
                     currentDate = Calendar.getInstance();
                     int hourDifference = currentDate.get(Calendar.HOUR_OF_DAY) - tweetDate.get(Calendar.HOUR_OF_DAY);
-                    return hourDifference + " " + fineWords(hourDifference, ENIDING_HOURS) + " назад";
+                    return hourDifference + " " + fineWords(hourDifference, ENDING_HOURS) + " назад";
                 }
             } else {
                 return "вчера";
