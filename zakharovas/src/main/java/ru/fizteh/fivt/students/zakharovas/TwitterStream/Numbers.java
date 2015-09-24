@@ -9,4 +9,7 @@ public class Numbers {
     public static final int TEN = 10;
     public static final int ELEVEN = 11;
     public static final int NINETEEN = 19;
+    public static final int SECOND = 1000;
+    public static final int NOW_CONSTANT = -2;
+    public static final int HUNDRED = 100;
 }

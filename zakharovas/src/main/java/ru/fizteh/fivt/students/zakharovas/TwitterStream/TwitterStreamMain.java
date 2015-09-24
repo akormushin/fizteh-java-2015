@@ -78,11 +78,11 @@ public class TwitterStreamMain {
         twitterStream.filter(String.join(" ", commandLineArgs.
                 getStringForQuery()));
         while (true) {
-            if (!tweetQueue.isEmpty()) {
-                StringFormater.tweetForOutputWithoutDate(tweetQueue.poll());
+            while (!tweetQueue.isEmpty()) {
+                System.out.println(StringFormater.tweetForOutputWithoutDate(tweetQueue.poll()));
             }
             try {
-                Thread.sleep(1000);
+                Thread.sleep(Numbers.SECOND);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
