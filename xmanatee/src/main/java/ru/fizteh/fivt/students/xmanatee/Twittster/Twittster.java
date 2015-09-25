@@ -51,7 +51,7 @@ public class Twittster {
         }
     }
 
-    static final int DELAY_X = 1000;
+    static final int DELAY_X = 5000;
     public static void runStreamer(Parameters parameters) {
         ConfigurationBuilder cb = getOAuthConfigurationBuilder();
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
@@ -74,6 +74,7 @@ public class Twittster {
         try (Scanner scan = new Scanner(System.in)) {
             while (scan.hasNextLine()) {
                 sleep(DELAY_X);
+                twitterStream.wait(DELAY_X);
             }
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
@@ -163,17 +164,18 @@ public class Twittster {
         String formattedTime;
         long currentTime = System.currentTimeMillis();
         long timeToFormat = date.getTime();
-        long milliseconds = currentTime - timeToFormat;
-        long minutes = TimeUnit.MILLISECONDS.toMinutes(milliseconds);
-        long hours = TimeUnit.MILLISECONDS.toHours(milliseconds);
-        long days = TimeUnit.MILLISECONDS.toDays(milliseconds);
+        long dMilliseconds = currentTime - timeToFormat;
+        long dMinutes = TimeUnit.MILLISECONDS.toMinutes(dMilliseconds);
+        long dHours = TimeUnit.MILLISECONDS.toHours(dMilliseconds);
+        long days = TimeUnit.MILLISECONDS.toDays(currentTime)
+                - TimeUnit.MILLISECONDS.toDays(timeToFormat);
 
-        if (minutes < 2) {
+        if (dMinutes < 2) {
             formattedTime = "только что";
-        } else if (hours == 0) {
-            formattedTime = minutes + " " + minuteWord.declension4Number(minutes) + " назад";
+        } else if (dHours == 0) {
+            formattedTime = dMinutes + " " + minuteWord.declension4Number(dMinutes) + " назад";
         } else if (days == 0) {
-            formattedTime = hours + " " + hourWord.declension4Number(hours) + " назад";
+            formattedTime = dHours + " " + hourWord.declension4Number(dHours) + " назад";
         } else if (days == 1) {
             formattedTime = "вчера";
         } else {
