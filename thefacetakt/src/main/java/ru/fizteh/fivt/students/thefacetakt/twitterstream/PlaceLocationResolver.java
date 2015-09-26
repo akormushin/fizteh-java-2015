@@ -130,7 +130,7 @@ class PlaceLocationResolver {
 
 
             try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                    yandexMapsURL.openStream()))){
+                    yandexMapsURL.openStream()))) {
                 assert yandexMapsURL != null;
 
                 String currentInfo;
