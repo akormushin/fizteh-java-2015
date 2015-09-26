@@ -72,9 +72,8 @@ class PlaceLocationResolver {
                 continue;
             }
 
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        googleMapsURL.openStream()));
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(
+                    googleMapsURL.openStream()))) {
 
                 String currentInfo;
                 StringBuilder responseStrBuilder = new StringBuilder();
@@ -139,11 +138,9 @@ class PlaceLocationResolver {
                 continue;
             }
 
-            try {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(
+                    yandexMapsURL.openStream()))){
                 assert yandexMapsURL != null;
-
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        yandexMapsURL.openStream()));
 
                 String currentInfo;
                 StringBuilder responseStrBuilder = new StringBuilder();
@@ -232,10 +229,9 @@ class PlaceLocationResolver {
                 continue;
             }
 
-            try {
-                BufferedReader in = new BufferedReader(new InputStreamReader(
-                        whatIsMyCity.openStream()));
-
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(
+                    whatIsMyCity.openStream()))) {
+                
                 String currentInfo;
                 StringBuilder responseStrBuilder = new StringBuilder();
                 while ((currentInfo = in.readLine()) != null) {
