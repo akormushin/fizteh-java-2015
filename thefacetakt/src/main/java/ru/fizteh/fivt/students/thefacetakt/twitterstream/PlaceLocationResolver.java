@@ -11,16 +11,14 @@ import ru.fizteh.fivt.students.thefacetakt.twitterstream
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 class PlaceLocationResolver {
     static final String LOCATION_DEFINITION_ERROR
@@ -32,13 +30,19 @@ class PlaceLocationResolver {
     private String yandexMapsKey;
 
     PlaceLocationResolver() throws NoKeyException {
-        try (BufferedReader mapsKeyFile = new BufferedReader(
-                new FileReader("src/main/resources/geo.properties"))) {
-            googleMapsKey = mapsKeyFile.readLine();
-            yandexMapsKey = mapsKeyFile.readLine();
+
+        Properties mapsKeys = new Properties();
+        try (FileInputStream inputStream = new
+                FileInputStream("src/main/resources/geo.properties")){
+            mapsKeys.load(inputStream);
         } catch (IOException e) {
-            throw new NoKeyException("Something went terribly wrong: no maps "
-                    + "key found");
+            throw new NoKeyException();
+        }
+
+        googleMapsKey = mapsKeys.getProperty("google");
+        yandexMapsKey = mapsKeys.getProperty("yandex");
+        if (googleMapsKey == null || yandexMapsKey == null) {
+            throw new NoKeyException();
         }
     }
 
