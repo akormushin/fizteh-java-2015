@@ -13,6 +13,7 @@ import ru.fizteh.fivt.students.thefacetakt
         .twitterstream.exceptions.NoKeyException;
 import twitter4j.*;
 
+import java.net.MalformedURLException;
 import java.util.*;
 
 
@@ -42,12 +43,12 @@ public class TwitterStream {
     }
 
     static Location resolveLocation(String passedLocation)
-            throws LocationDefinitionErrorException, InvalidLocationException {
+            throws LocationDefinitionErrorException, InvalidLocationException,
+            MalformedURLException {
         Location result = null;
         if (passedLocation.equals(JCommanderSetting.DEFAULT_LOCATION)) {
             result = geoResolver.resolveCurrentLocation();
         } else {
-
             result = geoResolver.resolvePlaceLocation(passedLocation);
         }
         return result;
@@ -194,7 +195,8 @@ public class TwitterStream {
                                     geoResolver.resolvePlaceLocation(
                                             status.getUser().getLocation());
                         } catch (InvalidLocationException
-                                | LocationDefinitionErrorException e) {
+                                | LocationDefinitionErrorException
+                                | MalformedURLException e) {
                             return;
                         }
                     } else {
@@ -238,7 +240,7 @@ public class TwitterStream {
 
         try {
             JCommander jCommander = new JCommander(jCommanderSettings, args);
-            jCommander.setProgramName("twitterstream");
+            jCommander.setProgramName("Twitter Stream");
             if (jCommanderSettings.isHelp()) {
                 jCommander.usage();
                 return;
@@ -246,7 +248,7 @@ public class TwitterStream {
         } catch (ParameterException pe) {
             JCommander jCommander =
                     new JCommander(jCommanderSettings, new String[0]);
-            jCommander.setProgramName("twitterstream");
+            jCommander.setProgramName("Twitter Stream");
             jCommander.usage();
             return;
         }
@@ -257,7 +259,8 @@ public class TwitterStream {
                     jCommanderSettings.getLocation()
             );
         } catch (LocationDefinitionErrorException
-                | InvalidLocationException e) {
+                | InvalidLocationException
+                | MalformedURLException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }

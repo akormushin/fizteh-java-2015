@@ -49,27 +49,21 @@ class PlaceLocationResolver {
 
     private Location resolvePlaceLocationGoogle(String nameOfLocation)
             throws InvalidLocationException, QueryLimitException,
-            LocationDefinitionErrorException {
+            LocationDefinitionErrorException, MalformedURLException {
         int numberOfTries = 0;
 
         do {
             URL googleMapsURL = null;
             try {
-                try {
-                    URI uri = new URI("https",
-                            "maps.googleapis.com",
-                            "/maps/api/geocode/json",
-                            "address=" + nameOfLocation + "&key="
-                                    + googleMapsKey,
-                            null);
-                    googleMapsURL = uri.toURL();
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
-            } catch (MalformedURLException e) {
-                System.err.println(e.getMessage());
-                ++numberOfTries;
-                continue;
+                URI uri = new URI("https",
+                        "maps.googleapis.com",
+                        "/maps/api/geocode/json",
+                        "address=" + nameOfLocation + "&key="
+                                + googleMapsKey,
+                        null);
+                googleMapsURL = uri.toURL();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
             }
 
             try (BufferedReader in = new BufferedReader(new InputStreamReader(
@@ -114,29 +108,26 @@ class PlaceLocationResolver {
     }
 
     private Location resolvePlaceLocationYandex(String nameOfLocation)
-            throws InvalidLocationException, LocationDefinitionErrorException {
+            throws InvalidLocationException, LocationDefinitionErrorException,
+            MalformedURLException {
         int numberOfTries = 0;
 
         do {
             URL yandexMapsURL = null;
+
             try {
-                try {
-                    URI uri = new URI("https",
-                            "geocode-maps.yandex.ru",
-                            "/1.x/",
-                            "geocode=" + nameOfLocation
-                                    + "&key=" + yandexMapsKey
-                                    + "&format=json",
-                            null);
-                    yandexMapsURL = uri.toURL();
-                } catch (URISyntaxException e) {
-                    e.printStackTrace();
-                }
-            } catch (MalformedURLException e) {
-                System.err.println(e.getMessage());
-                ++numberOfTries;
-                continue;
+                URI uri = new URI("https",
+                        "geocode-maps.yandex.ru",
+                        "/1.x/",
+                        "geocode=" + nameOfLocation
+                                + "&key=" + yandexMapsKey
+                                + "&format=json",
+                        null);
+                yandexMapsURL = uri.toURL();
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
             }
+
 
             try (BufferedReader in = new BufferedReader(new InputStreamReader(
                     yandexMapsURL.openStream()))){
@@ -183,7 +174,8 @@ class PlaceLocationResolver {
     }
 
     public Location resolvePlaceLocation(String nameOfLocation)
-            throws InvalidLocationException, LocationDefinitionErrorException {
+            throws InvalidLocationException, LocationDefinitionErrorException,
+            MalformedURLException {
         nameOfLocation = nameOfLocation.trim();
 
         if (nameOfLocation.length() == 0) {
@@ -231,7 +223,7 @@ class PlaceLocationResolver {
 
             try (BufferedReader in = new BufferedReader(new InputStreamReader(
                     whatIsMyCity.openStream()))) {
-                
+
                 String currentInfo;
                 StringBuilder responseStrBuilder = new StringBuilder();
                 while ((currentInfo = in.readLine()) != null) {
