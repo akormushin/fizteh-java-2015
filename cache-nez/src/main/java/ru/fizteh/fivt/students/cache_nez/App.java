@@ -2,8 +2,7 @@ package ru.fizteh.fivt.students;
 
 /**
  * Hello world!
- *
-*/
+ */
 
 
 public class App {
