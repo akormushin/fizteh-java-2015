@@ -43,18 +43,15 @@ public class TwitterStream {
     }
 
     static Location resolveLocation(String passedLocation)
-            throws LocationDefinitionErrorException {
+            throws LocationDefinitionErrorException, InvalidLocationException {
         Location result = null;
         if (passedLocation.equals(JCommanderSetting.DEFAULT_LOCATION)) {
             result = geoResolver.resolveCurrentLocation();
         } else {
-            try {
-                result = geoResolver.resolvePlaceLocation(passedLocation);
-                result.setName(passedLocation);
-            } catch (InvalidLocationException e) {
-                System.err.println(e.getMessage());
-                System.exit(1);
-            }
+
+            result = geoResolver.resolvePlaceLocation(passedLocation);
+            result.setName(passedLocation);
+
         }
         return result;
     }
@@ -301,7 +298,8 @@ public class TwitterStream {
             currentLocation = resolveLocation(
                     jCommanderSettings.getLocation()
             );
-        } catch (LocationDefinitionErrorException e) {
+        } catch (LocationDefinitionErrorException
+                | InvalidLocationException e) {
             System.err.println(e.getMessage());
             System.exit(1);
         }
