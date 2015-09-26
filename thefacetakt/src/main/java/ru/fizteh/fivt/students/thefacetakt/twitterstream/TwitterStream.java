@@ -54,47 +54,7 @@ public class TwitterStream {
         return result;
     }
 
-    static class TimeFormatter {
-        static final int MILLISECONDS_IN_SECOND = 1000;
-        static final int MILLISECONDS_IN_MINUTE = 60 * MILLISECONDS_IN_SECOND;
-        static final int MILLISECONDS_IN_HOUR = 60 * MILLISECONDS_IN_MINUTE;
-        static final int MILLISECONDS_IN_DAY = 24 * MILLISECONDS_IN_HOUR;
 
-        static String formatTime(long currentTime, long timeToFormat) {
-            if (currentTime - timeToFormat < 2 * MILLISECONDS_IN_MINUTE) {
-                return "Только что";
-            }
-            if (currentTime - timeToFormat < MILLISECONDS_IN_HOUR) {
-                long n = ((currentTime - timeToFormat)
-                        / MILLISECONDS_IN_MINUTE);
-                return String.valueOf(n)
-                        + " " + Declenser.minutesDeclension(n) + " назад";
-            }
-
-            SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyy");
-
-            if (formatter.format(currentTime).equals(
-                    formatter.format(timeToFormat))) {
-                long n = (currentTime - timeToFormat) / MILLISECONDS_IN_HOUR;
-                return String.valueOf(n) + " " + Declenser.hoursDeclension(n)
-                        + " назад";
-            }
-
-            Calendar currentCalendar = Calendar.getInstance();
-            currentCalendar.setTimeInMillis(currentTime);
-            Calendar givenCalendar = Calendar.getInstance();
-            givenCalendar.setTimeInMillis(timeToFormat);
-
-            currentCalendar.add(Calendar.DAY_OF_MONTH, -1);
-            if (formatter.format(currentCalendar.getTimeInMillis()).equals(
-                    formatter.format(givenCalendar.getTimeInMillis()))) {
-                return "вчера";
-            }
-            long n = (currentTime - timeToFormat) / MILLISECONDS_IN_DAY;
-            return String.valueOf(n) + " " + Declenser.daysDeclension(n)
-                    + " назад";
-        }
-    }
 
     static final String ANSI_RESET = "\u001B[0m";
     static final String ANSI_BLUE = "\u001B[34m";
@@ -103,6 +63,8 @@ public class TwitterStream {
         System.out.print("@" + ANSI_BLUE + nick + ": " + ANSI_RESET);
     }
 
+
+    //RT @nick:
     static final int RT_SPACE_AT_LENGTH = 4;
     static void printTweet(Status status) {
         printNick(status.getUser().getScreenName());
@@ -119,7 +81,6 @@ public class TwitterStream {
         } else {
             System.out.print("ретвитнул ");
             String[] splittedText = status.getText().split(":");
-            //RT @nick:
 
             String originalNick = splittedText[0].substring(RT_SPACE_AT_LENGTH);
             printNick(originalNick);
