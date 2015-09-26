@@ -32,8 +32,8 @@ class PlaceLocationResolver {
     PlaceLocationResolver() throws NoKeyException {
 
         Properties mapsKeys = new Properties();
-        try (FileInputStream inputStream = new
-                FileInputStream("src/main/resources/geo.properties")){
+        try (InputStream inputStream
+                     = this.getClass().getResourceAsStream("/geo.properties")) {
             mapsKeys.load(inputStream);
         } catch (IOException e) {
             throw new NoKeyException();

@@ -13,7 +13,6 @@ import ru.fizteh.fivt.students.thefacetakt
         .twitterstream.exceptions.NoKeyException;
 import twitter4j.*;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
