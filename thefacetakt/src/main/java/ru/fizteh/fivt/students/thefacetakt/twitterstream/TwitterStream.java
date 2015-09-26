@@ -119,7 +119,7 @@ public class TwitterStream {
                 List<Status> tweets = result.getTweets();
                 Collections.reverse(tweets);
 
-                if (tweets.size() == 0) {
+                if (tweets.isEmpty()) {
                     System.out.println("Не найдено ни одного твита");
                     printSeparator();
                 }

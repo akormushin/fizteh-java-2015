@@ -178,7 +178,7 @@ class PlaceLocationResolver {
             MalformedURLException {
         nameOfLocation = nameOfLocation.trim();
 
-        if (nameOfLocation.length() == 0) {
+        if (nameOfLocation.isEmpty()) {
             throw new InvalidLocationException("empty address");
         }
 
