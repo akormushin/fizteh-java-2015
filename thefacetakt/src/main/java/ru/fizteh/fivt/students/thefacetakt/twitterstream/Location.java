@@ -3,10 +3,10 @@ package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 /**
  * Created by thefacetakt on 23.09.15.
  */
-class Location {
-    private double latitude;
-    private double longitude;
-    private String name;
+final class Location {
+    private final double latitude;
+    private final double longitude;
+    private final String name;
 
     public double getLatitude() {
         return latitude;
@@ -20,13 +20,15 @@ class Location {
         return name;
     }
 
-    public void setName(String newName) {
-        this.name = newName;
-    }
-
-
     Location(double newLatitude, double newLongitude) {
         this.latitude = newLatitude;
         this.longitude = newLongitude;
+        this.name = null;
+    }
+
+    Location(double newLatitude, double newLongitude, String newName) {
+        this.latitude = newLatitude;
+        this.longitude = newLongitude;
+        this.name = newName;
     }
 }

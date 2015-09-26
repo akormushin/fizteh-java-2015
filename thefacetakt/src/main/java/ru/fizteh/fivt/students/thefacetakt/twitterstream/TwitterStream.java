@@ -50,8 +50,6 @@ public class TwitterStream {
         } else {
 
             result = geoResolver.resolvePlaceLocation(passedLocation);
-            result.setName(passedLocation);
-
         }
         return result;
     }

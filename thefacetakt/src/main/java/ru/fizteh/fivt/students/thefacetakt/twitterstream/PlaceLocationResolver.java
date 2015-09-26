@@ -101,7 +101,8 @@ class PlaceLocationResolver {
 
                 return new Location(
                         Double.parseDouble(locationInfo.getString("lat")),
-                        Double.parseDouble(locationInfo.getString("lng")));
+                        Double.parseDouble(locationInfo.getString("lng")),
+                        nameOfLocation);
             } catch (IOException | JSONException e) {
                 System.err.println(e.getMessage());
                 ++numberOfTries;
@@ -172,7 +173,8 @@ class PlaceLocationResolver {
 
                 return new Location(
                         Double.parseDouble(coordinates[1]),
-                        Double.parseDouble(coordinates[0]));
+                        Double.parseDouble(coordinates[0]),
+                        nameOfLocation);
             } catch (IOException | JSONException e) {
                 System.err.println(e.getMessage());
                 ++numberOfTries;
@@ -248,8 +250,8 @@ class PlaceLocationResolver {
 
                 Location result = new Location(
                         Double.parseDouble(coordinates[0]),
-                        Double.parseDouble(coordinates[1]));
-                result.setName(locationInfo.getString("city"));
+                        Double.parseDouble(coordinates[1]),
+                        locationInfo.getString("city"));
                 return result;
             } catch (IOException | JSONException e) {
                 ++numberOfTries;
