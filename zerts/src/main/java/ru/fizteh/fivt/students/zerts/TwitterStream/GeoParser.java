@@ -14,7 +14,7 @@ import static java.lang.Double.parseDouble;
 
 public class GeoParser {
     private static String getKey() throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader("../fizteh-java-2015/zerts/src/main/resources/yandexkey"));
+        BufferedReader in = new BufferedReader(new FileReader("../fizteh-java-2015/zerts/src/main/resources/yandexkey.properties"));
         String key = in.readLine();
         System.out.println(key);
         return key;
