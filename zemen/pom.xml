@@ -32,6 +32,11 @@
       <artifactId>jcommander</artifactId>
       <version>1.48</version>
     </dependency>
+    <dependency>
+      <groupId>com.bytebybyte</groupId>
+      <artifactId>google-geocoding</artifactId>
+      <version>3.0.1</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -39,7 +44,8 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>exec-maven-plugin</artifactId>
         <configuration>
-          <mainClass>ru.fizteh.fivt.students.zemen.TwitterStream</mainClass>
+          <mainClass>ru.fizteh.fivt.students.zemen.twitterstream.TwitterStream
+          </mainClass>
         </configuration>
       </plugin>
     </plugins>

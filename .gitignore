@@ -4,6 +4,7 @@
 *.war
 *.ear
 hs_err_pid*
+/twitter4j.properties
 .idea
 *.iml
 *.ipr
@@ -14,7 +15,6 @@ target
 .classpath
 .project
 workbench.xmi
-twitter4j.properties
 *.swp
 .settings
 .checkstyle
