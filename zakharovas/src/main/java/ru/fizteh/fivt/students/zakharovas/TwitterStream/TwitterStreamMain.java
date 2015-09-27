@@ -12,6 +12,8 @@ import java.util.Queue;
 
 public class TwitterStreamMain {
 
+    private static GeoLocator geoLocator;
+
     public static void main(String[] args) {
         String[] separatedArgs = ArgumentSepatator.separateArguments(args);
         CommandLineArgs commandLineArgs = new CommandLineArgs();
@@ -26,6 +28,7 @@ public class TwitterStreamMain {
         if (commandLineArgs.getHelp()) {
             helpMode(jCommander);
         } else {
+            geoLocator = new GeoLocator(commandLineArgs.getLocation());
             if (commandLineArgs.getStringForQuery().isEmpty()) {
                 System.err.println("Empty search");
                 System.exit(1);
@@ -33,7 +36,7 @@ public class TwitterStreamMain {
             if (commandLineArgs.getStreamMode()) {
                 streamMode(commandLineArgs);
             } else {
-                twitterWork(commandLineArgs);
+                searchMode(commandLineArgs);
             }
         }
     }
@@ -79,8 +82,10 @@ public class TwitterStreamMain {
             }
         };
         twitterStream.addListener(listener);
-        twitterStream.filter(String.join(" ", commandLineArgs.
+        FilterQuery query = new FilterQuery(String.join(" ", commandLineArgs.
                 getStringForQuery()));
+        query.locations(geoLocator.getLocationForStream());
+        twitterStream.filter(query);
         while (true) {
             while (!tweetQueue.isEmpty()) {
                 System.out.println(StringFormater.tweetForOutputWithoutDate(tweetQueue.poll()));
@@ -93,12 +98,13 @@ public class TwitterStreamMain {
         }
     }
 
-    private static void twitterWork(CommandLineArgs commandLineArgs) {
+    private static void searchMode(CommandLineArgs commandLineArgs) {
         String search = String.join(" ", commandLineArgs.getStringForQuery());
 
         Twitter twitter = TwitterFactory.getSingleton();
         Query query = new Query(search);
         query.setCount(Integer.MAX_VALUE);
+        query.geoCode(geoLocator.getLocationForSearch(), geoLocator.getRadius(), Query.KILOMETERS.toString());
         List<Status> tweets = new ArrayList<>();
         try {
             tweets = twitter.search(query).getTweets();
