@@ -48,8 +48,6 @@ public class TwitterStreamMain {
                 if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
                     tweetQueue.add(tweet);
                 }
-
-
             }
 
             @Override
@@ -108,7 +106,7 @@ public class TwitterStreamMain {
             System.err.println(te.getMessage());
             System.exit(1);
         }
-        System.out.println(tweets.size());
+        //System.out.println(tweets.size());
         List<Status> tweetsForOutput = new ArrayList<>();
         for (Status tweet : tweets) {
             if (tweetsForOutput.size() == commandLineArgs.getLimit()) {
