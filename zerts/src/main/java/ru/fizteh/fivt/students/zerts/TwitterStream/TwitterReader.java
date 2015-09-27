@@ -5,6 +5,8 @@ import com.beust.jcommander.ParameterException;
 import twitter4j.*;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import static java.lang.Thread.*;
 
@@ -81,15 +83,54 @@ public class TwitterReader {
             System.exit(0);
         }
         Twitter twitter = new TwitterFactory().getInstance();
-        if (argsPars.getQuery() == null) {
+        if (argsPars.isStreamMode()) {
+            StatusListener listener = new StatusListener() {
+                @Override
+                public void onStatus(Status status) {
+                    System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
+                    try {
+                        sleep(MILLS_PER_PER);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                @Override
+                public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                    System.err.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+                }
+                @Override
+                public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                    System.err.println("Got track limitation notice:" + numberOfLimitedStatuses);
+                }
+                @Override
+                public void onScrubGeo(long userId, long upToStatusId) {
+                    System.err.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+                }
+                @Override
+                public void onStallWarning(StallWarning warning) {
+                    System.err.println("Got stall warning:" + warning);
+                }
+                @Override
+                public void onException(Exception ex) {
+                    ex.printStackTrace();
+                }
+            };
+            TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+            twitterStream.addListener(listener);
+            String[] trackArray = argsPars.getQuery().toArray(
+                    new String[argsPars.getQuery().size()]
+            );
+            twitterStream.filter(new FilterQuery().track(trackArray));
+
+        } else if (argsPars.getQuery() == null) {
             try {
                 int currPage = 1;
                 User user = twitter.verifyCredentials();
+                System.out.println("\nShowing @" + user.getScreenName()
+                        + "'s home timeline.\n");
                 do {
                     Paging p = new Paging(currPage);
                     List<Status> tweets = twitter.getHomeTimeline(p);
-                    System.out.println("\nShowing @" + user.getScreenName()
-                            + "'s home timeline.\n");
                     for (Status tweet : tweets) {
                         printTweet(tweet, argsPars, true);
                     }
@@ -106,11 +147,11 @@ public class TwitterReader {
                 Query query;
                 if (argsPars.getPlace() != null) {
                     query = new Query(
-                            argsPars.getQuery()).
+                            argsPars.getQuery().toString()).
                             geoCode(GeoParser.getCoordinates(
                                     argsPars.getPlace()), LOCATE_RADIUS, "km");
                 } else {
-                    query = new Query(argsPars.getQuery());
+                    query = new Query(argsPars.getQuery().toString());
                 }
                 QueryResult result;
                 do {

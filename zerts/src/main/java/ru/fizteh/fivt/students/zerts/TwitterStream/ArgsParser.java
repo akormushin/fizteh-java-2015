@@ -1,12 +1,15 @@
 package ru.fizteh.fivt.students.zerts.TwitterStream;
     import com.beust.jcommander.Parameter;
 
+    import java.util.ArrayList;
+    import java.util.List;
+
 public class ArgsParser {
     //public int argMode = new int(0);
     @Parameter(names = {"-s", "--stream"}, description = "stream output")
     private boolean streamMode;
     @Parameter(names = {"-q", "--query"}, description = "query output")
-    private String query;
+    private List<String> query = new ArrayList<>();
     @Parameter(names = {"-p", "--place"}, description = "place output")
     private String place;
     @Parameter(names = "--hideRetweets", description = "no retweets output")
@@ -19,7 +22,7 @@ public class ArgsParser {
     public final boolean isStreamMode() {
         return streamMode;
     }
-    public final String getQuery() {
+    public final List<String> getQuery() {
         return query;
     }
     public final String getPlace() {
