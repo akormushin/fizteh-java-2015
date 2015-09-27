@@ -1,108 +1,72 @@
 package ru.fizteh.fivt.students.zerts.TwitterStream;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by User on 20.09.2015.
  */
 
 public class TimeParser {
-    static final int MILSEC_IN_DAY = 1000 * 3600 * 24, MILLS_PER_SEC = 1000,
-            SEC_IN_DAY = 24 * 3600, SEC_IN_HOUR = 3600, SEC_IN_MIN = 60;
-    static final int SEC_MODE = 0, MIN_MODE = 1, HOUR_MODE = 2, DAY_MODE = 3,
-            RT_MODE = 4;
-    static final int TEN_MOD = 10, FIVE = 5, HUNDRED_MOD = 100, TWENTY = 20;
-    public static void rightWordPrinting(long goneTime, long mode) {
+    static final int SEC_MODE = 0;
+    static final int MIN_MODE = 1;
+    static final int HOUR_MODE = 2;
+    static final int DAY_MODE = 3;
+    static final int RT_MODE = 4;
+
+    static final int FIRST_FORM = 0;
+    static final int SECOND_FORM = 1;
+    static final int THIRD_FORM = 2;
+
+    static final int TEN_MOD = 10;
+    static final int FIVE = 5;
+    static final int HUNDRED_MOD = 100;
+    static final int TWENTY = 20;
+
+    static final String[][] WORDS = {
+            {"секунд", "секунда", "секунды"},
+            {"минут", "минута", "минуты"},
+            {"дней", "день", "дня"},
+            {"ретвитов", "ретвит", "ретвита"}
+    };
+
+    public static void rightWordPrinting(long goneTime, int mode) {
         System.out.print(goneTime + " ");
-        if (goneTime % TEN_MOD >= FIVE || goneTime % TEN_MOD == 0
-                || (goneTime % HUNDRED_MOD > TEN_MOD
+        if (goneTime % TEN_MOD >= FIVE || goneTime % TEN_MOD == 0 || (goneTime % HUNDRED_MOD > TEN_MOD
                 && goneTime % HUNDRED_MOD < TWENTY)) {
-            if (mode == SEC_MODE) {
-                System.out.print("секунд");
-            }
-            if (mode == MIN_MODE) {
-                System.out.print("минут");
-            }
-            if (mode == HOUR_MODE) {
-                System.out.print("часов");
-            }
-            if (mode == DAY_MODE) {
-                System.out.print("дней");
-            }
-            if (mode == RT_MODE) {
-                System.out.print("ретвитов");
-            }
+            System.out.print(WORDS[mode][FIRST_FORM]);
         } else if (goneTime % TEN_MOD == 1) {
-            if (mode == SEC_MODE) {
-                System.out.print("секунда");
-            }
-            if (mode == MIN_MODE) {
-                System.out.print("минута");
-            }
-            if (mode == HOUR_MODE) {
-                System.out.print("час");
-            }
-            if (mode == DAY_MODE) {
-                System.out.print("день");
-            }
-            if (mode == RT_MODE) {
-                System.out.print("ретвит");
-            }
+            System.out.print(WORDS[mode][SECOND_FORM]);
         } else {
-            if (mode == SEC_MODE) {
-                System.out.print("секунды");
-            }
-            if (mode == MIN_MODE) {
-                System.out.print("минуты");
-            }
-            if (mode == HOUR_MODE) {
-                System.out.print("часа");
-            }
-            if (mode == DAY_MODE) {
-                System.out.print("дня");
-            }
-            if (mode == RT_MODE) {
-                System.out.print("ретвита");
-            }
+            System.out.print(WORDS[mode][THIRD_FORM]);
         }
         if (mode < RT_MODE) {
-            System.out.print(" назад ");
+            System.out.print(" назад");
         }
     }
-    public static void printGoneDate(Date givenDate) {
-        Date date = new Date();
-        Calendar c = new GregorianCalendar();
-        c.set(Calendar.HOUR_OF_DAY, 0); //anything 0 - 23
-        c.set(Calendar.MINUTE, 0);
-        c.set(Calendar.SECOND, 0);
-        Date todayDate = c.getTime();
-        long goneTime = (date.getTime() - givenDate.getTime()) / MILLS_PER_SEC,
-                todayTime = todayDate.getTime();
+    public static void printGoneDate(long givenTime) {
+        long nowTime = System.currentTimeMillis(), goneTime = nowTime - givenTime;
         //System.out.print("Время: " + tweetTime + " " + currTime + "   ");
-        if (goneTime <= 2) {
-            System.out.print("Только что ");
-            return;
+        System.out.print("[");
+        if (goneTime <= 2 * TimeUnit.SECONDS.toMillis(1L)) {
+            System.out.print("Только что");
+        } else if (goneTime < TimeUnit.MINUTES.toMillis(1L)) {
+            rightWordPrinting(goneTime / TimeUnit.SECONDS.toMillis(1L), SEC_MODE);
+        } else if (goneTime < TimeUnit.HOURS.toMillis(1L)) {
+            rightWordPrinting(goneTime / TimeUnit.MINUTES.toMillis(1L), MIN_MODE);
+        } else if (new Date(givenTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().
+                equals(LocalDate.now())) {
+            rightWordPrinting(goneTime / TimeUnit.HOURS.toSeconds(1L), HOUR_MODE);
+        } else if (new Date(givenTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().
+                equals(LocalDate.now().minusDays(1))) {
+            System.out.print("Вчера");
+        } else {
+            rightWordPrinting(goneTime / TimeUnit.DAYS.toMillis(1L), DAY_MODE);
         }
-        if (goneTime < SEC_IN_MIN) {
-            rightWordPrinting(goneTime, SEC_MODE);
-            return;
-        }
-        if (goneTime < SEC_IN_HOUR) {
-            rightWordPrinting(goneTime / SEC_IN_MIN, MIN_MODE);
-            return;
-        }
-        if (goneTime < SEC_IN_DAY && givenDate.getTime() >= todayTime) {
-            rightWordPrinting(goneTime / SEC_IN_HOUR, HOUR_MODE);
-            return;
-        }
-        if (givenDate.getTime() < todayTime
-                && givenDate.getTime() >= todayTime - MILSEC_IN_DAY) {
-            System.out.print("Вчера ");
-            return;
-        }
-        rightWordPrinting((todayTime - givenDate.getTime()) / MILSEC_IN_DAY,
-                DAY_MODE);
+        System.out.print("] ");
     }
 }

@@ -5,16 +5,15 @@ import com.beust.jcommander.ParameterException;
 import twitter4j.*;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import static java.lang.Thread.*;
 
 public class TwitterReader {
     private static int printedTweets = 0;
-    static final int MILLS_PER_PER = 1000, LOCATE_RADIUS = 5, RT_MODE = 4;
-    public static void printTweet(Status tweet, ArgsParser argsPars,
-                                  boolean streamMode) {
+    static final int MILLS_PER_PER = 1000;
+    static final int LOCATE_RADIUS = 50;
+    static final int RT_MODE = 4;
+    public static void printTweet(Status tweet, ArgsParser argsPars, boolean streamMode) {
         if (tweet.isRetweet()) {
             if (argsPars.isNoRetweetMode()) {
                 return;
@@ -27,7 +26,7 @@ public class TwitterReader {
         }
         if (!streamMode) {
             TimeParser timePars = new TimeParser();
-            TimeParser.printGoneDate(tweet.getCreatedAt());
+            TimeParser.printGoneDate(tweet.getCreatedAt().getTime());
         }
         printedTweets++;
         System.out.print("@" + tweet.getUser().getScreenName() + ": ");
@@ -49,14 +48,149 @@ public class TwitterReader {
                 System.out.print(" ");
             }
         }
-        if (!tweet.isRetweet()) {
+        if (!argsPars.isStreamMode() && !tweet.isRetweet() && tweet.getRetweetCount() != 0) {
             System.out.print(" (");
             TimeParser.rightWordPrinting(tweet.getRetweetCount(), RT_MODE);
             System.out.print(")");
         }
-        System.out.print("\n\n");
+        System.out.print("\n---------------------------------------------------------------------------------------\n");
         if (argsPars.getNumberOfTweets() == printedTweets) {
             System.exit(0);
+        }
+    }
+    public static void stream(ArgsParser argsPars) {
+        if (argsPars.getQuery() == null) {
+            System.err.println("Any query, please!");
+            System.exit(-1);
+        }
+        StatusListener listener = new StatusListener() {
+            @Override
+            public void onStatus(Status status) {
+                if (argsPars.getPlace() == null) {
+                    printTweet(status, argsPars, true);
+                } else {
+                    //System.out.println("another one");
+                    GeoLocation tweetLocation = null;
+                    if (status.getGeoLocation() != null) {
+                        tweetLocation = new GeoLocation(status.getGeoLocation().getLatitude(),
+                                status.getGeoLocation().getLongitude());
+                    } else if (!status.getUser().getLocation().isEmpty()) {
+                        try {
+                            //System.out.println(status.getUser().getLocation());
+                            tweetLocation = GeoParser.getCoordinates(status.getUser().getLocation());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        return;
+                    }
+                    try {
+                        GeoLocation queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
+                        if (queryLocation == null) {
+                            System.err.println("Bad place");
+                            System.exit(-1);
+                        }
+                        if (tweetLocation == null) {
+                            return;
+                        }
+                        if (GeoParser.near(tweetLocation, queryLocation, LOCATE_RADIUS)) {
+                            printTweet(status, argsPars, true);
+                        }
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            @Override
+            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
+                System.err.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
+            }
+
+            @Override
+            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
+                System.err.println("Got track limitation notice:" + numberOfLimitedStatuses);
+            }
+
+            @Override
+            public void onScrubGeo(long userId, long upToStatusId) {
+                System.err.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
+            }
+
+            @Override
+            public void onStallWarning(StallWarning warning) {
+                System.err.println("Got stall warning:" + warning);
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                ex.printStackTrace();
+            }
+        };
+        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.addListener(listener);
+        String[] trackArray = argsPars.getQuery().toArray(
+                new String[argsPars.getQuery().size()]
+        );
+        twitterStream.filter(new FilterQuery().track(trackArray));
+    }
+    public static void query(ArgsParser argsPars) throws IOException {
+        Twitter twitter = new TwitterFactory().getInstance();
+        try {
+            Query query;
+            if (argsPars.getPlace() != null) {
+                GeoLocation queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
+                if (queryLocation == null) {
+                    System.err.println("Bad place");
+                    System.exit(-1);
+                }
+                query = new Query(argsPars.getQuery().toString()).geoCode(queryLocation, LOCATE_RADIUS, "km");
+            } else {
+                query = new Query(argsPars.getQuery().toString());
+            }
+            QueryResult result;
+            do {
+                result = twitter.search(query);
+                List<Status> tweets = result.getTweets();
+                System.out.print("Tweets with " + argsPars.getQuery());
+                if (argsPars.getPlace() != null) {
+                    System.out.print(" near " + argsPars.getPlace());
+                }
+                System.out.print(":\n\n");
+                if (tweets.isEmpty()) {
+                    System.out.println("Sorry, no tweets found :(");
+                    System.exit(0);
+                }
+                for (Status tweet : tweets) {
+                    printTweet(tweet, argsPars, false);
+                }
+                query = result.nextQuery();
+            } while (query != null);
+            System.exit(0);
+        } catch (TwitterException te) {
+            te.printStackTrace();
+            System.err.println("Failed to search tweets: " + te.getMessage());
+            System.exit(-1);
+        }
+    }
+    public static void userStream(ArgsParser argsPars) {
+        Twitter twitter = new TwitterFactory().getInstance();
+        try {
+            int currPage = 1;
+            User user = twitter.verifyCredentials();
+            System.out.println("\nShowing @" + user.getScreenName() + "'s home timeline.\n");
+            do {
+                Paging p = new Paging(currPage);
+                List<Status> tweets = twitter.getHomeTimeline(p);
+                for (Status tweet : tweets) {
+                    printTweet(tweet, argsPars, true);
+                }
+                currPage++;
+            } while (true);
+        } catch (TwitterException te) {
+            te.printStackTrace();
+            System.err.println("Failed to get timeline: " + te.getMessage());
+            System.exit(-1);
         }
     }
     public static void main(String[] args) throws IOException {
@@ -70,10 +204,8 @@ public class TwitterReader {
             System.err.print("Invalid Paramters:\n" + pe.getMessage());
             System.exit(-1);
         }
-        //System.out.print(argsPars.place + "\n");
-        if (argsPars.isHelpMode()) {
-            BufferedReader in = new BufferedReader(
-                    new FileReader("./zerts/src/main/java/ru/fizteh"
+        /*if (argsPars.isHelpMode()) {
+            BufferedReader in = new BufferedReader(new FileReader("./zerts/src/main/java/ru/fizteh"
                             + "/fivt/students/zerts/TwitterStream/help.txt"));
             String currentLine = in.readLine();
             while (currentLine != null) {
@@ -81,103 +213,13 @@ public class TwitterReader {
                 currentLine = in.readLine();
             }
             System.exit(0);
-        }
-        Twitter twitter = new TwitterFactory().getInstance();
+        }*/
         if (argsPars.isStreamMode()) {
-            StatusListener listener = new StatusListener() {
-                @Override
-                public void onStatus(Status status) {
-                    System.out.println("@" + status.getUser().getScreenName() + " - " + status.getText());
-                    try {
-                        sleep(MILLS_PER_PER);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                @Override
-                public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                    System.err.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
-                }
-                @Override
-                public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                    System.err.println("Got track limitation notice:" + numberOfLimitedStatuses);
-                }
-                @Override
-                public void onScrubGeo(long userId, long upToStatusId) {
-                    System.err.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
-                }
-                @Override
-                public void onStallWarning(StallWarning warning) {
-                    System.err.println("Got stall warning:" + warning);
-                }
-                @Override
-                public void onException(Exception ex) {
-                    ex.printStackTrace();
-                }
-            };
-            TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
-            twitterStream.addListener(listener);
-            String[] trackArray = argsPars.getQuery().toArray(
-                    new String[argsPars.getQuery().size()]
-            );
-            twitterStream.filter(new FilterQuery().track(trackArray));
-
+            stream(argsPars);
         } else if (argsPars.getQuery() == null) {
-            try {
-                int currPage = 1;
-                User user = twitter.verifyCredentials();
-                System.out.println("\nShowing @" + user.getScreenName()
-                        + "'s home timeline.\n");
-                do {
-                    Paging p = new Paging(currPage);
-                    List<Status> tweets = twitter.getHomeTimeline(p);
-                    for (Status tweet : tweets) {
-                        printTweet(tweet, argsPars, true);
-                    }
-                    currPage++;
-                } while (true);
-            } catch (TwitterException te) {
-                te.printStackTrace();
-                System.err.println("Failed to get timeline: "
-                        + te.getMessage());
-                System.exit(-1);
-            }
+            userStream(argsPars);
         } else {
-            try {
-                Query query;
-                if (argsPars.getPlace() != null) {
-                    query = new Query(
-                            argsPars.getQuery().toString()).
-                            geoCode(GeoParser.getCoordinates(
-                                    argsPars.getPlace()), LOCATE_RADIUS, "km");
-                } else {
-                    query = new Query(argsPars.getQuery().toString());
-                }
-                QueryResult result;
-                do {
-                    result = twitter.search(query);
-                    List<Status> tweets = result.getTweets();
-                    System.out.print("Tweets with " + argsPars.getQuery());
-                    if (argsPars.getPlace() != null) {
-                        System.out.print(" near " + argsPars.getPlace());
-                    }
-                    System.out.print(":\n\n");
-                    if (tweets.isEmpty()) {
-                        System.out.println("Sorry, no tweets found :(");
-                        System.exit(0);
-                    }
-                    for (Status tweet : tweets) {
-                        printTweet(tweet, argsPars, false);
-                    }
-                    query = result.nextQuery();
-                } while (query != null);
-                System.exit(0);
-            } catch (TwitterException te) {
-                te.printStackTrace();
-                System.err.println("Failed to search tweets: "
-                        + te.getMessage());
-                System.exit(-1);
-            }
+            query(argsPars);
         }
     }
 }
