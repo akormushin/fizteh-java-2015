@@ -13,25 +13,22 @@ import java.util.List;
 public class TwitterStream {
     private static final int DEFAULT_LIMIT = 10;
 
-    @Parameter
-    private List<String> parameters = new ArrayList<>();
-
-    @Parameter(names = {"--query", "-q"}, description = "Keywords to find")
+    @Parameter(names = {"--query", "-q"}, description = "Set keywords to find", required = true)
     private String query = "физтех";
 
-    @Parameter(names = {"--place", "-p"}, description = "location, used to search tweets")
+    @Parameter(names = {"--place", "-p"}, description = "Specify tweets location")
     private  String location;
 
-    @Parameter(names = {"--stream", "-s"}, description = "stream mode on: display a bunch of tweets every second")
+    @Parameter(names = {"--stream", "-s"}, description = "Determines if the stream mode is on: print a bunch of tweets every second")
     private boolean streamMode = false;
 
-    @Parameter(names = "hideRetweets", description = "show original tweets only")
+    @Parameter(names = "--hideRetweets", description = "Show original tweets only")
     private boolean hideRetweets = false;
 
-    @Parameter(names = {"--limit", "-l"}, description = "number of tweets to show")
+    @Parameter(names = {"--limit", "-l"}, description = "Specify a number of tweets to show")
     private int tweetsLimit = DEFAULT_LIMIT;
 
-    @Parameter(names = {"--help", "-h"}, help = true, description = "display help message")
+    @Parameter(names = {"--help", "-h"}, help = true, description = "Display help message")
     private boolean showHelp = false;
 
 
@@ -61,16 +58,15 @@ public class TwitterStream {
 
     public static void main(String[] args) {
         TwitterStream parseArgs = new TwitterStream();
-        /*TODO: try-catch block for arguments parsing */
         JCommander jCommander = null;
         try {
             jCommander =  new JCommander(parseArgs, args);
         } catch (Exception wrongArgs) {
             System.err.println("Wrong arguments");
+            return;
         }
         if (parseArgs.isShowHelp()) {
-            assert jCommander != null;
-            jCommander.setProgramName("JCommanderForTwitterStream");
+            jCommander.setProgramName("TwitterStream");
             jCommander.usage();
             return;
         }
@@ -80,5 +76,6 @@ public class TwitterStream {
         } catch (TwitterException e) {
             System.err.println("Error " + e.getErrorCode() + ": " +  e.getErrorMessage());
         }
+        /*TODO: */
     }
 }

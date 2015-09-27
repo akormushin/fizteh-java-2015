@@ -1,12 +1,8 @@
 package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import twitter4j.*;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by cache-nez on 9/23/15.
@@ -25,21 +21,28 @@ public class TweetsRetriever {
         return date.toString();
     }
 
-    static String getTextToPrint(Status status) {
-        /*TODO: make it clear*/
+    static String getRetweetText (Status status) {
+        String[] splitText = status.getText().split(":", 2);
+        String tweetText = splitText[1];
+        return new StringBuilder().append("[").append(status.getCreatedAt().toString()).append("] @").append(ANSI_BLUE).append(status.getUser().getScreenName()).append(ANSI_RESET).append(" ретвитнул @").append(ANSI_BLUE).append(status.getRetweetedStatus().getUser().getScreenName()).append(ANSI_RESET).append(": ").append(tweetText).toString();
+    }
+
+    static String getTweetText (Status status) {
         String text = "[" + status.getCreatedAt().toString() + "] @" + ANSI_BLUE + status.getUser().getScreenName()
                 + ANSI_RESET + ": " + status.getText();
         if (status.getRetweetCount() > 0) {
             text = text + " (" + status.getRetweetCount() + " ретвитов)";
         }
-        if (status.isRetweet()) {
-            String[] splitText = status.getText().split(":", 2);
-            String tweetText = splitText[1];
-            text = "[" + status.getCreatedAt().toString() + "] @" + ANSI_BLUE +  status.getUser().getScreenName()
-                    + ANSI_RESET + " ретвитнул @" + ANSI_BLUE +  status.getRetweetedStatus().getUser().getScreenName()
-                    + ANSI_RESET + ": " + tweetText;
-        }
         return  text;
+    }
+
+    static String getTextToPrint(Status status) {
+        if (status.isRetweet()) {
+            return getRetweetText(status)
+        }
+        else {
+            return  getTweetText(status);
+        }
     }
 
     public static void getTweets(String searchFor, int limit) throws TwitterException {
