@@ -16,8 +16,8 @@ public class CommandLineArgs {
     @Parameter(names = {"--stream", "-s"},
             description = "Activates StreamMode")
     private Boolean streamMode = false;
-    /*@Parameter(names = {"--place", "-p"}, variableArity = true)
-    private List<String> location = new ArrayList<>();*/
+    @Parameter(names = {"--place", "-p"}, variableArity = true)
+    private List<String> location = new ArrayList<>();
     @Parameter(names = {"--hideRetweets"},
             description = "HidesRetweets")
     private Boolean hideRetweets = false;
@@ -37,9 +37,9 @@ public class CommandLineArgs {
         return streamMode;
     }
 
-    /*public final List<String> getLocation() {
+    public final List<String> getLocation() {
         return location;
-    }*/
+    }
 
     public final Boolean getHideRetweets() {
         return hideRetweets;

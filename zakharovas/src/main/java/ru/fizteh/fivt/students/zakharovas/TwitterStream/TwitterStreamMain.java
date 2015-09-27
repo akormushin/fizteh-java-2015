@@ -25,10 +25,16 @@ public class TwitterStreamMain {
         checkArguments(commandLineArgs, jCommander);
         if (commandLineArgs.getHelp()) {
             helpMode(jCommander);
-        } else if (commandLineArgs.getStreamMode()) {
-            streamMode(commandLineArgs);
         } else {
-            twitterWork(commandLineArgs);
+            if (commandLineArgs.getStringForQuery().isEmpty()) {
+                System.err.println("Empty search");
+                System.exit(1);
+            }
+            if (commandLineArgs.getStreamMode()) {
+                streamMode(commandLineArgs);
+            } else {
+                twitterWork(commandLineArgs);
+            }
         }
     }
 
@@ -94,7 +100,6 @@ public class TwitterStreamMain {
 
         Twitter twitter = TwitterFactory.getSingleton();
         Query query = new Query(search);
-
         query.setCount(Integer.MAX_VALUE);
         List<Status> tweets = new ArrayList<>();
         try {
