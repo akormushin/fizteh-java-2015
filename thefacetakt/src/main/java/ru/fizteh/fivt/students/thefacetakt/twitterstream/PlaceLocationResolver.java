@@ -209,17 +209,14 @@ class PlaceLocationResolver {
     }
 
     public Location resolveCurrentLocation()
-            throws LocationDefinitionErrorException {
+            throws LocationDefinitionErrorException, MalformedURLException {
         int numberOfTries = 0;
 
         do {
             URL whatIsMyCity;
-            try {
-                whatIsMyCity = new URL("http://ipinfo.io/json");
-            } catch (MalformedURLException e) {
-                ++numberOfTries;
-                continue;
-            }
+
+            whatIsMyCity = new URL("http://ipinfo.io/json");
+
 
             try (BufferedReader in = new BufferedReader(new InputStreamReader(
                     whatIsMyCity.openStream()))) {
