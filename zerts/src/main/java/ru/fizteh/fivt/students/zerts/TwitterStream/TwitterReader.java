@@ -71,7 +71,8 @@ public class TwitterReader {
             System.err.println("Any query, please!");
             System.exit(-1);
         }
-        StatusListener listener = new StatusListener() {
+        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.addListener(new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
                 if (argsPars.getPlace() == null) {
@@ -109,34 +110,7 @@ public class TwitterReader {
                     }
                 }
             }
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-                System.err.println("Got a status deletion notice id:" + statusDeletionNotice.getStatusId());
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-                System.err.println("Got track limitation notice:" + numberOfLimitedStatuses);
-            }
-
-            @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
-                System.err.println("Got scrub_geo event userId:" + userId + " upToStatusId:" + upToStatusId);
-            }
-
-            @Override
-            public void onStallWarning(StallWarning warning) {
-                System.err.println("Got stall warning:" + warning);
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                ex.printStackTrace();
-            }
-        };
-        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
-        twitterStream.addListener(listener);
+        });
         String[] trackArray = argsPars.getQuery().toArray(
                 new String[argsPars.getQuery().size()]
         );
