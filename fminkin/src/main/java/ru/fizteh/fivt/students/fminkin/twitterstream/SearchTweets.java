@@ -45,8 +45,8 @@ public class SearchTweets {
         } else {
             System.out.print("ретвитнул ");
             String[] tokens = tweet.getText().split(":"); //tokens[0] contains name RT @NICK
-            System.out.println(tokens[0].substring(SYMBOLS_BEFORE_NAME)  +
-                    tweet.getText().substring(tokens[0].length())); //3 symbols
+            System.out.println(tokens[0].substring(SYMBOLS_BEFORE_NAME)
+                    + tweet.getText().substring(tokens[0].length())); //3 symbols
         }
         for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
             System.out.print("-");

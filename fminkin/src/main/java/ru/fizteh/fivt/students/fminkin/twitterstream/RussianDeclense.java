@@ -11,13 +11,16 @@ public class RussianDeclense {
     public static final Integer MODULE_VALUE_FOURTH = 1;
     static final String[] HOURS = {"час", "часа", "часов"};
     static final String[] DAYS = {"день", "дня", "дней"};
-    static final String[] MINUTES = {"минута", "минуты", "минут"};
-    static final String[] RETWEETS = {"ретвит", "ретвита", "ретвитов"};
+    static final String[] MINUTES = {"минута", "минуты",
+            "минут"};
+    static final String[] RETWEETS = {"ретвит", "ретвита",
+            "ретвитов"};
     private static String module(long raw, String[] d) {
         if (raw % MODULE_CONSTANT == MODULE_VALUE_FIRST) {
             return d[0];
         }
-        if (raw % MODULE_CONSTANT == MODULE_VALUE_SECOND || raw % MODULE_CONSTANT == MODULE_VALUE_THIRD
+        if (raw % MODULE_CONSTANT == MODULE_VALUE_SECOND
+                || raw % MODULE_CONSTANT == MODULE_VALUE_THIRD
                 || raw % MODULE_CONSTANT == MODULE_VALUE_FOURTH) {
             return d[1];
         }
