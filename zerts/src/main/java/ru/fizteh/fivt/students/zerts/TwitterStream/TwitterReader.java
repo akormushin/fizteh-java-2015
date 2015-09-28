@@ -13,6 +13,14 @@ public class TwitterReader {
     static final int MILLS_PER_PER = 1000;
     static final int LOCATE_RADIUS = 50;
     static final int RT_MODE = 4;
+    static final int LINE_LENGTH = 100;
+    public static void printLine() {
+        System.out.print("\n");
+        for (int i = 0; i < LINE_LENGTH; i++) {
+            System.out.print("-");
+        }
+        System.out.print("\n");
+    }
     public static void printTweet(Status tweet, ArgsParser argsPars, boolean streamMode) {
         if (tweet.isRetweet()) {
             if (argsPars.isNoRetweetMode()) {
@@ -53,7 +61,7 @@ public class TwitterReader {
             TimeParser.rightWordPrinting(tweet.getRetweetCount(), RT_MODE);
             System.out.print(")");
         }
-        System.out.print("\n---------------------------------------------------------------------------------------\n");
+        printLine();
         if (argsPars.getNumberOfTweets() == printedTweets) {
             System.exit(0);
         }
@@ -156,7 +164,7 @@ public class TwitterReader {
                 if (argsPars.getPlace() != null) {
                     System.out.print(" near " + argsPars.getPlace());
                 }
-                System.out.print(":\n\n");
+                printLine();
                 if (tweets.isEmpty()) {
                     System.out.println("Sorry, no tweets found :(");
                     System.exit(0);
@@ -179,6 +187,7 @@ public class TwitterReader {
             int currPage = 1;
             User user = twitter.verifyCredentials();
             System.out.println("\nShowing @" + user.getScreenName() + "'s home timeline.\n");
+            printLine();
             do {
                 Paging p = new Paging(currPage);
                 List<Status> tweets = twitter.getHomeTimeline(p);

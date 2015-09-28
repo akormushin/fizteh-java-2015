@@ -8,21 +8,15 @@ import java.math.*;
 
 import static java.lang.Double.parseDouble;
 
-/**
- * Created by User on 21.09.2015.
- */
-
 public class GeoParser {
     private static String getKey() throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader("../fizteh-java-2015/zerts/src/main/resources/yandexkey.properties"));
-        String key = in.readLine();
-        System.out.println(key);
-        return key;
+        BufferedReader in = new BufferedReader(new FileReader(
+                "../fizteh-java-2015/zerts/src/main/resources/yandexkey.properties"));
+        return in.readLine();
     }
     public static GeoLocation getCoordinates(String place) throws IOException {
         URL getTheLL =
-                new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place
-                        + "&apikey=" + getKey());
+                new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place + "&apikey=" + getKey());
         BufferedReader in = new BufferedReader(new InputStreamReader(getTheLL.openStream()));
         String xmlParse;
         do {
@@ -72,7 +66,7 @@ public class GeoParser {
 
         double distance = 2 * Math.asin(Math.sqrt(sqr(Math.sin(deltaPhi / 2))
                 + Math.cos(firstLatitude) * Math.cos(secondLatitude) * sqr(Math.sin(deltaLambda / 2)))) * EARTH_RADIUS;
-        System.out.println(distance);
+        //System.out.println(distance);
         return distance < radius;
     }
 }
