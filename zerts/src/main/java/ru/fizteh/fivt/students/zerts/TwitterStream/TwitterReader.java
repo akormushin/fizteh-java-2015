@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
-import twitter4j.TwitterStream;
 
 import java.io.*;
 import java.util.List;
@@ -72,7 +71,7 @@ public class TwitterReader {
             System.err.println("Any query, please!");
             System.exit(-1);
         }
-        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+        twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
