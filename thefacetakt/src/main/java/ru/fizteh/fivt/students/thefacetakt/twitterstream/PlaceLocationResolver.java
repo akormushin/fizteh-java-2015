@@ -12,10 +12,7 @@ import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
 import java.io.*;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -64,26 +61,35 @@ class PlaceLocationResolver {
                 googleMapsURL = uri.toURL();
             } catch (URISyntaxException e) {
                 e.printStackTrace();
+                throw new LocationDefinitionErrorException("Google: "
+                        + "Can't make valid"
+                        + "url from place. Perhaps, strange symbols are used");
             }
 
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                    googleMapsURL.openStream()))) {
-
-                String currentInfo;
-                StringBuilder responseStrBuilder = new StringBuilder();
-                while ((currentInfo = in.readLine()) != null) {
-                    responseStrBuilder.append(currentInfo);
-                }
+            try {
+                String currentInfo
+                        = HttpReader.httpGet(googleMapsURL.toString());
 
                 JSONObject locationInfo =
-                        new JSONObject(responseStrBuilder.toString());
+                        new JSONObject(currentInfo);
 
                 String status = locationInfo.getString("status");
-                if (status.equals("OVER_QUERY_LIMIT")) {
+
+                if (status.equals("ZERO_RESULTS")) {
+                    throw new InvalidLocationException("Google: Unknown place");
+                } else if (status.equals("OVER_QUERY_LIMIT")) {
                     throw new QueryLimitException("Google");
-                }
-                if (!status.equals("OK")) {
-                    throw new InvalidLocationException("Unknown place");
+                } else if (status.equals("REQUEST_DENIED")) {
+                    if (locationInfo.has("error_message")) {
+                        throw new LocationDefinitionErrorException("Google: "
+                                + locationInfo.getString("error_message"));
+                    } else {
+                        throw new LocationDefinitionErrorException(
+                                "Google: Unexpected request deny");
+                    }
+                } else if (!status.equals("OK")) {
+                    throw new LocationDefinitionErrorException("Google: "
+                            + status);
                 }
 
                 locationInfo = locationInfo
@@ -96,10 +102,13 @@ class PlaceLocationResolver {
                         Double.parseDouble(locationInfo.getString("lat")),
                         Double.parseDouble(locationInfo.getString("lng")),
                         nameOfLocation);
-            } catch (IOException | JSONException e) {
+            } catch (JSONException | IllegalStateException e) {
                 System.err.println(e.getMessage());
                 ++numberOfTries;
-                continue;
+                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                    throw new LocationDefinitionErrorException(
+                            "Google: " + LOCATION_DEFINITION_ERROR);
+                }
             }
         }
         while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
@@ -126,29 +135,32 @@ class PlaceLocationResolver {
                 yandexMapsURL = uri.toURL();
             } catch (URISyntaxException e) {
                 e.printStackTrace();
+                throw new LocationDefinitionErrorException("Yandex: "
+                        + "Can't make valid"
+                        + "url from place. Perhaps, strange symbols are used");
             }
 
+            try {
+                String currentInfo
+                        = HttpReader.httpGet(yandexMapsURL.toString());
+                JSONObject locationInfo
+                        = new JSONObject(currentInfo);
 
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                    yandexMapsURL.openStream()))) {
-                assert yandexMapsURL != null;
-
-                String currentInfo;
-                StringBuilder responseStrBuilder = new StringBuilder();
-                while ((currentInfo = in.readLine()) != null) {
-                    responseStrBuilder.append(currentInfo);
+                if (locationInfo.has("error")) {
+                    throw new LocationDefinitionErrorException("Yandex: "
+                            + locationInfo.getJSONObject("error")
+                                    .getString("message"));
                 }
 
-                JSONObject locationInfo =
-                        new JSONObject(responseStrBuilder.toString())
-                                .getJSONObject("response")
-                                .getJSONObject("GeoObjectCollection");
+                locationInfo = locationInfo
+                            .getJSONObject("response")
+                            .getJSONObject("GeoObjectCollection");
 
                 if (Integer.parseInt(locationInfo
                         .getJSONObject("metaDataProperty")
                         .getJSONObject("GeocoderResponseMetaData")
                         .getString("found")) == 0) {
-                    throw new InvalidLocationException("Unknown place");
+                    throw new InvalidLocationException("Yandex: Unknown place");
                 }
 
                 locationInfo = locationInfo
@@ -163,9 +175,14 @@ class PlaceLocationResolver {
                         Double.parseDouble(coordinates[1]),
                         Double.parseDouble(coordinates[0]),
                         nameOfLocation);
-            } catch (IOException | JSONException e) {
+            } catch (JSONException | IllegalStateException e) {
                 System.err.println(e.getMessage());
                 ++numberOfTries;
+                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                    String additionalText = "";
+                    throw new LocationDefinitionErrorException(
+                            "Yandex: " + LOCATION_DEFINITION_ERROR);
+                }
             }
         }
         while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
@@ -188,7 +205,8 @@ class PlaceLocationResolver {
                 Location result
                         = resolvePlaceLocationGoogle(nameOfLocation);
                 cache.put(nameOfLocation, result);
-            } catch (QueryLimitException e) {
+            } catch (QueryLimitException | LocationDefinitionErrorException e) {
+                System.err.println(e.getMessage());
                 try {
                     Location result
                             = resolvePlaceLocationYandex(nameOfLocation);
