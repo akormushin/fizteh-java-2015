@@ -3,9 +3,7 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 import twitter4j.GeoLocation;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.math.*;
 
 import static java.lang.Double.parseDouble;
 
