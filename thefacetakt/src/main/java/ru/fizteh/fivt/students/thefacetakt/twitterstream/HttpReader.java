@@ -29,8 +29,13 @@ class HttpReader {
             // See: http://www.w3.org/Protocols/rfc2616/rfc2616-sec10.html.
 
             boolean isError = con.getResponseCode() >= ERROR_CODE_START;
+
             //The normal input stream doesn't work in error-cases.
-            is = isError ? con.getErrorStream() : con.getInputStream();
+            if (isError) {
+                is = con.getErrorStream();
+            } else {
+                con.getInputStream();
+            }
 
             try (BufferedReader in = new BufferedReader(
                     new InputStreamReader(is))) {
