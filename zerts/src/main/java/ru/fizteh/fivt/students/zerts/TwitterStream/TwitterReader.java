@@ -13,7 +13,7 @@ public class TwitterReader {
     static final int MILLS_PER_PER = 1000;
     static final int LOCATE_RADIUS = 50;
     static final int RT_MODE = 4;
-    static final int LINE_LENGTH = 100;
+    static final int LINE_LENGTH = 170;
     public static void printLine() {
         System.out.print("\n");
         for (int i = 0; i < LINE_LENGTH; i++) {
@@ -134,7 +134,12 @@ public class TwitterReader {
                 List<Status> tweets = result.getTweets();
                 System.out.print("Tweets with " + argsPars.getQuery());
                 if (argsPars.getPlace() != null) {
-                    System.out.print(" near " + argsPars.getPlace());
+                    System.out.print(" near ");
+                    if (argsPars.getPlace().equals("nearby")) {
+                        System.out.print(GeoParser.getMyPlace());
+                    } else {
+                        System.out.print(argsPars.getPlace());
+                    }
                 }
                 printLine();
                 if (tweets.isEmpty()) {

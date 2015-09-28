@@ -3,20 +3,42 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 import twitter4j.GeoLocation;
 
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.math.*;
 
 import static java.lang.Double.parseDouble;
 
 public class GeoParser {
+    static final int CITY_PARSER_TAB = 7;
     private static String getKey() throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(
                 "../fizteh-java-2015/zerts/src/main/resources/yandexkey.properties"));
         return in.readLine();
     }
+    public static String getMyPlace() throws IOException {
+        URL getCityName = new URL("http://api.hostip.info/get_json.php");
+        BufferedReader in = new BufferedReader(new InputStreamReader(getCityName.openStream()));
+        String siteAnswer = in.readLine(), city = "";
+        in.close();
+        if (siteAnswer != null && siteAnswer.contains("city")) {
+            int i = siteAnswer.indexOf("city") + CITY_PARSER_TAB;
+            while (siteAnswer.charAt(i) != '"') {
+                city += siteAnswer.charAt(i);
+                i++;
+            }
+        } else {
+            System.err.println("bad ip location!");
+            System.exit(-1);
+        }
+        //System.out.println(city);
+        return city;
+    }
     public static GeoLocation getCoordinates(String place) throws IOException {
-        URL getTheLL =
-                new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place + "&apikey=" + getKey());
+        if (place.equals("nearby")) {
+            place = getMyPlace();
+        }
+        URL getTheLL = new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place + "&apikey=" + getKey());
         BufferedReader in = new BufferedReader(new InputStreamReader(getTheLL.openStream()));
         String xmlParse;
         do {
