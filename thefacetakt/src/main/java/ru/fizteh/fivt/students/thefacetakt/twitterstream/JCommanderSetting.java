@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 import com.beust.jcommander.Parameter;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,9 +14,11 @@ class JCommanderSetting {
     static final String DEFAULT_LOCATION = "nearby";
 
     @Parameter(names = {"--query", "-q"},
-            description = "query or keywords for stream",
-            variableArity = true)
-    private List<String> queries = new ArrayList<>();
+            description = "query or keywords for stream (required)",
+            variableArity = true,
+            required = true)
+    private List<String> queries = new ArrayList<String>(
+            Arrays.asList("thefacetakt"));
 
     @Parameter(names = {"--place", "-p"}, description = "location")
     private String location = DEFAULT_LOCATION;
@@ -37,6 +40,7 @@ class JCommanderSetting {
     public List<String> getQueries() {
         return queries;
     }
+
     public String getLocation() {
         return location;
     }

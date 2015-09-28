@@ -250,15 +250,15 @@ public class TwitterStream {
 
         try {
             JCommander jCommander = new JCommander(jCommanderSettings, args);
-            jCommander.setProgramName("Twitter Stream");
+            jCommander.setProgramName("TwitterStream");
             if (jCommanderSettings.isHelp()) {
-                jCommander.usage();
-                return;
+                throw new ParameterException("");
             }
         } catch (ParameterException pe) {
             JCommander jCommander =
-                    new JCommander(jCommanderSettings, new String[0]);
-            jCommander.setProgramName("Twitter Stream");
+                    new JCommander(jCommanderSettings,
+                            new String[] {"--query", "query"});
+            jCommander.setProgramName("TwitterStream");
             jCommander.usage();
             return;
         }
