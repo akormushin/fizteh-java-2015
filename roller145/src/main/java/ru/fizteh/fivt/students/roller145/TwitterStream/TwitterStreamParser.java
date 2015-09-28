@@ -36,6 +36,9 @@ public class TwitterStreamParser {
             description = "выводить только заданное количество твитов")
     int number = -1;
 
+    @Parameter(names = {"--whereI"}, description = "определить регион по ip ")
+    boolean isWhere = false;
+
     public boolean isHelpOn(){
         return isHelp;
     }
@@ -70,5 +73,8 @@ public class TwitterStreamParser {
 
     public String getWhere() {
         return where;
+    }
+    public boolean isWhere(){
+        return isWhere;
     }
 }

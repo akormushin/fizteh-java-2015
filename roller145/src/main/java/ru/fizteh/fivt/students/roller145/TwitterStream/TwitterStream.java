@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.getGeolocation;
+import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.reCode;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.TimeMethods.printTime;
 
 public class TwitterStream {
@@ -24,6 +25,9 @@ public class TwitterStream {
         }
         if (twParse.isTweet()) {
             makeTweet();
+        }
+        if (twParse.isWhere()){
+            reCode();
         }
         if (twParse.isStreamOn() && twParse.isLimit()) {
             System.out.println("Command conflict");
@@ -60,6 +64,7 @@ public class TwitterStream {
         System.out.print(ANSI_PURPLE + "@" + name + ":" + ANSI_RESET);
     }
     static void printTweet(Status tweet){
+        printTime(tweet.getCreatedAt());
         printName(tweet.getUser().getScreenName());
         if (tweet.isRetweet()){
             System.out.print("retweeted ");
@@ -92,7 +97,6 @@ public class TwitterStream {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                    printTime(tweet);
                     printTweet(tweet);
                     ++i;
                     if (i >= numberOfTweets) {break;}

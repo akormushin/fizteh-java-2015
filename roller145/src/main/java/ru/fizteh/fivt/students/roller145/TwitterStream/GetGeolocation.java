@@ -42,6 +42,24 @@ public class GetGeolocation {
             return result;
         }
     }
+    public static void reCode() throws IOException {
+        GeoQuery res = new GeoQuery(getCurrentIP());
+        GeoLocation IAmHere = res.getLocation();
+        String lat = null;
+        lat.valueOf(IAmHere.getLatitude());
+        String lng = null;
+        lng.valueOf(IAmHere.getLongitude());
+        final Map<String, String> params = Maps.newHashMap();
+        params.put("language", "ru");// язык данных, на котором мы хотим получить
+        params.put("sensor", "false");// исходит ли запрос на геокодирование от устройства с датчиком местоположения
+        // текстовое значение широты/долготы
+        params.put("latlng", lat+lng );
+        final String url = baseUrl + '?' + encodeParams(params);
+        final JSONObject response = JsonReader.read(url);
+        final JSONObject location = response.getJSONArray("results").getJSONObject(0);
+        final String formattedAddress = location.getString("formatted_address");
+        System.out.println(formattedAddress);
+    }
 
     private static String getCurrentIP() {
         String result = null;
