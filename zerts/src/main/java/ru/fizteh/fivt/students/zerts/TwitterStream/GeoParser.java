@@ -10,12 +10,15 @@ import static java.lang.Double.parseDouble;
 
 public class GeoParser {
     static final int CITY_PARSER_TAB = 7;
-    private static String getKey() throws IOException {
-        BufferedReader in = new BufferedReader(new FileReader(
-                GeoParser.class.getResource("/yandexkey.properties").getFile()));
-        String key = in.readLine();
-        in.close();
-        return key;
+    private static String getKey() throws IOException, GeoExeption {
+        try (BufferedReader in = new BufferedReader(new FileReader(
+                GeoParser.class.getResource("/yandexkey.properties").getFile()))) {
+            String key = in.readLine();
+            in.close();
+            return key;
+        } catch (IOException ioe) {
+            throw new GeoExeption();
+        }
     }
     public static String getMyPlace() throws IOException, GeoExeption {
         URL getCityName = new URL("http://api.hostip.info/get_json.php");
