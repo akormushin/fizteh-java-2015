@@ -22,7 +22,7 @@ class TimeFormatter {
                     + " " + Declenser.minutesDeclension(n) + " назад";
         }
 
-        if (new Date(currentTime).toInstant()
+        if (new Date(timeToFormat).toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate()
                 .equals(LocalDate.now())) {
             long n = (currentTime - timeToFormat) / TimeUnit.HOURS.toMillis(1L);
@@ -30,7 +30,7 @@ class TimeFormatter {
                     + " назад";
         }
 
-        if (new Date(currentTime).toInstant()
+        if (new Date(timeToFormat).toInstant()
                 .atZone(ZoneId.systemDefault()).toLocalDate()
                 .equals(LocalDate.now().minusDays(1))) {
             return "вчера";
