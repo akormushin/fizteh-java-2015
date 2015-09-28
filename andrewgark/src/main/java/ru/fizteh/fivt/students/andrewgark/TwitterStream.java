@@ -18,6 +18,14 @@ import static ru.fizteh.fivt.students.andrewgark.GeolocationTwitterStream.getLoc
 public class TwitterStream {
     private static final Double RADIUS = 30.0;
     private static final Integer NUMBER_TWEETS = 100;
+    private static final Integer ONE = 1;
+    private static final Integer TWO = 2;
+    private static final Integer FOUR = 4;
+    private static final Integer TEN = 10;
+    private static final Integer ELEVEN = 11;
+    private static final Integer TWENTY = 20;
+    private static final Integer HUNDRED = 100;
+
     public static void main(String[] args) {
         JCommanderTwitterStream jcts = new JCommanderTwitterStream();
         new JCommander(jcts, args);
@@ -32,16 +40,18 @@ public class TwitterStream {
             keywords = new String[1];
             keywords[0] = "";
         }
+        String stringKeywords = String.join(" ", keywords);
         if (jcts.isStream()) {
             if (jcts.getLimit() < Integer.MAX_VALUE) {
                 System.out.println("You can't have stream with limit.");
                 System.exit(-1);
             }
         }
-        printTweets(String.join(" ", keywords), jcts.getLocation(), jcts.getLimit(), jcts.isHideRetweets(), jcts.isStream());
+        printTweets(stringKeywords, jcts.getLocation(), jcts.getLimit(), jcts.isHideRetweets(), jcts.isStream());
     }
 
-    public static void printTweets(String keywords, String location, Integer limit, Boolean hideRetweets, Boolean isStream) {
+    public static void printTweets(String keywords, String location, Integer limit,
+                                   Boolean hideRetweets, Boolean isStream) {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query(keywords);
         query.setGeoCode(getLocation(location), RADIUS, Query.KILOMETERS);
@@ -65,7 +75,8 @@ public class TwitterStream {
                         numberTweets++;
                     }
                 }
-            } while ((isStream || numberTweets < needTweets) && (query = result.nextQuery()) != null);
+                query = result.nextQuery();
+            } while ((isStream || numberTweets < needTweets) && (query != null));
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
@@ -137,9 +148,9 @@ public class TwitterStream {
     }
 
     public static String getForm(Integer n, String[] forms) {
-        if ((n % 10 == 1) && (n % 100 != 11)) {
+        if ((n % TEN == ONE) && (n % HUNDRED != ELEVEN)) {
             return Integer.toString(n) + " "  + forms[0];
-        } else if ((n % 10 >= 2) && (n %10 <= 4)  && (n % 100 < 10 || n % 100 >= 20)) {
+        } else if ((n % TEN >= TWO) && (n % TEN <= FOUR)  && (n % HUNDRED < TEN || n % HUNDRED >= TWENTY)) {
             return Integer.toString(n) + " "  + forms[1];
         } else {
             return Integer.toString(n) + " "  + forms[2];
