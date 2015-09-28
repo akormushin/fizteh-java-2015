@@ -1,17 +1,12 @@
 package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 
-import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
-import twitter4j.TwitterException;
-
 
 /**
- * Created by cache-nez on 9/27/15.
+ * Created by cache-nez on 9/28/15.
  */
 
-
-
-public class TwitterStream {
+public class ParseArguments {
     private static final int DEFAULT_LIMIT = 100;
 
     @Parameter(names = {"--query", "-q"}, description = "Set keywords to find.")
@@ -22,7 +17,7 @@ public class TwitterStream {
 
     @Parameter(names = {"--stream", "-s"},
             description = "Determines if the stream mode is on: print a bunch of tweets every second. "
-                        + "Limit parameter is ignored.")
+                    + "Limit parameter is ignored.")
     private boolean streamMode = false;
 
     @Parameter(names = "--hideRetweets", description = "Show original tweets only.")
@@ -35,26 +30,27 @@ public class TwitterStream {
     @Parameter(names = {"--help", "-h"}, help = true, description = "Display help message.")
     private boolean showHelp = false;
 
+    public String getQuery() {
+        return query;
+    }
 
-    public static void main(String[] args) {
-        TwitterStream parseArgs = new TwitterStream();
-        JCommander jCommander = null;
-        try {
-            jCommander =  new JCommander(parseArgs, args);
-        } catch (Exception wrongArgs) {
-            System.err.println("Wrong arguments: " + wrongArgs.getMessage());
-            return;
-        }
-        if (parseArgs.showHelp) {
-            jCommander.setProgramName("TwitterStream");
-            jCommander.usage();
-            return;
-        }
+    public String getLocation() {
+        return location;
+    }
 
-        try {
-            TweetsRetriever.getTweets(parseArgs.query, parseArgs.tweetsLimit, parseArgs.hideRetweets);
-        } catch (TwitterException e) {
-            System.err.println("Error " + e.getErrorCode() + ": " +  e.getErrorMessage());
-        }
+    public boolean isStreamMode() {
+        return streamMode;
+    }
+
+    public boolean doHideRetweets() {
+        return hideRetweets;
+    }
+
+    public int getTweetsLimit() {
+        return tweetsLimit;
+    }
+
+    public boolean doShowHelp() {
+        return showHelp;
     }
 }
