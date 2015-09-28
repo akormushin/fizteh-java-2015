@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
+import twitter4j.TwitterStream;
 
 import java.io.*;
 import java.util.List;
@@ -111,9 +112,7 @@ public class TwitterReader {
                 }
             }
         });
-        String[] trackArray = argsPars.getQuery().toArray(
-                new String[argsPars.getQuery().size()]
-        );
+        String[] trackArray = argsPars.getQuery().toArray(new String[argsPars.getQuery().size()]);
         twitterStream.filter(new FilterQuery().track(trackArray));
     }
     public static void query(ArgsParser argsPars) throws IOException {
