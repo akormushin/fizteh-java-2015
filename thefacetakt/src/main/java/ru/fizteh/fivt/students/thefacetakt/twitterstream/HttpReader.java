@@ -34,7 +34,7 @@ class HttpReader {
             if (isError) {
                 is = con.getErrorStream();
             } else {
-                con.getInputStream();
+                is = con.getInputStream();
             }
 
             try (BufferedReader in = new BufferedReader(
