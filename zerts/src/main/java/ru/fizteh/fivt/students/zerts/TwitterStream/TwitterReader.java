@@ -2,6 +2,10 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.GeoExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.GetTimelineExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.NoQueryExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.SearchTweetExeption;
 import twitter4j.*;
 
 import java.io.*;
@@ -22,10 +26,8 @@ public class TwitterReader {
         System.out.print("\n");
     }
     public static void printTweet(Status tweet, ArgsParser argsPars, boolean streamMode) {
-        if (tweet.isRetweet()) {
-            if (argsPars.isNoRetweetMode()) {
-                return;
-            }
+        if (tweet.isRetweet() && argsPars.isNoRetweetMode()) {
+            return;
         }
         try {
             sleep(MILLS_PER_PER);
@@ -66,10 +68,9 @@ public class TwitterReader {
             System.exit(0);
         }
     }
-    public static void stream(ArgsParser argsPars) {
+    public static void stream(ArgsParser argsPars) throws NoQueryExeption, GeoExeption {
         if (argsPars.getQuery() == null) {
-            System.err.println("Any query, please!");
-            System.exit(-1);
+            throw new NoQueryExeption();
         }
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(new StatusAdapter() {
@@ -86,7 +87,11 @@ public class TwitterReader {
                     } else if (!status.getUser().getLocation().isEmpty()) {
                         try {
                             //System.out.println(status.getUser().getLocation());
-                            tweetLocation = GeoParser.getCoordinates(status.getUser().getLocation());
+                            try {
+                                tweetLocation = GeoParser.getCoordinates(status.getUser().getLocation());
+                            } catch (GeoExeption geoExeption) {
+                                geoExeption.printStackTrace();
+                            }
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -94,10 +99,14 @@ public class TwitterReader {
                         return;
                     }
                     try {
-                        GeoLocation queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
+                        GeoLocation queryLocation = null;
+                        try {
+                            queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
+                        } catch (GeoExeption geoExeption) {
+                            geoExeption.printStackTrace();
+                        }
                         if (queryLocation == null) {
-                            System.err.println("Bad place");
-                            System.exit(-1);
+                            throw new GeoExeption();
                         }
                         if (tweetLocation == null) {
                             return;
@@ -105,7 +114,7 @@ public class TwitterReader {
                         if (GeoParser.near(tweetLocation, queryLocation, LOCATE_RADIUS)) {
                             printTweet(status, argsPars, true);
                         }
-                    } catch (IOException e) {
+                    } catch (IOException | GeoExeption e) {
                         e.printStackTrace();
                     }
                 }
@@ -114,15 +123,14 @@ public class TwitterReader {
         String[] trackArray = argsPars.getQuery().toArray(new String[argsPars.getQuery().size()]);
         twitterStream.filter(new FilterQuery().track(trackArray));
     }
-    public static void query(ArgsParser argsPars) throws IOException {
+    public static void query(ArgsParser argsPars) throws IOException, GeoExeption, SearchTweetExeption {
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query;
             if (argsPars.getPlace() != null) {
                 GeoLocation queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
                 if (queryLocation == null) {
-                    System.err.println("Bad place");
-                    System.exit(-1);
+                    throw new GeoExeption();
                 }
                 query = new Query(argsPars.getQuery().toString()).geoCode(queryLocation, LOCATE_RADIUS, "km");
             } else {
@@ -154,29 +162,29 @@ public class TwitterReader {
             System.exit(0);
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.err.println("Failed to search tweets: " + te.getMessage());
-            System.exit(-1);
+            throw new SearchTweetExeption();
         }
     }
-    public static void userStream(ArgsParser argsPars) {
+    public static void userStream(ArgsParser argsPars) throws GetTimelineExeption {
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             int currPage = 1;
             User user = twitter.verifyCredentials();
             System.out.println("\nShowing @" + user.getScreenName() + "'s home timeline.\n");
             printLine();
+            List<Status> tweets;
             do {
                 Paging p = new Paging(currPage);
-                List<Status> tweets = twitter.getHomeTimeline(p);
+                tweets = twitter.getHomeTimeline(p);
                 for (Status tweet : tweets) {
                     printTweet(tweet, argsPars, true);
                 }
                 currPage++;
-            } while (true);
+            } while (!tweets.isEmpty());
         } catch (TwitterException te) {
             te.printStackTrace();
             System.err.println("Failed to get timeline: " + te.getMessage());
-            System.exit(-1);
+            throw new GetTimelineExeption();
         }
     }
     public static void main(String[] args) throws IOException {
@@ -201,11 +209,25 @@ public class TwitterReader {
             System.exit(0);
         }*/
         if (argsPars.isStreamMode()) {
-            stream(argsPars);
+            try {
+                stream(argsPars);
+            } catch (NoQueryExeption | GeoExeption noQueryExeption) {
+                noQueryExeption.printStackTrace();
+                System.exit(-1);
+            }
         } else if (argsPars.getQuery() == null) {
-            userStream(argsPars);
+            try {
+                userStream(argsPars);
+            } catch (GetTimelineExeption getTimelineExeption) {
+                getTimelineExeption.printStackTrace();
+            }
         } else {
-            query(argsPars);
+            try {
+                query(argsPars);
+            } catch (GeoExeption | SearchTweetExeption geoExeption) {
+                geoExeption.printStackTrace();
+                System.exit(-1);
+            }
         }
     }
 }

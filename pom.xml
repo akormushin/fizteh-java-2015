@@ -22,8 +22,8 @@
     <modules>
         <module>akormushin</module>
         <!--Add you module here-->
-    <module>zerts</module>
-  </modules>
+        <module>zerts</module>
+      </modules>
 
     <dependencies>
         <dependency>

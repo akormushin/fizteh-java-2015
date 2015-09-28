@@ -5,10 +5,6 @@ import java.time.ZoneId;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Created by User on 20.09.2015.
- */
-
 public class TimeParser {
     static final int SEC_MODE = 0;
     static final int MIN_MODE = 1;

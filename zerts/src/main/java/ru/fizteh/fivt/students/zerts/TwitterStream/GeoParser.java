@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.zerts.TwitterStream;
 
+import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.GeoExeption;
 import twitter4j.GeoLocation;
 
 import java.io.*;
@@ -11,10 +12,12 @@ public class GeoParser {
     static final int CITY_PARSER_TAB = 7;
     private static String getKey() throws IOException {
         BufferedReader in = new BufferedReader(new FileReader(
-                "../fizteh-java-2015/zerts/src/main/resources/yandexkey.properties"));
-        return in.readLine();
+                GeoParser.class.getResource("/yandexkey.properties").getFile()));
+        String key = in.readLine();
+        in.close();
+        return key;
     }
-    public static String getMyPlace() throws IOException {
+    public static String getMyPlace() throws IOException, GeoExeption {
         URL getCityName = new URL("http://api.hostip.info/get_json.php");
         BufferedReader in = new BufferedReader(new InputStreamReader(getCityName.openStream()));
         String siteAnswer = in.readLine(), city = "";
@@ -26,13 +29,12 @@ public class GeoParser {
                 i++;
             }
         } else {
-            System.err.println("bad ip location!");
-            System.exit(-1);
+            throw new GeoExeption();
         }
         //System.out.println(city);
         return city;
     }
-    public static GeoLocation getCoordinates(String place) throws IOException {
+    public static GeoLocation getCoordinates(String place) throws IOException, GeoExeption {
         if (place.equals("nearby")) {
             place = getMyPlace();
         }

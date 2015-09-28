@@ -5,7 +5,6 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
     import java.util.List;
 
 public class ArgsParser {
-    //public int argMode = new int(0);
     @Parameter(names = {"-s", "--stream"}, description = "stream output")
     private boolean streamMode;
     @Parameter(names = {"-q", "--query"}, description = "query output")
