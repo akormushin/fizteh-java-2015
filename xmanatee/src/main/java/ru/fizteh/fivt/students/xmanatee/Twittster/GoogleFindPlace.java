@@ -7,6 +7,12 @@ import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
+
 class GoogleFindPlace {
     private static final double R = 6371;
     private GeocodingResult[] result;
@@ -18,14 +24,27 @@ class GoogleFindPlace {
         }
 
         GeoApiContext context = new GeoApiContext()
-                .setApiKey("AIzaSyD0YkaGrWTTtyuXMSYr7_iZ1oPDO4p37Ac");
+                .setApiKey(getKeyFromProperties());
         try {
             result = GeocodingApi.geocode(context, place).await();
         } catch (Exception e) {
             System.out.println("Problems with finding specified place: " + e.getMessage());
-            //e.printStackTrace();
         }
         radius = calculateRadius();
+    }
+
+    private String getKeyFromProperties() {
+        Properties prop = new Properties();
+        try (InputStream input = new FileInputStream("mykeys.properties")) {
+            prop.load(input);
+        } catch (FileNotFoundException e) {
+            System.out.println("Problems finding .properties file : " + e.getMessage());
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("Problems reading .properties file : " + e.getMessage());
+            System.exit(1);
+        }
+        return prop.getProperty("googleApiKey");
     }
 
     public LatLng getLocation() {

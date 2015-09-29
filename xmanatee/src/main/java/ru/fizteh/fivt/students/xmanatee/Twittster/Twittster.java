@@ -5,11 +5,11 @@ import twitter4j.conf.ConfigurationBuilder;
 
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 import static java.lang.Thread.sleep;
 
 public class Twittster {
+    public static final int MAX_NUMBER_OF_TRIES = 5;
 
     public static void main(String[] args) {
         System.out.println(ANSI_YELLOW + "YOU'RE RUNNING TWITTSTER" + ANSI_RESET);
@@ -20,25 +20,37 @@ public class Twittster {
             System.exit(0);
         }
 
-        if (parameters.isStream()) {
-            runStreamer(parameters);
-        } else {
-            runSearch(parameters);
+        try {
+            if (parameters.isStream()) {
+                runStreamer(parameters);
+            } else {
+                runSearch(parameters);
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            System.exit(1);
         }
     }
 
-    public static void runSearch(Parameters parameters) {
+    public static void runSearch(Parameters parameters) throws Exception {
         ConfigurationBuilder cb = getOAuthConfigurationBuilder();
         Twitter twitter = new TwitterFactory(cb.build()).getInstance();
         Query query = composeQuery(parameters);
 
+
         QueryResult result = null;
-        try {
-            result = twitter.search(query);
-        } catch (TwitterException e) {
-            System.out.println("Problems with searching ...");
-            //e.printStackTrace();
-            System.exit(1);
+
+        Integer tryNumber = 0;
+        while (tryNumber < MAX_NUMBER_OF_TRIES) {
+            tryNumber++;
+            try {
+                result = twitter.search(query);
+            } catch (TwitterException e) {
+                System.out.println("Problems with searching : " + e.getMessage());
+            }
+        }
+        if (tryNumber == MAX_NUMBER_OF_TRIES) {
+            throw new Exception("Can't search... Check your keys or something");
         }
 
         List<Status> tweets = result.getTweets();
@@ -51,7 +63,7 @@ public class Twittster {
         }
     }
 
-    static final int DELAY_X = 5000;
+    static final int DELAY_X = 1000;
     public static void runStreamer(Parameters parameters) {
         ConfigurationBuilder cb = getOAuthConfigurationBuilder();
         TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
@@ -60,10 +72,15 @@ public class Twittster {
             @Override
             public void onStatus(Status status) {
                 displayTweet(status, false);
+                try {
+                    Thread.sleep(DELAY_X);
+                } catch (InterruptedException e) {
+                    System.out.println(e.getMessage());
+                }
             }
             @Override
             public void onException(Exception ex) {
-                System.out.println(ex.getMessage());
+                System.out.println("Problems listening : " + ex.getMessage());
             }
         };
 
@@ -74,12 +91,9 @@ public class Twittster {
         try (Scanner scan = new Scanner(System.in)) {
             while (scan.hasNextLine()) {
                 sleep(DELAY_X);
-                twitterStream.wait(DELAY_X);
             }
         } catch (InterruptedException e) {
-            System.out.println(e.getMessage());
-            System.exit(1);
-        } finally {
+            System.out.println("Ctrl+D => shutting down Twittster");
             twitterStream.cleanUp();
             twitterStream.shutdown();
         }
@@ -121,19 +135,16 @@ public class Twittster {
     }
 
     public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_RED = "\u001B[31m";
     public static final String ANSI_GREEN = "\u001B[32m";
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
 
     public static final Integer RT_PREFIX_LENGTH = 3;
     public static void displayTweet(Status tweet, boolean showTime) {
         String formattedTweet = "";
         String tweetText = tweet.getText();
         if (showTime) {
-            formattedTweet += "[" + timeParser(tweet.getCreatedAt()) + "] ";
+            formattedTweet += "[" + new AdvTimeParser(tweet.getCreatedAt()).get() + "] ";
         }
         formattedTweet += "@" + tweet.getUser().getScreenName() + ": ";
         if (tweet.isRetweet()) {
@@ -155,50 +166,18 @@ public class Twittster {
         System.out.println(formattedTweet);
     }
 
-    public static String timeParser(java.util.Date date) {
-
-        Word4declension minuteWord = new Word4declension("минута", "минуты", "минут");
-        Word4declension hourWord = new Word4declension("час", "часа", "часов");
-        Word4declension dayWord = new Word4declension("день", "дня", "дней");
-
-        String formattedTime;
-        long currentTime = System.currentTimeMillis();
-        long timeToFormat = date.getTime();
-        long dMilliseconds = currentTime - timeToFormat;
-        long dMinutes = TimeUnit.MILLISECONDS.toMinutes(dMilliseconds);
-        long dHours = TimeUnit.MILLISECONDS.toHours(dMilliseconds);
-        long days = TimeUnit.MILLISECONDS.toDays(currentTime)
-                - TimeUnit.MILLISECONDS.toDays(timeToFormat);
-
-        if (dMinutes < 2) {
-            formattedTime = "только что";
-        } else if (dHours == 0) {
-            formattedTime = dMinutes + " " + minuteWord.declension4Number(dMinutes) + " назад";
-        } else if (days == 0) {
-            formattedTime = dHours + " " + hourWord.declension4Number(dHours) + " назад";
-        } else if (days == 1) {
-            formattedTime = "вчера";
-        } else {
-            formattedTime = days + " " + dayWord.declension4Number(days) + " назад";
-        }
-
-        return formattedTime;
-    }
-
     public static ConfigurationBuilder getOAuthConfigurationBuilder() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
 
         Properties prop = new Properties();
-        InputStream input = null;
 
-        try {
-            input = new FileInputStream("mykeys.properties");
+        try (InputStream input = new FileInputStream("mykeys.properties")) {
             prop.load(input);
         } catch (FileNotFoundException e) {
-            System.out.println("File mykeys.properties with keys not found: " + e.getMessage());
+            System.out.println("Problems finding file : " + e.getMessage());
             System.exit(1);
         } catch (IOException e) {
-            System.out.println("Can't read file mykeys.properties: " + e.getMessage());
+            System.out.println("Problems reading file : " + e.getMessage());
             System.exit(1);
         }
 
