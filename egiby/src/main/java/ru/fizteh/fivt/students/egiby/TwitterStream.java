@@ -1,52 +1,56 @@
 package ru.fizteh.fivt.students.egiby;
 
+import com.beust.jcommander.JCommander;
 import twitter4j.*;
 import java.util.List;
+
+import static java.lang.System.exit;
 
 /**
  * Created by egiby on 24.09.15.
  */
 
 public class TwitterStream {
-    private static final Integer DEFAULT_NUMBER_TWEETS = 100;
-
     public static void main(String[] args) {
-        if (args.length == 0) {
-            return;
+        JCommanderParams jcp = new JCommanderParams();
+        JCommander jcm = new JCommander(jcp, args);
+
+        if (jcp.isHelp()) {
+            jcm.usage();
+            exit(0);
         }
 
-        if (args[0].equals("--query") || args[0].equals("-q")) {
-            try {
-                printAllTweets("Moscow");
-            } catch (TwitterException te) {
-                te.printStackTrace();
-            }
+        try {
+            printAllTweets(jcp);
+        } catch (TwitterException te) {
+            te.printStackTrace();
         }
+
     }
 
-    private static void printAllTweets(String keywords) throws TwitterException {
+    private static void printAllTweets(JCommanderParams jcp) throws TwitterException {
         Twitter twitter = new TwitterFactory().getInstance();
-        Query query = new Query(keywords);
+        Query query = new Query(jcp.getKeyword());
         QueryResult result;
 
         Integer numberOfTweets = 0;
 
-        while (numberOfTweets < DEFAULT_NUMBER_TWEETS && query != null) {
+        while ((numberOfTweets < jcp.numberTweets() || jcp.isStream()) && query != null) {
             result = twitter.search(query);
 
             List<Status> tweets = result.getTweets();
             for (Status tweet : tweets) {
-                printTweet(tweet);
+                printTweet(tweet, jcp.isStream());
                 numberOfTweets++;
             }
 
             query = result.nextQuery();
         }
 
-        System.exit(0);
+        exit(0);
     }
 
-    private static void printTweet(Status tweet) {
+    private static void printTweet(Status tweet, boolean isStream) {
         System.out.println("@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
     }
 }
