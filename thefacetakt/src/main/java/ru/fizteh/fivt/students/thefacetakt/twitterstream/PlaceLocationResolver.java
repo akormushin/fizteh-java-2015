@@ -60,7 +60,6 @@ class PlaceLocationResolver {
                         null);
                 googleMapsURL = uri.toURL();
             } catch (URISyntaxException e) {
-                e.printStackTrace();
                 throw new LocationDefinitionErrorException("Google: "
                         + "Can't make valid"
                         + "url from place. Perhaps, strange symbols are used");
@@ -104,11 +103,11 @@ class PlaceLocationResolver {
                         Double.parseDouble(locationInfo.getString("lng")),
                         nameOfLocation);
             } catch (JSONException | IllegalStateException e) {
-                System.err.println(e.getMessage());
                 ++numberOfTries;
                 if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
                     throw new LocationDefinitionErrorException(
-                            "Google: " + LOCATION_DEFINITION_ERROR);
+                            "Google: " + LOCATION_DEFINITION_ERROR
+                                    + " : " + e.getMessage());
                 }
             }
         }
@@ -135,10 +134,10 @@ class PlaceLocationResolver {
                         null);
                 yandexMapsURL = uri.toURL();
             } catch (URISyntaxException e) {
-                e.printStackTrace();
                 throw new LocationDefinitionErrorException("Yandex: "
                         + "Can't make valid"
-                        + "url from place. Perhaps, strange symbols are used");
+                        + "url from place. Perhaps, strange symbols are used: "
+                        + e.getMessage());
             }
 
             try {
@@ -177,12 +176,12 @@ class PlaceLocationResolver {
                         Double.parseDouble(coordinates[0]),
                         nameOfLocation);
             } catch (JSONException | IllegalStateException e) {
-                System.err.println(e.getMessage());
                 ++numberOfTries;
                 if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
                     String additionalText = "";
                     throw new LocationDefinitionErrorException(
-                            "Yandex: " + LOCATION_DEFINITION_ERROR);
+                            "Yandex: " + LOCATION_DEFINITION_ERROR + " : "
+                                    + e.getMessage());
                 }
             }
         }
