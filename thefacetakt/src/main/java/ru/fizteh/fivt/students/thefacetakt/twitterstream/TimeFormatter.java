@@ -1,9 +1,9 @@
 package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Created by thefacetakt on 26.09.15.
@@ -12,30 +12,30 @@ import java.util.concurrent.TimeUnit;
 class TimeFormatter {
 
     static String formatTime(long currentTime, long timeToFormat) {
-        if (currentTime - timeToFormat < 2 * TimeUnit.MINUTES.toMillis(1L)) {
+        LocalDateTime current = new Date(currentTime).toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime tweetTime = new Date(timeToFormat).toInstant()
+                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        if (ChronoUnit.MINUTES.between(tweetTime, current) < 2) {
             return "Только что";
         }
-        if (currentTime - timeToFormat < TimeUnit.HOURS.toMillis(1L)) {
-            long n = ((currentTime - timeToFormat)
-                    / TimeUnit.MINUTES.toMillis(1L));
+        if (ChronoUnit.HOURS.between(tweetTime, current) <= 0) {
+            long n = ChronoUnit.MINUTES.between(tweetTime, current);
             return String.valueOf(n)
                     + " " + Declenser.minutesDeclension(n) + " назад";
         }
 
-        if (new Date(timeToFormat).toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDate()
-                .equals(LocalDate.now())) {
-            long n = (currentTime - timeToFormat) / TimeUnit.HOURS.toMillis(1L);
+        if (ChronoUnit.DAYS.between(tweetTime, current) <= 0) {
+            long n = ChronoUnit.HOURS.between(tweetTime, current);
             return String.valueOf(n) + " " + Declenser.hoursDeclension(n)
                     + " назад";
         }
 
-        if (new Date(timeToFormat).toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDate()
-                .equals(LocalDate.now().minusDays(1))) {
+        if (ChronoUnit.DAYS.between(tweetTime, current) == 1) {
             return "вчера";
         }
-        long n = (currentTime - timeToFormat) / TimeUnit.DAYS.toMillis(1L);
+        long n = ChronoUnit.DAYS.between(tweetTime, current);
         return String.valueOf(n) + " " + Declenser.daysDeclension(n)
                 + " назад";
     }
