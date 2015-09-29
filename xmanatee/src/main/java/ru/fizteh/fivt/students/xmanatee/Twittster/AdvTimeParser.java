@@ -8,7 +8,7 @@ class AdvTimeParser {
     private String timeToReturn;
     AdvTimeParser(java.util.Date date) {
 
-        Word4declension minuteWord = new Word4declension("минута", "минуты", "минут");
+        Word4declension minuteWord = new Word4declension("минуту", "минуты", "минут");
         Word4declension hourWord = new Word4declension("час", "часа", "часов");
         Word4declension dayWord = new Word4declension("день", "дня", "дней");
 

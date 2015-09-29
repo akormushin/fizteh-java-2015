@@ -10,6 +10,7 @@ import static java.lang.Thread.sleep;
 
 public class Twittster {
     public static final int MAX_NUMBER_OF_TRIES = 5;
+    public static final int MAGIC_NUMBER = 100;
 
     public static void main(String[] args) {
         System.out.println(ANSI_YELLOW + "YOU'RE RUNNING TWITTSTER" + ANSI_RESET);
@@ -45,6 +46,7 @@ public class Twittster {
             tryNumber++;
             try {
                 result = twitter.search(query);
+                break;
             } catch (TwitterException e) {
                 System.out.println("Problems with searching : " + e.getMessage());
             }
