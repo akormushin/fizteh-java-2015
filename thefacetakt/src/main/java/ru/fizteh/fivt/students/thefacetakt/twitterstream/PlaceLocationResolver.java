@@ -78,7 +78,8 @@ class PlaceLocationResolver {
                 if (status.equals("ZERO_RESULTS")) {
                     throw new InvalidLocationException("Google: Unknown place");
                 } else if (status.equals("OVER_QUERY_LIMIT")) {
-                    throw new QueryLimitException("Google");
+                    throw new QueryLimitException(
+                            "Google query limit exceeded");
                 } else if (status.equals("REQUEST_DENIED")) {
                     if (locationInfo.has("error_message")) {
                         throw new LocationDefinitionErrorException("Google: "
