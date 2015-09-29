@@ -18,18 +18,18 @@ import com.google.common.collect.Maps;
 
 public class MyMaps {
     private static String encodeParams(final Map<String, String> params) {
-        final String paramsUrl = Joiner.on('&').join(// получаем значение вида key1=value1&key2=value2...
-                Iterables.transform(params.entrySet(), new Function<Entry<String, String>, String>() {
+        final String paramsUrl = Joiner.on('&').join(
+                Iterables.transform(params.entrySet(),
+                        new Function<Entry<String, String>, String>() {
 
                     @Override
                     public String apply(final Entry<String, String> input) {
                         try {
                             final StringBuffer buffer = new StringBuffer();
-                            buffer.append(input.getKey());// получаем значение вида key=value
+                            buffer.append(input.getKey());
                             buffer.append('=');
-                            buffer.append(URLEncoder.encode(input.getValue(), "utf-8"));// кодирует строку в
-                            // соответствии со стандартом
-                            // HTML 4.01
+                            buffer.append(URLEncoder.encode(input.getValue(),
+                                    "utf-8"));
                             return buffer.toString();
                         } catch (final UnsupportedEncodingException e) {
                             throw new RuntimeException(e);
@@ -41,14 +41,18 @@ public class MyMaps {
 
     public static double[] getCoordsByPlace(String place) {
         double[] ans = {0, 0, 0};
-        final String baseUrl = "http://maps.googleapis.com/maps/api/geocode/json";
+        final String baseUrl = "http://maps.googleapis.com/"
+                + "maps/api/geocode/json";
         final Map<String, String> params = Maps.newHashMap();
-        params.put("sensor", "false"); // исходит ли запрос на геокодирование от устройства с датчиком местоположения
+        params.put("sensor", "false"); // исходит ли запрос на геокодирование
+        // от устройства с датчиком местоположения
         params.put("address", place); // адрес, который нужно геокодировать
-        final String url = baseUrl + '?' + encodeParams(params); // генерируем путь с параметрами
+        final String url = baseUrl + '?' + encodeParams(params); //
+        // генерируем путь с параметрами
         try {
             final JSONObject response = JsonReader.read(url);
-            JSONObject location = response.getJSONArray("results").getJSONObject(0);
+            JSONObject location = response.
+                    getJSONArray("results").getJSONObject(0);
             location = location.getJSONObject("geometry");
 
             JSONObject center = location.getJSONObject("location");
@@ -74,7 +78,8 @@ public class MyMaps {
 
     public static double[] getMyCoords() {
         try {
-            final JSONObject response = JsonReader.read("http://ipinfo.io/json");
+            final JSONObject response = JsonReader.
+                    read("http://ipinfo.io/json");
             return getCoordsByPlace(response.getString("city"));
         } catch (IOException ex) {
             System.err.println(ex.getMessage());
@@ -82,6 +87,6 @@ public class MyMaps {
             System.err.println(ex.getMessage());
         }
         System.exit(1);
-        return new double[] {};
+        return new double[]{};
     }
 }

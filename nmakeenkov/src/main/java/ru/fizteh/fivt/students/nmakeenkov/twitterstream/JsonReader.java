@@ -22,10 +22,12 @@ public class JsonReader {
         return sb.toString();
     }
 
-    public static JSONObject read(final String url) throws IOException, JSONException {
+    public static JSONObject read(final String url)
+            throws IOException, JSONException {
         final InputStream is = new URL(url).openStream();
         try {
-            final BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            final BufferedReader rd = new BufferedReader(
+                    new InputStreamReader(is, Charset.forName("UTF-8")));
             final String jsonText = readAll(rd);
             final JSONObject json = new JSONObject(jsonText);
             return json;
@@ -33,4 +35,6 @@ public class JsonReader {
             is.close();
         }
     }
+
 }
+

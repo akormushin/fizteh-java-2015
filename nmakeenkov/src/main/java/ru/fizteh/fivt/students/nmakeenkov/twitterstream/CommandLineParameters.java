@@ -21,27 +21,27 @@ public class CommandLineParameters {
     @Parameter(names = {"-h", "--help"}, help = true)
     private boolean help = false;
 
-    public String getQuery() {
+    public final String getQuery() {
         return query;
     }
 
-    public String getPlace() {
+    public final String getPlace() {
         return place;
     }
 
-    public boolean isStream() {
+    public final boolean isStream() {
         return stream;
     }
 
-    public boolean isHideRetweets() {
+    public final boolean isHideRetweets() {
         return hideRetweets;
     }
 
-    public int getLimit() {
+    public final int getLimit() {
         return limit;
     }
 
-    public boolean isHelp() {
+    public final boolean isHelp() {
         return help;
     }
 }

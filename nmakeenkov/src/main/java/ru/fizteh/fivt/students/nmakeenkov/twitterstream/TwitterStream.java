@@ -6,6 +6,8 @@ import java.util.*;
 
 public class TwitterStream {
     private static final String NEARBY = "nearby";
+    private static final int LITTLE_SLEEP = 200;
+    private static final int BIG_SLEEP = 1000;
 
     private static Query createQuery(CommandLineParameters params) {
         Query query = new Query(params.getQuery());
@@ -46,7 +48,7 @@ public class TwitterStream {
                     System.exit(1);
                 }
                 try {
-                    Thread.sleep(200);
+                    Thread.sleep(LITTLE_SLEEP);
                 } catch (Exception e) {
                     System.err.println("Странная ошибка");
                 }
@@ -54,7 +56,7 @@ public class TwitterStream {
             printTweet(status.get(0));
             query.setSinceId(status.get(0).getId());
             try {
-                Thread.sleep(1000);
+                Thread.sleep(BIG_SLEEP);
             } catch (Exception e) {
                 System.err.println("Странная ошибка");
             }
@@ -74,10 +76,12 @@ public class TwitterStream {
                         any = true;
                         Utils.printTime(status.getCreatedAt().getTime());
                         printTweet(status);
-                        if (tweetsLeft != -1)
+                        if (tweetsLeft != -1) {
                             tweetsLeft--;
-                        if (tweetsLeft == 0)
+                        }
+                        if (tweetsLeft == 0) {
                             break;
+                        }
                     }
                 }
                 query = result.nextQuery();
