@@ -24,10 +24,10 @@ public class TextFormatter {
         if (!streamMode) {
             text = "[" + TimeConverter.getRelativeTime(status.getCreatedAt()) + "] ";
         }
-        text = text + ANSI_BLUE + "@" + status.getUser().getScreenName() + ANSI_RESET;
-        text = text + " ретвитнул " + ANSI_BLUE + "@" + status.getRetweetedStatus().getUser().getScreenName()
+        text += ANSI_BLUE + "@" + status.getUser().getScreenName() + ANSI_RESET;
+        text += " ретвитнул " + ANSI_BLUE + "@" + status.getRetweetedStatus().getUser().getScreenName()
                 + ANSI_RESET;
-        text = text + ": " + splitText[1];
+        text += ": " + splitText[1];
         return text;
     }
 
@@ -36,11 +36,11 @@ public class TextFormatter {
         if (!streamMode) {
             text = "[" + TimeConverter.getRelativeTime(status.getCreatedAt()) + "] ";
         }
-        text = text + ANSI_BLUE + "@" + status.getUser().getScreenName() + ANSI_RESET;
-        text = text + ": " + status.getText();
+        text += ANSI_BLUE + "@" + status.getUser().getScreenName() + ANSI_RESET;
+        text += ": " + status.getText();
         if (status.getRetweetCount() > 0) {
             int retweets = status.getRetweetCount();
-            text = text + " (" + retweets + Declenser.getDeclension(retweets, Declenser.ToDeclense.RETWEET) + ")";
+            text += " (" + retweets + Declenser.getDeclension(retweets, Declenser.ToDeclense.RETWEET) + ")";
         }
         return  text;
     }
@@ -48,54 +48,33 @@ public class TextFormatter {
 }
 
 class Declenser {
-    public enum ToDeclense { MINUTE, HOUR, DAY, RETWEET };
-    public static final int FIRST_TYPE = 1;
-    public static final int SECOND_TYPE_START = 2;
-    public static final int SECOND_TYPE_END = 4;
-    public static final int EXCEPTION_START = 11;
-    public static final int EXCEPTION_END = 14;
-    public static final int FIRST_MODULO = 100;
-    public static final int SECOND_MODULO = 10;
+    public enum ToDeclense { MINUTE, HOUR, DAY, RETWEET }
+
+    private static final int FIRST_CASE = 1;
+    private static final int SECOND_CASE_START = 2;
+    private static final int SECOND_CASE_END = 4;
+    private static final int EXCEPTION_START = 11;
+    private static final int EXCEPTION_END = 14;
+    private static final int FIRST_MODULO = 100;
+    private static final int SECOND_MODULO = 10;
+    private static final String[] FIRST_TYPE = {"минуту", "час", "день", "ретвит"};
+    private static final String[] SECOND_TYPE = {"минуты", "часа", "дня", "ретвита"};
+    private static final String[] THIRD_TYPE = {"минут", "часов", "дней", "ретвитов"};
+
 
     public static String getDeclension(long numeral, ToDeclense word) {
         numeral %= FIRST_MODULO;
         if (numeral >= EXCEPTION_START && numeral <= EXCEPTION_END) {
-            switch (word) {
-                case MINUTE: return " минут";
-                case HOUR: return " часов";
-                case DAY: return " дней";
-                case RETWEET: return "ретвитов";
-                default: assert true;
-            }
+            return SECOND_TYPE[word.ordinal()];
         }
         numeral %= SECOND_MODULO;
-        if (numeral == FIRST_TYPE) {
-            switch (word) {
-                case MINUTE: return " минуту";
-                case HOUR: return " час";
-                case DAY: return " день";
-                case RETWEET: return " ретвит";
-                default: assert true;
-            }
+        if (numeral == FIRST_CASE) {
+            return FIRST_TYPE[word.ordinal()];
         }
-        if (numeral >= SECOND_TYPE_START && numeral <= SECOND_TYPE_END) {
-            switch (word) {
-                case MINUTE: return " минуты";
-                case HOUR: return " часа";
-                case DAY:  return " дня";
-                case RETWEET: return " ретвита";
-                default: assert true;
-            }
+        if (numeral >= SECOND_CASE_START && numeral <= SECOND_CASE_END) {
+            return SECOND_TYPE[word.ordinal()];
         }
-        switch (word) {
-            case MINUTE: return " минут";
-            case HOUR: return " часов";
-            case DAY: return " дней";
-            case RETWEET: return " ретвитов";
-            default: assert true;
-        }
-        assert true;
-        return  "";
+        return THIRD_TYPE[word.ordinal()];
     }
 }
 

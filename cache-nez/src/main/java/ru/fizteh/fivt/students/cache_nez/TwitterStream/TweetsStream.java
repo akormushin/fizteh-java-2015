@@ -39,11 +39,14 @@ public class TweetsStream {
 
     public static void main(String[] args) throws InterruptedException {
         ParseArguments parseArgs = new ParseArguments();
-        JCommander jCommander = null;
+        JCommander jCommander;
         try {
             jCommander =  new JCommander(parseArgs, args);
         } catch (Exception wrongArgs) {
             System.err.println("Wrong arguments: " + wrongArgs.getMessage());
+            jCommander = new JCommander(parseArgs);
+            jCommander.setProgramName("TweetsStream");
+            jCommander.usage();
             System.exit(EXIT_FAILURE);
         }
         if (parseArgs.doShowHelp()) {
