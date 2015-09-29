@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.xmanatee.Twittster;
+package ru.fizteh.fivt.students.xmanatee.twittster;
 
 
 import org.apache.commons.io.IOUtils;

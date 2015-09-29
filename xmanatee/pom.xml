@@ -97,7 +97,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>ru.fizteh.fivt.students.xmanatee.Twittster.Twittster</mainClass>
+                            <mainClass>ru.fizteh.fivt.students.xmanatee.twittster.Twittster</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

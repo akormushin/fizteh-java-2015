@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.xmanatee.Twittster;
+package ru.fizteh.fivt.students.xmanatee.twittster;
 
 import twitter4j.*;
 import twitter4j.conf.ConfigurationBuilder;
@@ -18,7 +18,7 @@ public class Twittster {
 
         if (parameters.isHelp()) {
             parameters.runHelp();
-            System.exit(0);
+            return;
         }
 
         try {
@@ -95,7 +95,7 @@ public class Twittster {
                 sleep(DELAY_X);
             }
         } catch (InterruptedException e) {
-            System.out.println("Ctrl+D => shutting down Twittster");
+            System.out.println("Ctrl+D => shutting down twittster");
             twitterStream.cleanUp();
             twitterStream.shutdown();
         }
