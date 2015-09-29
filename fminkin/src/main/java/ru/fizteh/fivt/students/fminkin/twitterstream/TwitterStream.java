@@ -5,7 +5,6 @@ import com.beust.jcommander.ParameterException;
 
 import twitter4j.*;
 
-
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -41,7 +40,7 @@ public class TwitterStream {
         }
         Location loc = new Location();
         try {
-            loc.getLocationGoogle(jcc.getLocation());
+            loc = GeoLocation.getLocationGoogle(jcc.getLocation());
         } catch (IOException e) {
             System.out.println("IOException has occured");
             e.printStackTrace();

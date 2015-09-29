@@ -1,39 +1,21 @@
 package ru.fizteh.fivt.students.fminkin.twitterstream;
 
 import twitter4j.*;
+import twitter4j.GeoLocation;
 
 import java.util.List;
 
-/**
+/*
  * Created by Федор on 23.09.2015.
- */
+*/
 
 public class SearchTweets {
+    public static final Integer DIAGONAL_BOX_NUMBER = 4;
     public static final Integer SLEEP_TIME = 1000;
     public static final Integer SYMBOLS_BEFORE_NAME = 3;
     public static final Integer RAD = 5;
     public static final String METRIC_CHAR = "km";
 
-    static final double EARTH_RADIUS = 6371;
-    static final double RADIANS_IN_DEGREE = Math.PI / 180;
-
-    static double toRadians(double angle) {
-        return angle * RADIANS_IN_DEGREE;
-    }
-    static double sphereDistance(double phi1, double lambda1, double phi2, double lambda2) {
-        phi1 = toRadians(phi1);
-        phi2 = toRadians(phi2);
-        lambda1 = toRadians(lambda1);
-        lambda2 = toRadians(lambda2);
-
-        double deltaPhi = phi2 - phi1;
-        double deltaLambda = lambda2 - lambda1;
-
-        return 2 * Math.asin(Math.sqrt(Math.pow(Math.sin(deltaPhi / 2), 2)
-                + Math.cos(phi1) * Math.cos(phi2)
-                * Math.pow(Math.sin(deltaLambda / 2), 2)))
-                * EARTH_RADIUS;
-    }
     public static void handleStream(JCommanderConfig jcc, Location curLoc) {
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(new StatusAdapter() {
@@ -42,24 +24,7 @@ public class SearchTweets {
                 if (jcc.isRetweetsHidden() && tweet.isRetweet()) {
                     return;
                 }
-
-                Location tweetLocation;
-                if (tweet.getGeoLocation() != null) {
-                    tweetLocation = new Location(tweet.getGeoLocation().getLatitude(),
-                            tweet.getGeoLocation().getLongitude());
-                } else {
-                    return;
-                }
-                assert tweetLocation != null;
-
-                if (sphereDistance(tweetLocation.getLatitude(),
-                        tweetLocation.getLongitude(),
-                        curLoc.getLatitude(),
-                        curLoc.getLongitude()
-                ) < RAD) {
-                    printTweet(tweet);
-                }
-
+                printTweet(tweet);
             try {
                 Thread.sleep(SLEEP_TIME);
             } catch (InterruptedException e) {
@@ -67,9 +32,13 @@ public class SearchTweets {
             }
         }
     });
-
+        double lat1 = curLoc.getLatitude() - DIAGONAL_BOX_NUMBER;
+        double lat2 = curLoc.getLatitude() + DIAGONAL_BOX_NUMBER;
+        double lng1 = curLoc.getLongitude() - DIAGONAL_BOX_NUMBER;
+        double lng2 = curLoc.getLongitude() + DIAGONAL_BOX_NUMBER;
+        double[][] loc = {{lng1, lat1}, {lng2, lat2}};
         twitterStream.filter(new FilterQuery().track(jcc.getQueries().toArray(
-                new String[jcc.getQueries().size()])));
+                new String[jcc.getQueries().size()])).locations(loc));
     }
 
     public static void printTweet(Status tweet) {
@@ -97,7 +66,7 @@ public class SearchTweets {
         Twitter twitter = new TwitterFactory().getInstance();
         try {
             Query query = new Query(jcc.getQueries().toString()).geoCode(
-                    new GeoLocation(curLoc.getLatitude(), curLoc.getLongitude()), RAD, METRIC_CHAR);
+                   new GeoLocation(curLoc.getLatitude(), curLoc.getLongitude()), RAD, METRIC_CHAR);
             query.setCount(jcc.getTweetsLimit());
             QueryResult result = twitter.search(query);
             List<Status> tweets = result.getTweets();
@@ -121,6 +90,5 @@ public class SearchTweets {
             System.err.println("Failed to search tweets: " + te.getMessage());
             System.exit(-1);
         }
-
     }
 }
