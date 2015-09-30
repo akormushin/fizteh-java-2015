@@ -13,20 +13,23 @@ public class JCommanderParams {
     @Parameter
     private List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = {"--query", "-q"}, description = "Query or keywords for stream")
-    private String keyword = new String();
+    @Parameter(names = {"--query", "-q"}, description = "Поиск по строке")
+    private String keyword = new String("");
 
-    @Parameter(names = {"--stream", "-s"}, description = "Is stream")
+    @Parameter(names = {"--stream", "-s"}, description = "Вывод твитов в потоке")
     private boolean stream = false;
 
-    @Parameter(names = "--hideRetweets", description = "Is hiding retweets")
+    @Parameter(names = "--hideRetweets", description = "Скрывать ретвиты")
     private boolean hideRetweets = false;
 
-    @Parameter(names = {"--limit", "-l"}, description = "Max number of tweets if not stream")
+    @Parameter(names = {"--limit", "-l"}, description = "Количество твитов. Неприменимо вместе с --stream")
     private Integer limit = DEFAULT_NUMBER_OF_TWEETS;
 
-    @Parameter(names = {"--help", "-h"}, description = "Get help")
+    @Parameter(names = {"--help", "-h"}, description = "Вывести эту справку")
     private boolean help = false;
+
+    @Parameter(names = {"--place", "-p"}, description = "Поиск по месту")
+    private String location = new String("");
 
     public String getKeyword() {
         return keyword;
@@ -40,11 +43,15 @@ public class JCommanderParams {
         return hideRetweets;
     }
 
-    public Integer numberTweets() {
+    public Integer getNumberTweets() {
         return limit;
     }
 
     public boolean isHelp() {
         return help;
+    }
+
+    public String getLocation() {
+        return location;
     }
 }

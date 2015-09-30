@@ -18,10 +18,9 @@ public class TwitterStream {
         }
 
         if (jcp.isStream()) {
-            if (jcp.numberTweets() != JCommanderParams.DEFAULT_NUMBER_OF_TWEETS) {
+            if (jcp.getNumberTweets() != JCommanderParams.DEFAULT_NUMBER_OF_TWEETS) {
                 printHelp(jcm);
             }
-
             getStream(jcp);
         } else {
             try {
@@ -44,31 +43,36 @@ public class TwitterStream {
 
         Integer numberOfTweets = 0;
 
-        while (numberOfTweets < jcp.numberTweets() && query != null) {
+        while (numberOfTweets < jcp.getNumberTweets() && query != null) {
             result = twitter.search(query);
 
             List<Status> tweets = result.getTweets();
             for (Status tweet : tweets) {
-                if (numberOfTweets == jcp.numberTweets()) {
+                if (numberOfTweets == jcp.getNumberTweets()) {
                     return;
                 }
-                numberOfTweets += printTweet(tweet, jcp.isStream());
+
+                if (tweet.isRetweet() && jcp.isHideRetweets()) {
+                    continue;
+                }
+
+                System.out.println(FormatUtils.formatTweet(tweet, false));
+                numberOfTweets++;
             }
 
             query = result.nextQuery();
         }
     }
 
-    private static int printTweet(Status tweet, boolean isStream) {
-        System.out.println("@" + tweet.getUser().getScreenName() + " - " + tweet.getText());
-        return 1;
-    }
-
     private static void getStream(JCommanderParams jcp) {
         StatusListener listener = new StatusListener() {
             @Override
             public void onStatus(Status tweet) {
-                printTweet(tweet, true);
+                if (jcp.isHideRetweets() && tweet.isRetweet()) {
+                    return;
+                }
+
+                System.out.println(FormatUtils.formatTweet(tweet, true));
             }
 
             @Override
