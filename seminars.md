@@ -34,10 +34,14 @@
 * Задание на дом: [то же](/tasks/01-TwitterStream.md)
 
 ## Семинар 4: Модульное тестирование
+* Исключения
+    * [Lesson: Exceptions](https://docs.oracle.com/javase/tutorial/essential/exceptions/)
+* Зависимости (<scope>test</test>)
+    * [Maven: Introduction to the Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope)
 * Модульное тестирование
-* Инструменты
     * [JUnit](http://junit.org)
     * [Mockito](http://site.mockito.org/mockito/docs/current/org/mockito/Mockito.html)
-    * [Maven: Introduction to the Dependency Mechanism](https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope)
+    * [IntelliJ IDEA Help - Testing](https://www.jetbrains.com/idea/help/testing.html?search=testing)
+    * [IntelliJ IDEA Help - Code Coverage](https://www.jetbrains.com/idea/help/code-coverage.html?search=coverage)
 * Задание на дом: [ModuleTests](/tasks/02-ModuleTests.md)
 
