@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.akormushin.helloworld;
 
-import twitter4j.*;
-
 /**
  * Hello world!
  */
