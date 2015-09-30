@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
 
+import java.io.IOException;
+
 
 /**
  * Created by cache-nez on 9/27/15.
@@ -61,15 +63,11 @@ public class TweetsStream {
         }
 
         try {
-            TweetsRetriever.getTweets(parseArgs.getQuery(), parseArgs.getTweetsLimit(), parseArgs.doHideRetweets());
-        } catch (TwitterException e) {
-            System.err.println("Error " + e.getErrorCode() + ": " +  e.getErrorMessage());
+            TweetsRetriever.getTweets(parseArgs);
+        } catch (TwitterException | GeoException | IOException e) {
+            System.err.println("Error: " +  e.getMessage());
             e.printStackTrace();
             System.exit(EXIT_FAILURE);
         }
-        /* TODO:
-        * check TimeConverter code
-        * add geolocation
-        * add reconnecting in query mode*/
     }
 }

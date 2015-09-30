@@ -79,7 +79,6 @@ class Declenser {
 }
 
 class TimeConverter {
-    /*TODO: передавать текущую дату внутрь (легче тестить)*/
 
     private static final TemporalAmount TWO_MINUTES = Duration.ofMinutes(2);
     private static final TemporalAmount HOUR = Duration.ofHours(1);

@@ -13,6 +13,7 @@ import java.util.Scanner;
  */
 
 class GeoException extends Exception {
+
     GeoException() {
     }
 
@@ -60,7 +61,9 @@ public class GeoLocater {
                     .getJSONObject("Point");
 
             String[] coordinates = toParse.getString("pos").split(" ");
-            return new GeoPosition(Double.parseDouble(coordinates[0]), Double.parseDouble(coordinates[1]));
+            double longitude = Double.parseDouble(coordinates[0]);
+            double latitude = Double.parseDouble(coordinates[1]);
+            return new GeoPosition(latitude, longitude);
 
         } catch (JSONException e) {
             throw new GeoException(e.getMessage());
