@@ -71,6 +71,39 @@ public class GeoLocater {
 
     }
 
+    static double[][] parseBoundingBox(String geoAnswer) throws GeoException {
+        try {
+            JSONObject toParse = new JSONObject(geoAnswer);
+            if (toParse.has("error")) {
+                throw new GeoException("Request failed: " + toParse.getJSONArray("error").toString());
+            }
+
+            toParse = toParse.getJSONObject("response").getJSONObject("GeoObjectCollection");
+
+            if (toParse.getJSONObject("metaDataProperty").getJSONObject("GeocoderResponseMetaData")
+                    .getString("found").equals("0")) {
+                throw new GeoException("Invalid location: yandex found nothing");
+            }
+
+            //the most relevant argument
+            toParse = toParse.getJSONArray("featureMember").getJSONObject(0).getJSONObject("GeoObject")
+                    .getJSONObject("boundedBy").getJSONObject("Envelope");
+            String[] lowerCorner = toParse.getString("lowerCorner").split(" ");
+            String[] upperCorner = toParse.getString("upperCorner").split(" ");
+
+            double[][] boundingBox = new double[2][2];
+            boundingBox[0][0] = Double.parseDouble(lowerCorner[0]);
+            boundingBox[0][1] = Double.parseDouble(lowerCorner[1]);
+            boundingBox[1][0] = Double.parseDouble(upperCorner[0]);
+            boundingBox[1][1] = Double.parseDouble(upperCorner[1]);
+
+            return boundingBox;
+
+        } catch (JSONException e) {
+            throw new GeoException(e.getMessage());
+        }
+    }
+
 
     static String getKey() throws IOException {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
@@ -102,6 +135,14 @@ public class GeoLocater {
         String answer = HttpConnect.getAnswer(request);
 
         return parseAnswer(answer);
+    }
+
+    public static double[][] getBoundingBox(String location) throws IOException, GeoException {
+        String key = getKey();
+        String request = YANDEX_URL + location + "&key=" + key + "&format=json";
+        String answer = HttpConnect.getAnswer(request);
+
+        return parseBoundingBox(answer);
     }
 
     public static GeoPosition getLocationByIP(String ip) {

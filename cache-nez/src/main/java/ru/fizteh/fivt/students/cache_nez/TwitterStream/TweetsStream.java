@@ -16,7 +16,7 @@ public class TweetsStream {
     public static final int EXIT_FAILURE = 1;
     public static final boolean STREAM_MODE_ON = true;
 
-    public static void twitterStream(ParseArguments description) {
+    public static void twitterStream(ParseArguments description) throws IOException, GeoException {
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         StatusListener listener = new StatusAdapter() {
             @Override
@@ -32,14 +32,17 @@ public class TweetsStream {
 
         };
         String[] query = {description.getQuery()};
-        FilterQuery filter = new FilterQuery();
-        filter.track(query);
+        FilterQuery filterQuery = new FilterQuery();
+        filterQuery.track(query);
+        if (!description.getLocation().equals("everywhere")) {
+            filterQuery.locations(GeoLocater.getBoundingBox(description.getLocation()));
+        }
         twitterStream.addListener(listener);
-        twitterStream.filter(filter);
+        twitterStream.filter(filterQuery);
     }
 
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException, GeoException {
         ParseArguments parseArgs = new ParseArguments();
         JCommander jCommander;
         try {
@@ -69,5 +72,10 @@ public class TweetsStream {
             e.printStackTrace();
             System.exit(EXIT_FAILURE);
         }
+        /* TODO:
+        * check TimeConverter code
+        * add geolocation
+        * add reconnecting in query mode*/
+    /*TODO: передавать текущую дату внутрь (легче тестить)*/
     }
 }
