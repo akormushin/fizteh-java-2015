@@ -6,6 +6,9 @@ import com.beust.jcommander.*;
  * Created by ocksumoron on 24.09.15.
  */
 public class JCommanderProperties {
+
+    private static final int DEFAULT_LIMIT = 100;
+
     @Parameter(names = {"-q", "--query"}, description = "Query type")
     private String query = "";
 
@@ -19,7 +22,7 @@ public class JCommanderProperties {
     private boolean hideRetweets = false;
 
     @Parameter(names = {"-l", "--limit"}, description = "Tweets limit")
-    private Integer limitNumber = 100;
+    private Integer limitNumber = DEFAULT_LIMIT;
 
     @Parameter(names = {"-h", "--help"}, description = "Print help")
     private boolean printHelp = false;

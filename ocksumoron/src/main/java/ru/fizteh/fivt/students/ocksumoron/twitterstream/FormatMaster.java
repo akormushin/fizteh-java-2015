@@ -40,8 +40,8 @@ public class FormatMaster {
         if (number % GET_LAST_NUM == ONE && number % GET_LAST_TWO_NUMS != ELEVEN) {
             return 0;
         }
-        if (number % GET_LAST_NUM > ONE && number % GET_LAST_NUM < FIVE &&
-                !(number % GET_LAST_TWO_NUMS >= ELEVEN && number % GET_LAST_TWO_NUMS <= NINETEEN)) {
+        if (number % GET_LAST_NUM > ONE && number % GET_LAST_NUM < FIVE
+                && !(number % GET_LAST_TWO_NUMS >= ELEVEN && number % GET_LAST_TWO_NUMS <= NINETEEN)) {
             return 1;
         }
         return 2;
@@ -64,8 +64,8 @@ public class FormatMaster {
         if (ChronoUnit.MINUTES.between(tweetDate, curDate) < 2) {
             return "только что";
         } else if (ChronoUnit.HOURS.between(tweetDate, curDate) == 0) {
-            return Long.toString(ChronoUnit.MINUTES.between(tweetDate, curDate)) +
-                    getTimeString(ChronoUnit.MINUTES.between(tweetDate, curDate), ETime.MINUTE);
+            return Long.toString(ChronoUnit.MINUTES.between(tweetDate, curDate))
+                    + getTimeString(ChronoUnit.MINUTES.between(tweetDate, curDate), ETime.MINUTE);
         } else if (ChronoUnit.DAYS.between(tweetDate, curDate) == 0) {
             return Long.toString(ChronoUnit.HOURS.between(tweetDate, curDate))
                     + getTimeString(ChronoUnit.HOURS.between(tweetDate, curDate), ETime.HOUR);
@@ -85,14 +85,13 @@ public class FormatMaster {
         }
         if (!isHideRetweets) {
             if (s.isRetweet()) {
-                result += "@" + s.getUser().getName() + " ретвитнул @" +
-                        s.getRetweetedStatus().getUser().getName() + ": " + s.getText();
+                result += "@" + s.getUser().getName() + " ретвитнул @"
+                        + s.getRetweetedStatus().getUser().getName() + ": " + s.getText();
             } else {
                 result += "@" + s.getUser().getName() + ": " + s.getText();
                 if (s.getRetweetCount() != 0) {
-                    result += " (" +
-                            Long.toString(s.getRetweetCount()) + " " +
-                            RETWEET_FORMS[getCorrectForm(s.getRetweetCount())] + ")";
+                    result += " (" + Long.toString(s.getRetweetCount()) + " "
+                            + RETWEET_FORMS[getCorrectForm(s.getRetweetCount())] + ")";
                 }
             }
             result += SEPARATOR;

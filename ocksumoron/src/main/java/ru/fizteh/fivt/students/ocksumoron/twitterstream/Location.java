@@ -14,7 +14,7 @@ public class Location {
     private double latitudeNECorner;
     private double longitudeNECorner;
 
-    public Location (double latitudeCenter, double longitudeCenter,
+    public Location(double latitudeCenter, double longitudeCenter,
                      double latitudeSWCorner, double longitudeSWCorner,
                      double latitudeNECorner, double longitudeNECorner, double res) {
         this.latitudeCenter = latitudeCenter;
@@ -26,7 +26,7 @@ public class Location {
         this.res = res;
     }
 
-    public Location (GeoLocation center, GeoLocation cornerSW, GeoLocation cornerNE, double res) {
+    public Location(GeoLocation center, GeoLocation cornerSW, GeoLocation cornerNE, double res) {
         this.latitudeCenter = center.getLatitude();
         this.longitudeCenter = center.getLongitude();
         this.latitudeSWCorner = cornerSW.getLatitude();

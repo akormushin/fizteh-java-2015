@@ -49,9 +49,9 @@ public class Twister {
         LocationMaster locationMaster = new LocationMaster();
         Location location = locationMaster.getLocation(jcp.getPlace());
         FilterQuery filterQuery = new FilterQuery();
-        String keyword[]= {jcp.getQuery()};
+        String[] keyword = {jcp.getQuery()};
 
-        double [][]locationBox = {{location.getLongitudeSWCorner(), location.getLatitudeSWCorner()},
+        double[][] locationBox = {{location.getLongitudeSWCorner(), location.getLatitudeSWCorner()},
                                 {location.getLongitudeNECorner(), location.getLatitudeNECorner()}};
 
         filterQuery.track(keyword);
