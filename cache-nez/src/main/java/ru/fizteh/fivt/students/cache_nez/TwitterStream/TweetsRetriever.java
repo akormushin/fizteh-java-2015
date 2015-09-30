@@ -14,7 +14,6 @@ public class TweetsRetriever {
     public static void getTweets(String searchFor, int limit, boolean hideRetweets) throws TwitterException {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query(searchFor);
-        //GeoQuery query = new GeoQuery("93.175.2.172");
         query.setQuery(searchFor);
         query.setCount(limit);
         QueryResult result;

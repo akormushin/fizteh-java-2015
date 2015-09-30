@@ -64,7 +64,12 @@ public class TweetsStream {
             TweetsRetriever.getTweets(parseArgs.getQuery(), parseArgs.getTweetsLimit(), parseArgs.doHideRetweets());
         } catch (TwitterException e) {
             System.err.println("Error " + e.getErrorCode() + ": " +  e.getErrorMessage());
+            e.printStackTrace();
             System.exit(EXIT_FAILURE);
         }
+        /* TODO:
+        * check TimeConverter code
+        * add geolocation
+        * add reconnecting in query mode*/
     }
 }

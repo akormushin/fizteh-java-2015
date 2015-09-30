@@ -13,7 +13,7 @@ public class ParseArguments {
     private String query = "физтех";
 
     @Parameter(names = {"--place", "-p"}, description = "Specify tweets location.")
-    private  String location;
+    private  String location = "everywhere";
 
     @Parameter(names = {"--stream", "-s"},
             description = "Determines if the stream mode is on: print a bunch of tweets every second. "
