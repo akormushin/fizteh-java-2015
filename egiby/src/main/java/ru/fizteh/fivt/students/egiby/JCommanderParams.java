@@ -9,7 +9,7 @@ import java.util.List;
  * Created by egiby on 29.09.15.
  */
 public class JCommanderParams {
-    private static final Integer DEFAULT_NUMBER_OF_TWEETS = 100;
+    public static final Integer DEFAULT_NUMBER_OF_TWEETS = 100;
     @Parameter
     private List<String> parameters = new ArrayList<>();
 
