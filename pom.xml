@@ -20,9 +20,8 @@
     </properties>
 
     <modules>
-        <module>akormushin</module>
         <module>egiby</module>
-        <module>thefacetakt</module>
+        <module>akormushin</module>
   </modules>
 
     <dependencies>
