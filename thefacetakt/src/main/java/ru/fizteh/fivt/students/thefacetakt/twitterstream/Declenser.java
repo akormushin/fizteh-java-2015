@@ -15,7 +15,7 @@ class Declenser {
     static final int THIRD_CASE_LEFT_BORDER = 2;
     static final int THIRD_CASE_RIGHT_BORDER = 4;
 
-    static String declensionScheme(long n, String[] cases) {
+    private static String declensionScheme(long n, String[] cases) {
         n = n % FIRST_IMPORTANT_MOD;
         if (FIRST_CASE_LEFT_BORDER <= n
                 && n <= FIRST_CASE_RIGHT_BORDER) {
@@ -35,13 +35,11 @@ class Declenser {
 
     static final String[] RETWEETS_CASES = {"ретвитов", "ретвит", "ретвита"};
     static String retweetDeclension(long n) {
-
         return declensionScheme(n, RETWEETS_CASES);
     }
 
     static final String[] MINUTES_CASES = {"минут", "минуту", "минуты"};
     static String minutesDeclension(long n) {
-
         return declensionScheme(n, MINUTES_CASES);
     }
 
