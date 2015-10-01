@@ -13,6 +13,7 @@ public class FormatUtils {
 
     private static final Long FIVE = 5L;
     private static final Long ONE = 1L;
+    private static final Long TEN = 10L;
     private static final String[] DAYS = {"день", "дня", "дней"};
     private static final String[] HOURS = {"час", "часа", "часов"};
     private static final String[] MINUTES = {"минуту", "минуты", "минут"};
@@ -38,13 +39,13 @@ public class FormatUtils {
         if (ChronoUnit.MINUTES.between(tweetTime, current) < 2) {
             timeString = "только что";
         } else if (ChronoUnit.HOURS.between(tweetTime, current) < 1) {
-            timeString = formatTime(ChronoUnit.MINUTES.between(tweetTime, current), MINUTES) + " назад";
+            timeString = formatTime(ChronoUnit.MINUTES.between(tweetTime, current) % TEN, MINUTES) + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, current) < 1) {
-            timeString = formatTime(ChronoUnit.HOURS.between(tweetTime, current), HOURS) + " назад";
+            timeString = formatTime(ChronoUnit.HOURS.between(tweetTime, current) % TEN, HOURS) + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, current) == 1) {
             timeString = "вчера";
         } else {
-            timeString = formatTime(ChronoUnit.DAYS.between(tweetTime, current), DAYS) + " назад";
+            timeString = formatTime(ChronoUnit.DAYS.between(tweetTime, current) % TEN, DAYS) + " назад";
         }
 
         return "[" + timeString + "] ";
