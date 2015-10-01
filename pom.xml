@@ -21,8 +21,9 @@
 
     <modules>
         <module>akormushin</module>
-        <!--Add you module here-->
+        <module>thefacetakt</module>
         <module>andrewgark</module>
+
     </modules>
 
     <dependencies>
