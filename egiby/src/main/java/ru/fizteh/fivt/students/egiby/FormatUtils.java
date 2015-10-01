@@ -6,6 +6,7 @@ import twitter4j.Status;
  * Created by egiby on 30.09.15.
  */
 public class FormatUtils {
+
     private static String formatTime(Status tweet) {
         return "[It is time] ";
     }

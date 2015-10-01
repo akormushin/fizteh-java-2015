@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.egiby;
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by egiby on 24.09.15.
@@ -65,7 +66,7 @@ public class TwitterStream {
     }
 
     private static void getStream(JCommanderParams jcp) {
-        StatusListener listener = new StatusListener() {
+        StatusAdapter listener = new StatusAdapter() {
             @Override
             public void onStatus(Status tweet) {
                 if (jcp.isHideRetweets() && tweet.isRetweet()) {
@@ -73,27 +74,12 @@ public class TwitterStream {
                 }
 
                 System.out.println(FormatUtils.formatTweet(tweet, true));
-            }
 
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice statusDeletionNotice) {
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int numberOfLimitedStatuses) {
-            }
-
-            @Override
-            public void onScrubGeo(long userId, long upToStatusId) {
-            }
-
-            @Override
-            public void onStallWarning(StallWarning warning) {
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                ex.printStackTrace();
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         };
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
