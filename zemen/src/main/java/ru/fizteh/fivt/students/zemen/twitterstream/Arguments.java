@@ -14,8 +14,9 @@ class Arguments {
     private List<String> query = null;
 
     @Parameter(names = {"--place", "-p"},
-            description = "Искать по заданному региону")
-    private String place = null;
+            description = "Искать по заданному региону. Если параметр не указан, или указан параметр"
+                    + " nearby - вычислить по IP")
+    private String place = "nearby";
 
     @Parameter(names = {"--stream", "-s"},
             description = "Равномерно и непрерывно с задержкой в 1 секунду "

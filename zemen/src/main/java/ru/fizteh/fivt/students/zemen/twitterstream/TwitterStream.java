@@ -20,29 +20,27 @@ public class TwitterStream {
                 if (arguments.isHideRetweets() && status.isRetweet()) {
                     return;
                 }
-                if (location != null) {
-                    GeoLocation statusLocation = status.getGeoLocation();
+                GeoLocation statusLocation = status.getGeoLocation();
 
-                    if (statusLocation == null) {
-                        String currentAddress = status.getUser().getLocation();
-                        try {
-                            statusLocation = GeoUtils
-                                    .getGeoLocation(currentAddress);
-                        } catch (LocationNotFoundException e) {
-                            statusLocation = null;
-                        }
+                if (statusLocation == null) {
+                    String currentAddress = status.getUser().getLocation();
+                    try {
+                        statusLocation = GeoUtils
+                                .getGeoLocationByAddress(currentAddress);
+                    } catch (LocationNotFoundException e) {
+                        statusLocation = null;
                     }
-                    if (statusLocation == null) {
-                        return;
-                    }
-                    double distance = GeoUtils.sphereDistance(
-                            statusLocation.getLatitude(),
-                            statusLocation.getLongitude(),
-                            location.getLatitude(),
-                            location.getLongitude());
-                    if (distance > KM_RADIUS) {
-                        return;
-                    }
+                }
+                if (statusLocation == null) {
+                    return;
+                }
+                double distance = GeoUtils.sphereDistance(
+                        statusLocation.getLatitude(),
+                        statusLocation.getLongitude(),
+                        location.getLatitude(),
+                        location.getLongitude());
+                if (distance > KM_RADIUS) {
+                    return;
                 }
                 System.out.println(FormatUtils.formatAll(status, arguments));
             }
@@ -72,14 +70,16 @@ public class TwitterStream {
             return;
         }
 
-        GeoLocation location = null;
-        if (arguments.getLocation() != null) {
-            try {
-                location = GeoUtils.getGeoLocation(arguments.getLocation());
-            } catch (LocationNotFoundException e) {
-                e.printStackTrace();
-                return;
+        GeoLocation location;
+        try {
+            if (arguments.getLocation().equals("nearby")) {
+                location = GeoUtils.getGeoLocationByIP();
+            } else {
+                location = GeoUtils.getGeoLocationByAddress(arguments.getLocation());
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return;
         }
 
         if (arguments.isStream()) {
@@ -89,9 +89,7 @@ public class TwitterStream {
 
         Twitter twitter = TwitterFactory.getSingleton();
         Query query = new Query(String.join(" ", arguments.getKeywords()));
-        if (location != null) {
-            query.setGeoCode(location, KM_RADIUS, Query.KILOMETERS);
-        }
+        query.setGeoCode(location, KM_RADIUS, Query.KILOMETERS);
         if (arguments.getLimit() > 0) {
             query.setCount(arguments.getLimit());
         }
@@ -102,11 +100,7 @@ public class TwitterStream {
             e.printStackTrace();
             return;
         }
-        System.out.print("Твиты по запросу " + query.getQuery());
-        if (location != null) {
-            System.out.print(" для " + arguments.getLocation());
-        }
-        System.out.println();
+        System.out.println("Твиты по запросу " + query.getQuery() + " для " + arguments.getLocation());
 
         if (response.getTweets().isEmpty()) {
             System.out.println("Не найдены :(");

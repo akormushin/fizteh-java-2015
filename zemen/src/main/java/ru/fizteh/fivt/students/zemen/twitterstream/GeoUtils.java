@@ -9,6 +9,13 @@ import com.bytebybyte.google.geocoding.service.request.*;
 import com.bytebybyte.google.geocoding.service.response.*;
 import com.bytebybyte.google.geocoding.service.standard.*;
 import twitter4j.GeoLocation;
+import twitter4j.JSONException;
+import twitter4j.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
 
 public class GeoUtils {
 
@@ -39,9 +46,32 @@ public class GeoUtils {
         return response.getResults()[0];
     }
 
-    public static GeoLocation getGeoLocation(String address)
+    public static GeoLocation getGeoLocationByAddress(String address)
             throws LocationNotFoundException {
         LatLng location = queryLocation(address).getGeometry().getLocation();
         return new GeoLocation(location.getLat(), location.getLng());
+    }
+
+    public static GeoLocation getGeoLocationByIP()
+            throws IOException, JSONException, LocationNotFoundException {
+        URL getMyFuckingLocation = new URL("https://wtfismyip.com/json");
+        BufferedReader in = null;
+        GeoLocation location = null;
+        try {
+            in = new BufferedReader(new InputStreamReader(getMyFuckingLocation.openStream()));
+            StringBuilder responseBuilder = new StringBuilder();
+            String newLine;
+            while ((newLine = in.readLine()) != null) {
+                responseBuilder.append(newLine);
+            }
+            JSONObject myFuckingLocation = new JSONObject(responseBuilder.toString());
+            String address = myFuckingLocation.getString("YourFuckingLocation");
+            location = getGeoLocationByAddress(address);
+        } finally {
+            if (in != null) {
+                in.close();
+            }
+        }
+        return location;
     }
 }

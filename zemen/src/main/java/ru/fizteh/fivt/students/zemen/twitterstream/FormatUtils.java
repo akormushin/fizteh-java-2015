@@ -41,57 +41,51 @@ public class FormatUtils {
                 .atZone(ZoneId.systemDefault()).toLocalDateTime();
         long daysBetween = ChronoUnit.DAYS.between(date.toLocalDate(),
                 now.toLocalDate());
-        String res = "[";
+        StringBuilder res = new StringBuilder().append("[");
 
         if (daysBetween == 1) {
-            res += "вчера";
+            res.append("вчера");
         } else if (daysBetween > 0) {
             String[] form = new String[]{"дней", "день", "дня"};
-            res += daysBetween + " "
-                    + FormatUtils.getRussianForm(form, daysBetween) + " назад";
+            res.append(daysBetween).append(" ").append(FormatUtils.getRussianForm(form, daysBetween)).append(" назад");
         } else {
             long hours = ChronoUnit.HOURS.between(date, now);
             long minutes = ChronoUnit.MINUTES.between(date, now);
             if (hours > 0) {
                 String[] form = new String[]{"часов", "час", "часа"};
-                res += hours + " "
-                        + FormatUtils.getRussianForm(form, hours)
-                        + " назад";
+                res.append(hours).append(" ").append(FormatUtils.getRussianForm(form, hours)).append(" назад");
             } else if (minutes > 2) {
                 String[] form = new String[]{"минут", "минуту", "минуты"};
-                res += minutes + " "
-                        + FormatUtils.getRussianForm(form, minutes)
-                        + " назад";
+                res.append(minutes).append(" ").append(FormatUtils.getRussianForm(form, minutes)).append(" назад");
             } else {
-                res += "только что";
+                res.append("только что");
             }
         }
-        res += "]";
-        return res;
+        res.append("]");
+        return res.toString();
     }
 
     public static String formatAll(Status tweet, Arguments arguments) {
         boolean isRetweet = tweet.isRetweet();
-        String formattedTweet = "";
+        StringBuilder formattedTweet = new StringBuilder();
         if (!arguments.isStream()) {
-            formattedTweet += FormatUtils.formatTime(
-                    tweet.getCreatedAt()) + " ";
+            formattedTweet.append(FormatUtils.formatTime(
+                    tweet.getCreatedAt())).append(" ");
         }
-        formattedTweet += FormatUtils.formatName(
-                tweet.getUser().getScreenName()) + ": ";
+        formattedTweet.append(FormatUtils.formatName(
+                tweet.getUser().getScreenName())).append(": ");
         if (isRetweet) {
             tweet = tweet.getRetweetedStatus();
-            formattedTweet += "ретвитнул "
-                    + FormatUtils.formatName(tweet.getUser().getScreenName())
-                    + ": ";
+            formattedTweet.append("ретвитнул ").append(FormatUtils.formatName(tweet.getUser().getScreenName()))
+                    .append(": ");
         }
-        formattedTweet += tweet.getText();
+        formattedTweet.append(tweet.getText());
         if (!isRetweet) {
             String[] form = new String[]{"ретвитов", "ретвит", "ретвита"};
             int retweets = tweet.getRetweetCount();
-            formattedTweet += " (" + retweets + " "
-                    + FormatUtils.getRussianForm(form, retweets) + ")";
+            formattedTweet.append(" (").append(retweets).append(" ")
+                    .append(FormatUtils.getRussianForm(form, retweets)).append(")");
         }
-        return formattedTweet;
+        return formattedTweet.toString();
     }
 }
