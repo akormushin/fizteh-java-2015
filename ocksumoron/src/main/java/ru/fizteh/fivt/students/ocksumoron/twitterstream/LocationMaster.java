@@ -30,15 +30,6 @@ public class LocationMaster {
         return new GeoLocation(latitude, longitude);
     }
 
-//    private GeoLocation getCoordinates(Elements elements) {
-//        org.jsoup.nodes.Element section = elements.first();
-//        String coordinates = section.text();
-//        String[] coordinatesParsed = coordinates.split(" ");
-//        Double longitude = Double.parseDouble(coordinatesParsed[0]);
-//        Double latitude = Double.parseDouble(coordinatesParsed[1]);
-//        return new GeoLocation(latitude, longitude);
-//    }
-
     private double getRes(GeoLocation lowerCornerPos, GeoLocation upperCornerPos) {
         return DEFAULT_RES;
     }
@@ -48,9 +39,9 @@ public class LocationMaster {
         URLConnection geoConnection = url.openConnection();
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setIgnoringComments(true);
-        factory.setCoalescing(true); // Convert CDATA to Text nodes
-        factory.setNamespaceAware(false); // No namespaces: this is default
-        factory.setValidating(false); // Don't validate DTD: also default
+        factory.setCoalescing(true);
+        factory.setNamespaceAware(false);
+        factory.setValidating(false);
 
         DocumentBuilder parser = factory.newDocumentBuilder();
 
@@ -66,25 +57,21 @@ public class LocationMaster {
                 place = section.getTextContent();
             }
 
-                Document document = documentResolver(new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place));
-//            org.jsoup.nodes.Document document =
-//                    Jsoup.connect("https://geocode-maps.yandex.ru/1.x/?geocode=" + place).get();
-            GeoLocation centerPos = getCoordinates(document.getElementsByTagName("pos"));
-            GeoLocation swPos = getCoordinates(document.getElementsByTagName("lowerCorner"));
-            GeoLocation nePos = getCoordinates(document.getElementsByTagName("upperCorner"));
-            double res = getRes(swPos, nePos);
+            Document document = documentResolver(new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place));
+            if (document.getElementsByTagName("pos").getLength() != 0) {
 
-            return new Location(centerPos, swPos, nePos, res);
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-//        }
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (SAXException e) {
+                GeoLocation centerPos = getCoordinates(document.getElementsByTagName("pos"));
+                GeoLocation swPos = getCoordinates(document.getElementsByTagName("lowerCorner"));
+                GeoLocation nePos = getCoordinates(document.getElementsByTagName("upperCorner"));
+                double res = getRes(swPos, nePos);
+
+                return new Location(centerPos, swPos, nePos, res);
+            } else {
+                return new Location(-1);
+            }
+        } catch (IOException | ParserConfigurationException | SAXException e) {
             e.printStackTrace();
         }
-        return new Location(0, 0, 0, 0, 0, 0, 0);
+        return new Location(-1);
     }
 }

@@ -6,13 +6,14 @@ import twitter4j.GeoLocation;
  * Created by ocksumoron on 28.09.15.
  */
 public class Location {
-    private double res;
-    private double latitudeCenter;
-    private double longitudeCenter;
-    private double latitudeSWCorner;
-    private double longitudeSWCorner;
-    private double latitudeNECorner;
-    private double longitudeNECorner;
+    private final double res;
+    private final double latitudeCenter;
+    private final double longitudeCenter;
+    private final double latitudeSWCorner;
+    private final double longitudeSWCorner;
+    private final double latitudeNECorner;
+    private final double longitudeNECorner;
+    private final int error;
 
     public Location(double latitudeCenter, double longitudeCenter,
                      double latitudeSWCorner, double longitudeSWCorner,
@@ -24,6 +25,7 @@ public class Location {
         this.latitudeNECorner = latitudeNECorner;
         this.longitudeNECorner = longitudeNECorner;
         this.res = res;
+        this.error = 0;
     }
 
     public Location(GeoLocation center, GeoLocation cornerSW, GeoLocation cornerNE, double res) {
@@ -34,6 +36,18 @@ public class Location {
         this.latitudeNECorner = cornerNE.getLatitude();
         this.longitudeNECorner = cornerNE.getLongitude();
         this.res = res;
+        this.error = 0;
+    }
+
+    public Location(int error) {
+        this.latitudeCenter = 0;
+        this.longitudeCenter = 0;
+        this.latitudeSWCorner = 0;
+        this.longitudeSWCorner = 0;
+        this.latitudeNECorner = 0;
+        this.longitudeNECorner = 0;
+        this.res = 0;
+        this.error = error;
     }
 
     public GeoLocation getGeoLocation() {
@@ -67,4 +81,6 @@ public class Location {
     public double getLongitudeNECorner() {
         return longitudeNECorner;
     }
+
+    public int getError() {return error; }
 }

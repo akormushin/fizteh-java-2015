@@ -13,7 +13,13 @@ public class Twister {
 
     public static void main(String[] args)  {
         JCommanderProperties jcp = new JCommanderProperties();
-        new JCommander(jcp, args);
+        try {
+            new JCommander(jcp, args);
+        } catch (Exception e) {
+            e.printStackTrace();
+            new JCommander(jcp).usage();
+            System.exit(1);
+        }
         if (jcp.isPrintHelp()) {
             new JCommander(jcp, args).usage();
         }
@@ -28,6 +34,10 @@ public class Twister {
         LocationMaster locationMaster = new LocationMaster();
         try {
             Location location = locationMaster.getLocation(jcp.getPlace());
+            if (location.getError() != 0) {
+                System.err.println("Bad location");
+                System.exit(1);
+            }
             GeoLocation geoLocation = new GeoLocation(location.getLatitudeCenter(), location.getLongitudeCenter());
             Twitter twitter = new TwitterFactory().getInstance();
             Query query = new Query(jcp.getQuery());
@@ -40,7 +50,7 @@ public class Twister {
                     .map(s -> formatter.format(s, jcp.isHideRetweets(), false)).forEach(System.out::print);
 
         } catch (TwitterException e) {
-
+            e.printStackTrace();
         }
     }
 
@@ -48,6 +58,10 @@ public class Twister {
         FormatMaster formatter = new FormatMaster();
         LocationMaster locationMaster = new LocationMaster();
         Location location = locationMaster.getLocation(jcp.getPlace());
+        if (location.getError() != 0) {
+            System.err.println("Bad location");
+            System.exit(1);
+        }
         FilterQuery filterQuery = new FilterQuery();
         String[] keyword = {jcp.getQuery()};
 

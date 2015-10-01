@@ -14,14 +14,10 @@ public class FormatMaster {
 
     static final int GET_LAST_NUM = 10;
     static final int GET_LAST_TWO_NUMS = 100;
-    static final int ZERO = 0;
-    static final int ONE = 1;
-    static final int TWO = 2;
-    static final int FOUR = 4;
-    static final int FIVE = 5;
-    static final int NINE = 9;
-    static final int ELEVEN = 11;
-    static final int NINETEEN = 19;
+    static final int NUMBER_ONE = 1;
+    static final int NUMBER_FIVE = 5;
+    static final int NUMBER_ELEVEN = 11;
+    static final int NUMBER_NINETEEN = 19;
     static final String SEPARATOR =
             "\n-----------------------------------------------------------------------------------------------------\n";
 
@@ -37,11 +33,11 @@ public class FormatMaster {
     }
 
     private static int getCorrectForm(long number) {
-        if (number % GET_LAST_NUM == ONE && number % GET_LAST_TWO_NUMS != ELEVEN) {
+        if (number % GET_LAST_NUM == NUMBER_ONE && number % GET_LAST_TWO_NUMS != NUMBER_ELEVEN) {
             return 0;
         }
-        if (number % GET_LAST_NUM > ONE && number % GET_LAST_NUM < FIVE
-                && !(number % GET_LAST_TWO_NUMS >= ELEVEN && number % GET_LAST_TWO_NUMS <= NINETEEN)) {
+        if (number % GET_LAST_NUM > NUMBER_ONE && number % GET_LAST_NUM < NUMBER_FIVE
+                && !(number % GET_LAST_TWO_NUMS >= NUMBER_ELEVEN && number % GET_LAST_TWO_NUMS <= NUMBER_NINETEEN)) {
             return 1;
         }
         return 2;
@@ -61,19 +57,22 @@ public class FormatMaster {
     private static String formatTime(Date date) {
         LocalDateTime tweetDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         LocalDateTime curDate = LocalDateTime.now();
-        if (ChronoUnit.MINUTES.between(tweetDate, curDate) < 2) {
+        long minuteDiff = ChronoUnit.MINUTES.between(tweetDate, curDate);
+        long hourDiff = ChronoUnit.HOURS.between(tweetDate, curDate);
+        long dayDiff = ChronoUnit.DAYS.between(tweetDate, curDate);
+        if (minuteDiff < 2) {
             return "только что";
-        } else if (ChronoUnit.HOURS.between(tweetDate, curDate) == 0) {
-            return Long.toString(ChronoUnit.MINUTES.between(tweetDate, curDate))
-                    + getTimeString(ChronoUnit.MINUTES.between(tweetDate, curDate), ETime.MINUTE);
+        } else if (hourDiff == 0) {
+            return Long.toString(minuteDiff)
+                    + getTimeString(minuteDiff, ETime.MINUTE);
         } else if (ChronoUnit.DAYS.between(tweetDate, curDate) == 0) {
-            return Long.toString(ChronoUnit.HOURS.between(tweetDate, curDate))
-                    + getTimeString(ChronoUnit.HOURS.between(tweetDate, curDate), ETime.HOUR);
-        } else if (ChronoUnit.DAYS.between(tweetDate, curDate) == ONE) {
+            return Long.toString(hourDiff)
+                    + getTimeString(hourDiff, ETime.HOUR);
+        } else if (dayDiff == NUMBER_ONE) {
             return "вчера";
         } else {
-            return Long.toString(ChronoUnit.DAYS.between(tweetDate, curDate))
-                    + getTimeString(ChronoUnit.DAYS.between(tweetDate, curDate), ETime.DAY);
+            return Long.toString(dayDiff)
+                    + getTimeString(dayDiff, ETime.DAY);
         }
     }
 
