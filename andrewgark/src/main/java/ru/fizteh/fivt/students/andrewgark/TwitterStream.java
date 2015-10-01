@@ -60,8 +60,9 @@ public class TwitterStream {
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(new StatusAdapter() {
             public void onStatus(Status status) {
-                if (!(status.isRetweet() && hideRetweets))
+                if (!(status.isRetweet() && hideRetweets)) {
                     printTweet(status, true);
+                }
             }
         });
         Double[] coordinates = getCoordinatesByQuery(location);
@@ -108,15 +109,14 @@ public class TwitterStream {
         }
         if (numberTweets == 0) {
             System.out.println("Твитов по заданному запросу не найдено.");
-        }
-        else {
+        } else {
             System.out.println(SEPARATOR);
         }
         return;
     }
 
     public static GeoLocation getLocation(String location) {
-        Double coordinates[];
+        Double[] coordinates;
         if (location == "nearby") {
             coordinates = getCoordinatesByIp();
         } else {
