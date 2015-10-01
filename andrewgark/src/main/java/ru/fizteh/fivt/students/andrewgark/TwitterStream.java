@@ -12,11 +12,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.fizteh.fivt.students.andrewgark.Files.getFile;
-import static ru.fizteh.fivt.students.andrewgark.GeolocationTwitterStream.getLocation;
+import static ru.fizteh.fivt.students.andrewgark.GeolocationSearch.getCoordinatesByIp;
+import static ru.fizteh.fivt.students.andrewgark.GeolocationSearch.getCoordinatesByQuery;
 
 public class TwitterStream {
-    private static final Double RADIUS = 30.0;
+    private static final Double RADIUS = 5.0;
     private static final Integer NUMBER_TWEETS = 100;
     private static final Integer ONE = 1;
     private static final Integer TWO = 2;
@@ -25,13 +25,16 @@ public class TwitterStream {
     private static final Integer ELEVEN = 11;
     private static final Integer TWENTY = 20;
     private static final Integer HUNDRED = 100;
+    private static final String SEPARATOR =
+            "----------------------------------------------------------------------------------------";
 
     public static void main(String[] args) {
         JCommanderTwitterStream jcts = new JCommanderTwitterStream();
         new JCommander(jcts, args);
         if (jcts.isHelp()) {
-            System.out.println(getFile("src/main/resources/01-TwitterStream.md"));
-            System.exit(0);
+            JCommander jc = new JCommander(jcts, args);
+            jc.usage();
+            return;
         }
         String[] keywords;
         if (jcts.getKeywords().size() > 0) {
@@ -43,15 +46,36 @@ public class TwitterStream {
         String stringKeywords = String.join(" ", keywords);
         if (jcts.isStream()) {
             if (jcts.getLimit() < Integer.MAX_VALUE) {
-                System.out.println("You can't have stream with limit.");
+                System.err.println("You can't have stream with limit.");
                 System.exit(-1);
             }
+            streamTweets(stringKeywords, jcts.getLocation(), jcts.isHideRetweets());
+        } else {
+            printTweets(stringKeywords, jcts.getLocation(), jcts.getLimit(), jcts.isHideRetweets());
         }
-        printTweets(stringKeywords, jcts.getLocation(), jcts.getLimit(), jcts.isHideRetweets(), jcts.isStream());
+        return;
     }
 
-    public static void printTweets(String keywords, String location, Integer limit,
-                                   Boolean hideRetweets, Boolean isStream) {
+    public static void streamTweets(String keywords, String location, Boolean hideRetweets) {
+        twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+        twitterStream.addListener(new StatusAdapter() {
+            public void onStatus(Status status) {
+                if (!(status.isRetweet() && hideRetweets))
+                    printTweet(status, true);
+            }
+        });
+        Double[] coordinates = getCoordinatesByQuery(location);
+        double[][] doubleCoordinates = {{coordinates[1] - RADIUS, coordinates[0] - RADIUS},
+                {coordinates[1] + RADIUS, coordinates[0] + RADIUS}};
+        //System.out.println(coordinates[0].toString() + " " + coordinates[1].toString());
+        String[] arrayKeywords = {keywords};
+        FilterQuery fq = new FilterQuery();
+        fq.locations(doubleCoordinates);
+        fq.track(arrayKeywords);
+        twitterStream.filter(fq);
+    }
+
+    public static void printTweets(String keywords, String location, Integer limit, Boolean hideRetweets) {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query(keywords);
         query.setGeoCode(getLocation(location), RADIUS, Query.KILOMETERS);
@@ -70,22 +94,35 @@ public class TwitterStream {
                 result = twitter.search(query);
                 tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                    if (!(hideRetweets && tweet.isRetweet())) {
-                        printTweet(tweet, isStream);
+                    if (!(hideRetweets && tweet.isRetweet()) && (numberTweets < needTweets)) {
+                        printTweet(tweet, false);
                         numberTweets++;
                     }
                 }
                 query = result.nextQuery();
-            } while ((isStream || numberTweets < needTweets) && (query != null));
+            } while ((numberTweets < needTweets) && (query != null));
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to search tweets: " + te.getMessage());
+            System.err.println("Failed to search tweets: " + te.getMessage());
             System.exit(-1);
         }
         if (numberTweets == 0) {
             System.out.println("Твитов по заданному запросу не найдено.");
         }
-        System.exit(0);
+        else {
+            System.out.println(SEPARATOR);
+        }
+        return;
+    }
+
+    public static GeoLocation getLocation(String location) {
+        Double coordinates[];
+        if (location == "nearby") {
+            coordinates = getCoordinatesByIp();
+        } else {
+            coordinates = getCoordinatesByQuery(location);
+        }
+        return new GeoLocation(coordinates[0], coordinates[1]);
     }
 
     public static void printTweet(Status tweet, boolean isStream) {
@@ -98,8 +135,9 @@ public class TwitterStream {
                 ie.printStackTrace();
             }
         } else {
-            time = getTime(tweet) + " ";
+            time = getTimeForm(tweet) + " ";
         }
+        System.out.println(SEPARATOR);
         String uName = tweet.getUser().getScreenName();
         String text = tweet.getText();
         Integer retweets = tweet.getRetweetCount();
@@ -115,27 +153,32 @@ public class TwitterStream {
         }
     }
 
-    public static String getTime(Status tweet) {
+    public static String getTimeForm(Status tweet) {
         ZonedDateTime dateTime = tweet.getCreatedAt().toInstant().atZone(ZoneId.systemDefault());
-        LocalDate tweetDate = dateTime.toLocalDate();
-        if (tweetDate.equals(LocalDate.now())) {
-            LocalDateTime tweetDateTime = dateTime.toLocalDateTime();
-            LocalDateTime now = LocalDateTime.now();
-            if (now.minusMinutes(2).isBefore(tweetDateTime)) {
+        LocalDateTime tweetLocalDateTime = dateTime.toLocalDateTime();
+        LocalDateTime nowLocalDateTime = LocalDateTime.now();
+        return "[" + getTimeBetweenForm(tweetLocalDateTime, nowLocalDateTime) + "]";
+    }
+
+    public static String getTimeBetweenForm(LocalDateTime tweetLDT, LocalDateTime nowLDT) {
+        LocalDate tweetLD = tweetLDT.toLocalDate();
+        LocalDate nowLD = nowLDT.toLocalDate();
+
+        if (tweetLD.equals(nowLD)) {
+            if (nowLDT.minusMinutes(2).isBefore(tweetLDT)) {
                 return "Только что";
             }
-            if (now.minusHours(1).isBefore(tweetDateTime)) {
-                Integer numberMinutes = Integer.valueOf(Long.toString(tweetDateTime.until(now, ChronoUnit.MINUTES)));
+            if (nowLDT.minusHours(1).isBefore(tweetLDT)) {
+                Integer numberMinutes = Integer.valueOf(Long.toString(tweetLDT.until(nowLDT, ChronoUnit.MINUTES)));
                 return getForm(numberMinutes, new String[]{"минута", "минуты", "минут"}) + " назад";
             }
-            Integer numberHours = Integer.valueOf(Long.toString(tweetDateTime.until(now, ChronoUnit.HOURS)));
+            Integer numberHours = Integer.valueOf(Long.toString(tweetLDT.until(nowLDT, ChronoUnit.HOURS)));
             return getForm(numberHours, new String[]{"час", "часа", "часов"}) + " назад";
         } else {
-            LocalDate now = LocalDate.now();
-            if (now.minusDays(1).equals(tweetDate)) {
+            if (nowLD.minusDays(1).equals(tweetLD)) {
                 return "Вчера";
             }
-            Integer numberDays = Integer.valueOf(Long.toString(tweetDate.until(now, ChronoUnit.DAYS)));
+            Integer numberDays = Integer.valueOf(Long.toString(tweetLD.until(nowLD, ChronoUnit.DAYS)));
             return getForm(numberDays, new String[]{"день", "дня", "дней"}) + " назад";
         }
     }
