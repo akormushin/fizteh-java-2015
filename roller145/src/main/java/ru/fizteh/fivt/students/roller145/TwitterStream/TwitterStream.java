@@ -1,23 +1,24 @@
 package ru.fizteh.fivt.students.roller145.TwitterStream;
 
 import com.beust.jcommander.JCommander;
+import javafx.util.Pair;
 import twitter4j.*;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.getGeolocation;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.reCode;
+import static ru.fizteh.fivt.students.roller145.TwitterStream.TimeMethods.MILISEC_IN_SEC;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.TimeMethods.printTime;
 
 public class TwitterStream {
 
     public static void main(String[] args) throws Exception {
-        String str = null;
-        for (int i =0; i < args.length; ++i){
-            str += args[i] +' ';
-        }
+
         TwitterStreamParser twParse = new TwitterStreamParser();
         JCommander command = new JCommander(twParse, args);
         if (twParse.isHelpOn()) {
@@ -34,7 +35,7 @@ public class TwitterStream {
             return;
         }
         if (twParse.isStreamOn()) {
-            streamMode(twParse.isFilterRetweet(), twParse.getQueryWords(), twParse.getWhere());
+            streamMode(twParse.isFilterRetweet(), twParse.getQueryWords(), twParse.getWhere(), twParse.isPlace());
         }
         if (twParse.isLimit()){
             limitedMode(twParse.isFilterRetweet(), twParse.getNumber(), twParse.getQueryWords(),twParse.getWhere(),twParse.isPlace());
@@ -45,7 +46,6 @@ public class TwitterStream {
     public static final String ANSI_PURPLE = "\u001B[35m";
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String UNIT_RADIUS = "km";
-    public static final int RADIUS = 10;
 
     public static void printHelp(JCommander command){
         command.usage();
@@ -84,25 +84,46 @@ public class TwitterStream {
 
     }
 
-    private static void limitedMode(boolean filterRetweet, int numberOfTweets, String queryWords, String were, boolean isLocation) {
+    private static void limitedMode(boolean filterRetweet, int numberOfTweets, String queryWords, String where, boolean isLocation) throws IOException {
         twitter4j.Twitter twitter = new TwitterFactory().getInstance();
-        int i = 0;
+        if (where == null && queryWords == null){
+            System.out.println("Empty query");
+            return;
+        }
         try {
-            Query query = new Query(queryWords);
-            if (isLocation){
-                query.setGeoCode(getGeolocation(were), RADIUS, UNIT_RADIUS);
+            boolean isAnyTweets= false;
+            Query query = new Query();
+            if (queryWords == null){
+                Pair<GeoLocation, Double> location = getGeolocation(where);
+                query.setGeoCode(location.getKey(), location.getValue(), UNIT_RADIUS);
+            }
+            else {
+                query.setQuery(queryWords);
+                if (isLocation) {
+                    Pair<GeoLocation, Double> location = getGeolocation(where);
+                    query.setGeoCode(location.getKey(), location.getValue(), UNIT_RADIUS);
+                    query.setCount(numberOfTweets);
+                }
             }
             QueryResult result;
+
             do {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                    printTweet(tweet);
-                    ++i;
-                    if (i >= numberOfTweets) {break;}
+                    if (tweet.isRetweet() && !filterRetweet){
+                        printTweet(tweet);
+                        isAnyTweets = true;
+                    }
                 }
-            } while ((query = result.nextQuery()) != null && i <numberOfTweets);
-            System.exit(0);
+            } while ((query = result.nextQuery()) != null);
+            if (!isAnyTweets) {
+                System.out.println("\nI can't find any tweets for the query"
+                                + queryWords + " for " +where
+                                + " \n\n"
+                                + " Please, try to check spelling  or use more common worlds\n");
+            }
+            return;
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
@@ -112,8 +133,53 @@ public class TwitterStream {
         }
     }
 
-    private static void streamMode(boolean filterRetweet, String queryWords, String where) {
-
+    private static void streamMode(boolean filterRetweet, String queryWords, String where, boolean isLocation) {
+        if (where == null && queryWords == null){
+            System.out.println("Empty query");
+            return;
+        }
+        twitter4j.Twitter twitter = new TwitterFactory().getInstance();
+        try {
+            Query query = new Query();
+            if (queryWords == null){
+                Pair<GeoLocation, Double> location = getGeolocation(where);
+                query.setGeoCode(location.getKey(), location.getValue(), UNIT_RADIUS);
+            }
+            else {
+                query.setQuery(queryWords);
+                if (isLocation) {
+                    Pair<GeoLocation, Double> location = getGeolocation(where);
+                    query.setGeoCode(location.getKey(), location.getValue(), UNIT_RADIUS);
+                }
+            }
+            QueryResult result;
+            boolean isAnyTweets= false;
+            Timer timer = new Timer();
+            TimerTask task = null;
+            do {
+                result = twitter.search(query);
+                List<Status> tweets = result.getTweets();
+                for (Status tweet : tweets) {
+                    if (tweet.isRetweet() && !filterRetweet){
+                        printTweet(tweet);
+                        isAnyTweets = true;
+                        timer.schedule(task, 1 * MILISEC_IN_SEC);
+                    }
+                }
+            } while ((query = result.nextQuery()) != null);
+            if (!isAnyTweets) {
+                System.out.println("\nI can't find any tweets for the query "
+                        + queryWords + " for " +where
+                        + " \n\nPlease, try to check spelling  or use more common worlds\n");
+            }
+            System.exit(0);
+        } catch (TwitterException te) {
+            te.printStackTrace();
+            System.out.println("Failed to search tweets: " + te.getMessage());
+            System.exit(-1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 

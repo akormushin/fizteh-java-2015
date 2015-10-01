@@ -5,6 +5,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import com.sun.deploy.net.URLEncoder;
+import javafx.util.Pair;
 import org.json.JSONException;
 import org.json.JSONObject;
 import twitter4j.GeoLocation;
@@ -22,10 +23,16 @@ import java.util.Map;
 public class GetGeolocation {
     public static final String baseUrl = "http://maps.googleapis.com/maps/api/geocode/json";// путь к Geocoding API по HTTP
 
-    public static GeoLocation getGeolocation(String were) throws IOException {
+    public static Pair<GeoLocation, Double> getGeolocation(String were) throws IOException {
         if (were == "nearbly"){
-            GeoQuery res = new GeoQuery(getCurrentIP());
-            return res.getLocation();
+            String IP = getCurrentIP();
+            final Map<String, String> params = Maps.newHashMap();
+            params.put("sensor", "false");
+            params.put("address", were);
+            final String url = baseUrl + '?' + encodeParams(params);
+            final JSONObject response = JsonReader.read(url);
+            return new Pair<>(new GeoLocation(12,15),5.25);
+
         }
         else{
             final Map<String, String> params = Maps.newHashMap();
@@ -33,13 +40,34 @@ public class GetGeolocation {
             params.put("address", were);// адрес, который нужно геокодировать
             final String url = baseUrl + '?' + encodeParams(params);
             final JSONObject response = JsonReader.read(url);// делаем запрос к вебсервису и получаем от него ответ
+
             JSONObject location = response.getJSONArray("results").getJSONObject(0);
             location = location.getJSONObject("geometry");
             location = location.getJSONObject("location");
             final double lng = location.getDouble("lng");// долгота
             final double lat = location.getDouble("lat");// широта
+
+            JSONObject south = response.getJSONArray("results").getJSONObject(0);
+            south = south.getJSONObject("geometry");
+            south = south.getJSONObject("bounds");
+            south = south.getJSONObject("southwest");
+            final double southLng = south.getDouble("lng");// долгота
+            final double southLat = south.getDouble("lat");// широта
+
+            JSONObject noth = response.getJSONArray("results").getJSONObject(0);
+            noth = noth.getJSONObject("geometry");
+            noth = noth.getJSONObject("bounds");
+            noth = noth.getJSONObject("southwest");
+            final double nothLng = noth.getDouble("lng");// долгота
+            final double nothLat = noth.getDouble("lat");// широта
+
+            GeoLocation northLoc = new GeoLocation(nothLat,nothLng);
+            GeoLocation southLoc = new GeoLocation(southLat,southLng);
+
+
+            final double resultRadius = getDistanse(northLoc,southLoc)/2;
             GeoLocation result = new GeoLocation(lat,lng);
-            return result;
+            return new Pair<GeoLocation, Double>(result, resultRadius);
         }
     }
     public static void reCode() throws IOException {
@@ -146,5 +174,12 @@ public class GetGeolocation {
                     }
                 }));
         return paramsUrl;
+    }
+
+    static final double EARTH_RADIUS = 6371;
+
+    public static double getDistanse(GeoLocation A, GeoLocation B){
+        return EARTH_RADIUS  * Math.acos(Math.sin(A.getLatitude()) * Math.sin(B.getLatitude())
+                + Math.cos(B.getLongitude())* Math.cos(B.getLongitude())* Math.cos(A.getLongitude()-B.getLongitude()));
     }
 }
