@@ -24,7 +24,6 @@
         <module>cache-nez</module>
         <module>thefacetakt</module>
   </modules>
->>>>>>> 55f6bcabe5b6c104df8e320acb435f0b6e9425b5
 
     <dependencies>
         <dependency>
