@@ -85,7 +85,7 @@ public class FormatMaster {
         if (!isHideRetweets) {
             if (s.isRetweet()) {
                 result += "@" + s.getUser().getName() + " ретвитнул @"
-                        + s.getRetweetedStatus().getUser().getName() + ": " + s.getText();
+                        + s.getRetweetedStatus().getUser().getName() + ": " + s.getRetweetedStatus().getText();
             } else {
                 result += "@" + s.getUser().getName() + ": " + s.getText();
                 if (s.getRetweetCount() != 0) {

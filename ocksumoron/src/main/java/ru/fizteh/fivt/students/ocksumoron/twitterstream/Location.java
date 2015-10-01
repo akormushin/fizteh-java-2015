@@ -5,7 +5,7 @@ import twitter4j.GeoLocation;
 /**
  * Created by ocksumoron on 28.09.15.
  */
-public class Location {
+public final class Location {
     private final double res;
     private final double latitudeCenter;
     private final double longitudeCenter;
