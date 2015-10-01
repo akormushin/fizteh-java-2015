@@ -2,20 +2,59 @@ package ru.fizteh.fivt.students.egiby;
 
 import twitter4j.Status;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
+
 /**
  * Created by egiby on 30.09.15.
  */
 public class FormatUtils {
 
-    private static String formatTime(Status tweet) {
-        return "[It is time] ";
+    private static final Long FIVE = 5L;
+    private static final Long ONE = 1L;
+    private static final String[] DAYS = {"день", "дня", "дней"};
+    private static final String[] HOURS = {"час", "часа", "часов"};
+    private static final String[] MINUTES = {"минуту", "минуты", "минут"};
+
+    private static String formatTime(Long number, String[] form) {
+        if (number == ONE) {
+            return number + " " + form[0];
+        }
+
+        if (number > ONE && number < FIVE) {
+            return number + " " + form[1];
+        }
+
+        return number + " " + form[2];
+    }
+
+    private static String getTweetTime(Status tweet) {
+        String timeString;
+
+        LocalDateTime current = LocalDateTime.now();
+        LocalDateTime tweetTime = tweet.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+        if (ChronoUnit.MINUTES.between(tweetTime, current) < 2) {
+            timeString = "только что";
+        } else if (ChronoUnit.HOURS.between(tweetTime, current) < 1) {
+            timeString = formatTime(ChronoUnit.MINUTES.between(tweetTime, current), MINUTES) + " назад";
+        } else if (ChronoUnit.DAYS.between(tweetTime, current) < 1) {
+            timeString = formatTime(ChronoUnit.HOURS.between(tweetTime, current), HOURS) + " назад";
+        } else if (ChronoUnit.DAYS.between(tweetTime, current) == 1) {
+            timeString = "вчера";
+        } else {
+            timeString = formatTime(ChronoUnit.DAYS.between(tweetTime, current), DAYS) + " назад";
+        }
+
+        return "[" + timeString + "] ";
     }
 
     public static String formatTweet(Status tweet, boolean isStream) {
         String formattedTweet = new String("");
 
         if (!isStream) {
-            formattedTweet += formatTime(tweet);
+            formattedTweet += getTweetTime(tweet);
         }
 
         formattedTweet += "@" + tweet.getUser().getScreenName() + ": ";
