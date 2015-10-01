@@ -82,5 +82,7 @@ public class Location {
         return longitudeNECorner;
     }
 
-    public int getError() {return error; }
+    public int getError() {
+        return error;
+    }
 }
