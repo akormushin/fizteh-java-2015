@@ -9,22 +9,22 @@ public class JCommanderTwitterStream {
     @Parameter
     private List<String> parameters = new ArrayList<>();
 
-    @Parameter(names = {"--query", "-q"}, description = "Поиск твитов по ключевым словам.")
+    @Parameter(names = {"--query", "-q"})
     private List<String> keywords = new ArrayList<>();
 
-    @Parameter(names = {"--place", "-p"}, arity = 1, description = "Поиск твитов по месту.")
+    @Parameter(names = {"--place", "-p"}, arity = 1)
     private String location = "nearby";
 
-    @Parameter(names = {"--stream", "-s"}, description = "Режим потока твитов.")
+    @Parameter(names = {"--stream", "-s"})
     private boolean stream = false;
 
-    @Parameter(names = "--hideRetweets", description = "Не показывать ретвиты.")
+    @Parameter(names = "--hideRetweets")
     private boolean hideRetweets = false;
 
-    @Parameter(names = {"--limit", "-l"}, description = "Ограничение числа выведенных твитов (не работает с потоком).")
+    @Parameter(names = {"--limit", "-l"})
     private Integer limit = Integer.MAX_VALUE;
 
-    @Parameter(names = {"--help", "-h"}, description = "Справка.")
+    @Parameter(names = {"--help", "-h"})
     private boolean help = false;
 
     public String getLocation() {
