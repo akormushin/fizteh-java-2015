@@ -72,10 +72,5 @@ public class TweetsStream {
             e.printStackTrace();
             System.exit(EXIT_FAILURE);
         }
-        /* TODO:
-        * check TimeConverter code
-        * add geolocation
-        * add reconnecting in query mode*/
-    /*TODO: передавать текущую дату внутрь (легче тестить)*/
     }
 }
