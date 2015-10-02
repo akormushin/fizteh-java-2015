@@ -13,7 +13,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.fusesource.jansi.Ansi.ansi;
 
-public class Main {
+class Main {
+    private static final int DELIMITER_LENGTH = 140;
+
     public static void main(String[] args) {
         ArgumentParser argumentParser = new ArgumentParser();
         try {
@@ -55,7 +57,7 @@ public class Main {
     private static void printSingleTweet(Status status, boolean showTime) {
         Ansi formattedTweet = ansi();
         if (showTime) {
-            formattedTweet.a(RecentDateFormatter.format(status.getCreatedAt()) + " ");
+            formattedTweet.a("[" + RecentDateFormatter.format(status.getCreatedAt()) + "] ");
         }
 
         formattedTweet.fg(Ansi.Color.BLUE).a("@" + status.getUser().getScreenName()).fg(Ansi.Color.DEFAULT);
@@ -73,7 +75,7 @@ public class Main {
         }
 
         System.out.println(formattedTweet);
-        System.out.println(new String(new char[140]).replace('\0', '-'));
+        System.out.println(new String(new char[DELIMITER_LENGTH]).replace('\0', '-'));
     }
 
 }
