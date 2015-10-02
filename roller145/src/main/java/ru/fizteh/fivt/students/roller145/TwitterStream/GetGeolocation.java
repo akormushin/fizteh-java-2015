@@ -11,11 +11,15 @@ import org.json.JSONObject;
 import twitter4j.GeoLocation;
 import twitter4j.GeoQuery;
 
+import javax.xml.ws.WebServiceClient;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
+
+import static java.lang.Math.*;
 
 /**
  * Created by riv on 27.09.15.
@@ -25,12 +29,7 @@ public class GetGeolocation {
 
     public static Pair<GeoLocation, Double> getGeolocation(String were) throws IOException {
         if (were == "nearbly"){
-            String IP = getCurrentIP();
-            final Map<String, String> params = Maps.newHashMap();
-            params.put("sensor", "false");
-            params.put("address", were);
-            final String url = baseUrl + '?' + encodeParams(params);
-            final JSONObject response = JsonReader.read(url);
+            GeoLocation location  = getLocationByIP(getCurrentIP());
             return new Pair<>(new GeoLocation(12,15),5.25);
 
         }
@@ -57,7 +56,7 @@ public class GetGeolocation {
             JSONObject noth = response.getJSONArray("results").getJSONObject(0);
             noth = noth.getJSONObject("geometry");
             noth = noth.getJSONObject("bounds");
-            noth = noth.getJSONObject("southwest");
+            noth = noth.getJSONObject("northeast");
             final double nothLng = noth.getDouble("lng");// долгота
             final double nothLat = noth.getDouble("lat");// широта
 
@@ -70,6 +69,14 @@ public class GetGeolocation {
             return new Pair<GeoLocation, Double>(result, resultRadius);
         }
     }
+
+    private static GeoLocation getLocationByIP(String currentIP) {
+
+
+        return null;
+    }
+
+
     public static void reCode() throws IOException {
         GeoQuery res = new GeoQuery(getCurrentIP());
         GeoLocation IAmHere = res.getLocation();
@@ -177,9 +184,51 @@ public class GetGeolocation {
     }
 
     static final double EARTH_RADIUS = 6371;
+    static final double  M_PI =  3.14159265358979323846;
 
     public static double getDistanse(GeoLocation A, GeoLocation B){
-        return EARTH_RADIUS  * Math.acos(Math.sin(A.getLatitude()) * Math.sin(B.getLatitude())
-                + Math.cos(B.getLongitude())* Math.cos(B.getLongitude())* Math.cos(A.getLongitude()-B.getLongitude()));
+
+        double resutl =  EARTH_RADIUS  * 2* asin(sqrtt(sqr(sin((A.getLatitude() - B.getLatitude()) /2 *M_PI / 180)
+                + cos(A.getLatitude()*M_PI / 180) * cos(B.getLatitude()*M_PI / 180) * sqr(sin((A.getLongitude() - B.getLongitude())) / 2 * M_PI / 180))));
+        return resutl;
+    }
+
+    private static double sqrtt(double v) {
+        return pow(v,0.5);
+    }
+
+    private static double sqr(double v) {
+        return v*v;
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

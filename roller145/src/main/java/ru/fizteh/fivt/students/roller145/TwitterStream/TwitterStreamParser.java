@@ -10,7 +10,7 @@ import java.util.List;
 public class TwitterStreamParser {
     @Parameter(names = {"--query", "-q"},
             description = "query or keywords for stream")
-    String queryWords;
+    String queryWords = null;
 
     @Parameter(names = {"-h","--help"}, description = "вывод справки")
     boolean isHelp = false;
@@ -22,7 +22,7 @@ public class TwitterStreamParser {
     @Parameter(names = {"--place", "-p"},
             description = "Искать по заданному региону." +
                     " Если значение равно nearby или параметр отсутствует - искать по ip")
-    String where;
+    String where = null;
 
     @Parameter(names = {"--stream", "-s"},
             description = "Равномерный и непрерывный с задержкой в 1 секунду вывод твитов на экран. ")
@@ -44,7 +44,7 @@ public class TwitterStreamParser {
     }
 
     public int getNumber() {
-        return number;
+        return number = 0;
     }
 
     public boolean isStreamOn(){

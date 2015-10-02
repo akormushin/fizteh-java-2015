@@ -10,6 +10,7 @@ import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static java.lang.Thread.sleep;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.getGeolocation;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.reCode;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.TimeMethods.MILISEC_IN_SEC;
@@ -118,7 +119,7 @@ public class TwitterStream {
                 }
             } while ((query = result.nextQuery()) != null);
             if (!isAnyTweets) {
-                System.out.println("\nI can't find any tweets for the query"
+                System.out.println("\nI can't find any tweets for the query "
                                 + queryWords + " for " +where
                                 + " \n\n"
                                 + " Please, try to check spelling  or use more common worlds\n");
@@ -154,16 +155,14 @@ public class TwitterStream {
             }
             QueryResult result;
             boolean isAnyTweets= false;
-            Timer timer = new Timer();
-            TimerTask task = null;
             do {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
                     if (tweet.isRetweet() && !filterRetweet){
                         printTweet(tweet);
+                        sleep(1 * MILISEC_IN_SEC);
                         isAnyTweets = true;
-                        timer.schedule(task, 1 * MILISEC_IN_SEC);
                     }
                 }
             } while ((query = result.nextQuery()) != null);
@@ -172,12 +171,14 @@ public class TwitterStream {
                         + queryWords + " for " +where
                         + " \n\nPlease, try to check spelling  or use more common worlds\n");
             }
-            System.exit(0);
+            return;
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
             System.exit(-1);
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }

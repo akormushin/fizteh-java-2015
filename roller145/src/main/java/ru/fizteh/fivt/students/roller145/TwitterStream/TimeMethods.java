@@ -43,7 +43,7 @@ public class TimeMethods {
                     System.out.print("Yesterday ");
                 }
                 else {
-                    System.out.print(days + " days ago");
+                    System.out.print(days + " days ago ");
                 }
             }
     }
