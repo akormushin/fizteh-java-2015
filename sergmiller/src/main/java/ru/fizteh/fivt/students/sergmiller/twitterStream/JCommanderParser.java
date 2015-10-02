@@ -12,17 +12,22 @@ import java.util.List;
 class JCommanderParser {
     @Parameter
     private List<String> parameters = new ArrayList<>();
+    public static final int DEFAULT_TWEETS_LIMIT = 100;
+
+    private boolean isLocate = false;
 
     @Parameter(names = {"--stream", "-s"},
-            description = "print stream of new tweets")
+            description = "Если параметр задан, то приложение"
+                    + " равномерно и непрерывно с задержкой в 1 секунду"
+                    + " печатает твиты на экран.")
     private boolean stream = false;
 
     @Parameter(names = {"--help", "-h"},
-            description = "print help man")
+            description = "Печатает эту справку.")
     private boolean help = false;
 
     @Parameter(names = {"--hideRetweets"},
-            description = "print tweets without retweets")
+            description = "если параметр задан, то ретвиты фильтруются")
     private boolean hideRetweets = false;
 
     @Parameter(names = {"--query", "-q"},
@@ -30,12 +35,14 @@ class JCommanderParser {
     private List<String> query = new ArrayList<>();
 
     @Parameter(names = {"--limit", "-l"},
-            description = "limit of max tweets")
-    private Integer limit = Integer.MAX_VALUE;
+            description = "Выводить не более чем столько твитов."
+                    + " Не применимо для --stream режима.")
+    private Integer limit = DEFAULT_TWEETS_LIMIT;
 
     @Parameter(names = {"--place", "-p"},
-            description = "tweets with keyword or query")
-    private String location = "nearby";
+            description = "Искать по заданному региону.")
+    private String location = "";
+
 
     public boolean isStream() {
         return stream;
@@ -59,5 +66,9 @@ class JCommanderParser {
 
     public String getLocation() {
         return location;
+    }
+
+    public boolean isLocate() {
+        return isLocate;
     }
 } //Thread.sleep(10000) <- sleep

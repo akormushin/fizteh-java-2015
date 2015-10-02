@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.sergmiller.twitterStream;
+//import  ru.fizteh.fivt.students.sergmiller.twitterStream.GeolocationResolver;
 
 import com.beust.jcommander.ParameterException;
+import ru.fizteh.fivt.students.sergmiller.twitterStream.exceptions.GettingMyLocationException;
 import twitter4j.*;
 import twitter4j.StatusListener;
 import com.beust.jcommander.JCommander;
@@ -10,8 +12,10 @@ import com.beust.jcommander.JCommander;
 //import java.time.Instant;
 //import java.time.Instant;
 //import java.time.Period;
+//import java.net.MalformedURLException;
 import java.time.LocalTime;
 import java.util.*;
+import java.io.IOException;
 //import java.time.LocalDateTime;
 //import java.lang.Math;
 
@@ -103,14 +107,15 @@ final class TwitterStream {
 
     static final double EARTH_RADIUS = 6371;
     static final String RADIUS_UNIT = "km";
+    static final String NEARBY = "nearby";
 
 
-    public static double getSphereDist(final Pair<Double, Double> point1,
-                                       final Pair<Double, Double> point2) {
-        double latitude1 = point1.getKey();
-        double latitude2 = point2.getKey();
-        double longitude1 = point1.getValue();
-        double longitude2 = point2.getValue();
+    public static double getSphereDist(double latitude1, double longitude1,
+                                       double latitude2, double longitude2) {
+        latitude1 = Math.toRadians(latitude1);
+        latitude2 = Math.toRadians(latitude2);
+        longitude1 = Math.toRadians(longitude1);
+        longitude2 = Math.toRadians(longitude2);
         return EARTH_RADIUS
                 * Math.acos(Math.sin(latitude1)
                 * Math.sin(latitude2)
@@ -126,68 +131,45 @@ final class TwitterStream {
      * @throws TwitterException is kind of exception
      */
     public static void printTwitterLimited(
-            final JCommanderParser jCommanderParsed) throws TwitterException {
+            final JCommanderParser jCommanderParsed) {
         int currentQuantityOfTries = 0;
-
         while (currentQuantityOfTries < MAX_QUANTITY_OF_TRIES) {
             try {
                 Twitter twitter = TwitterFactory.getSingleton();
 
-                Query query = new Query(String.join(" ", jCommanderParsed.getQuery()));
+                String joinedQuery = "*";
+                if (!jCommanderParsed.getQuery().isEmpty()) {
+                    joinedQuery = String.join(" ", jCommanderParsed.getQuery());
+                }
+                Query query = new Query(joinedQuery);
+                String curLocationRequest = "";
+                try {
+                    if (jCommanderParsed.getLocation() != "") {
+                        if (jCommanderParsed.getLocation().equals(NEARBY)) {
+                            curLocationRequest = GeoLocationResolver.getNameOfCurrentLocation();
+                        } else {
+                            curLocationRequest = jCommanderParsed.getLocation();
+                        }
+                        Pair<GeoLocation, Double> geoParams = GeoLocationResolver
+                                .getGeoLocation(curLocationRequest);
+                        query.geoCode(geoParams.getKey(), geoParams.getValue(), RADIUS_UNIT);
+                        System.out.println("location is " + curLocationRequest
+                                + ", latitude :"
+                                + geoParams.getKey().getLatitude()
+                                + " longitude :"
+                                + geoParams.getKey().getLongitude()
+                                + ", radius(km): "
+                                + geoParams.getValue());
+                    }
+                } catch (IOException | GettingMyLocationException e) {
+                    e.getMessage();
+                    System.out.println("Не могу определить регион=(\n" + "Поиск по World:");
+                    curLocationRequest = "World";
+                }
 
                 query.setCount(jCommanderParsed.getLimit());
 
-                if (jCommanderParsed.getLocation() != "nearby") {
-                    GeoQuery curGeoQuery =
-                            new GeoQuery(jCommanderParsed.getLocation());
-                    ResponseList<Place> correctPlaces
-                            = twitter.searchPlaces(curGeoQuery);
-                    ArrayList<Pair<Double, Double>> points = new ArrayList<>();
-                    double middleLatitude = 0;
-                    double middleLongitude = 0;
-                    double curLatitude;
-                    double curLongitude;
-                    double searchRadius = 0;
-                    double curDist;
-                    for (int i = 0; i < correctPlaces.size(); ++i) {
-                        for (int j = 0; j < correctPlaces.get(i)
-                                .getBoundingBoxCoordinates().length; ++j) {
-                            for (int k = 0; k < correctPlaces.get(i)
-                                    .getBoundingBoxCoordinates()[j].length; ++k) {
-                                curLatitude = correctPlaces.get(i)
-                                        .getBoundingBoxCoordinates()[j][k]
-                                        .getLatitude();
-                                curLongitude = correctPlaces.get(i)
-                                        .getBoundingBoxCoordinates()[j][k]
-                                        .getLongitude();
 
-                                middleLatitude += curLatitude;
-                                middleLongitude += curLongitude;
-
-                                points.add(
-                                        new Pair<Double, Double>(
-                                                new Double(curLatitude),
-                                                new Double(curLongitude)
-                                        )
-                                );
-                            }
-                        }
-                    }
-                    for (int i = 0; i < points.size(); ++i) {
-                        for (int j = 0; j < points.size(); ++j) {
-                            curDist = getSphereDist(points.get(i)
-                                    , points.get(j));
-                            if (curDist > searchRadius) {
-                                searchRadius = curDist;
-                            }
-                        }
-                    }
-                    searchRadius /= 2;
-
-                    query.geoCode(new GeoLocation(
-                                    middleLatitude, middleLongitude),
-                            searchRadius, RADIUS_UNIT);
-                }
                 QueryResult request = twitter.search(query);
 
                 List<Status> tweets = request.getTweets();
@@ -206,10 +188,10 @@ final class TwitterStream {
 
                 if (!existTweets) {
                     System.out.println("\nПо запросу "
-                                    + String.join(" "
+                                    + String.join(", "
                                     , jCommanderParsed.getQuery())
                                     + " для "
-                                    + jCommanderParsed.getLocation()
+                                    + curLocationRequest
                                     + " ничего не найдено=(\n\n"
                                     + "Рекомендации:\n\n"
                                     + "Убедитесь, что все слова"
@@ -227,7 +209,7 @@ final class TwitterStream {
                     System.out.println(twExp.getMessage());
                     System.err.println("Что-то пошло не так=(\n"
                             + "Проверьте наличие соединия.");
-                    System.exit(1);
+                    return;
                 }
             }
         }
@@ -353,7 +335,7 @@ final class TwitterStream {
             int oneStatement = 0;
         }
         scan.close();
-        System.exit(0);
+        //System.exit(0);
     }
 
     /**
@@ -362,25 +344,29 @@ final class TwitterStream {
      * @param args is input parameters
      * @throws TwitterException some exception
      */
-    public static void main(final String[] args) throws TwitterException {
+    public static void main(final String[] args) {
         JCommanderParser jCommanderParsed = new JCommanderParser();
 
         try {
             JCommander jCommanderSettings = new JCommander(jCommanderParsed, args);
-
-            jCommanderSettings.setProgramName("TwitterStream");
-
-            if (jCommanderParsed.isHelp()) {
+            if (jCommanderParsed.isHelp() || jCommanderParsed.getQuery().size() == 0) {
                 throw new ParameterException("");
             }
         } catch (ParameterException pe) {
-            printHelpMan(new JCommander(jCommanderParsed, new String[]{}));
+            JCommander jCommanderHelper = new JCommander(jCommanderParsed, new String[]{"-q", ""});
+            jCommanderHelper.setProgramName("TwitterStream");
+            printHelpMan(jCommanderHelper);
             return;
         }
+
+        String printLocation = "World";
+        if (jCommanderParsed.getLocation() != "") {
+            printLocation = jCommanderParsed.getLocation();
+        }
+
         System.out.println("Твиты по запросу "
                         + String.join(", ", jCommanderParsed.getQuery())
-                        + " для "
-                        + jCommanderParsed.getLocation()
+                        + " для " + printLocation
                         + tweetsSeparator()
         );
 
@@ -390,7 +376,7 @@ final class TwitterStream {
         } else {
             printTwitterLimited(jCommanderParsed);
         }
-        System.out.println(LocalTime.now() + " " + LocalTime.now().toSecondOfDay());
+        //System.out.println(LocalTime.now() + " " + LocalTime.now().toSecondOfDay());
     }
 
     public static String highlightUserName(final String userName) {
