@@ -20,7 +20,6 @@
     </properties>
 
     <modules>
-        <module>akormushin</module>
         <!--Add you module here-->
     <module>sergmiller</module>
   </modules>
