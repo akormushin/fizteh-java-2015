@@ -80,7 +80,6 @@ public class TwitterReader {
                 if (argsPars.getPlace() == null) {
                     printTweet(status, argsPars, true);
                 } else {
-                    //System.out.println("another one");
                     GeoLocation tweetLocation = null;
                     if (status.getGeoLocation() != null) {
                         tweetLocation = new GeoLocation(status.getGeoLocation().getLatitude(),
