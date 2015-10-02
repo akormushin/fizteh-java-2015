@@ -2,7 +2,7 @@ package ru.fizteh.fivt.students.riazanovskiy;
 
 import com.beust.jcommander.Parameter;
 
-public class ArgumentParser {
+class ArgumentParser {
     @Parameter(names = {"--query", "-q"}, description = "Search query")
     private String keywords = "";
 
@@ -20,4 +20,28 @@ public class ArgumentParser {
 
     @Parameter(names = {"--help", "-h"}, help = true, description = "Displays this help and exits")
     private boolean help;
+
+    public String getKeywords() {
+        return keywords;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public boolean isStream() {
+        return stream;
+    }
+
+    public boolean isHideRetweets() {
+        return hideRetweets;
+    }
+
+    public Integer getLimit() {
+        return limit;
+    }
+
+    public boolean isHelp() {
+        return help;
+    }
 }

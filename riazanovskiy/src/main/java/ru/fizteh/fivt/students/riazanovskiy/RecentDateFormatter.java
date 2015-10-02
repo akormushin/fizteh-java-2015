@@ -1,0 +1,32 @@
+package ru.fizteh.fivt.students.riazanovskiy;
+
+import java.time.*;
+import java.util.Date;
+
+class RecentDateFormatter {
+
+    private static final Duration JUST_NOW_THRESHOLD = Duration.ofMinutes(2);
+
+    public static String format(Date date) {
+        return format(LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault()), LocalDateTime.now());
+    }
+
+    public static String format(LocalDateTime then, LocalDateTime now) {
+        if (Duration.between(now, then).compareTo(JUST_NOW_THRESHOLD) < 0) {
+            return "только что";
+        } else if (Duration.between(now, then).compareTo(Duration.ofHours(1)) < 0) {
+            long minutesPassed = Duration.between(now, then).toMinutes();
+            return String.format("%d %s назад", minutesPassed, RussianWordForms.getWordForm("минута", minutesPassed));
+        } else if (then.toLocalDate().equals(now.toLocalDate())) {
+            long hoursPassed = Duration.between(now, then).toHours();
+            return String.format("%d %s назад", hoursPassed, RussianWordForms.getWordForm("час", hoursPassed));
+        } else {
+            int daysPassed = Period.between(now.toLocalDate(), then.toLocalDate()).getDays();
+            if (daysPassed == 1) {
+                return "вчера";
+            } else {
+                return String.format("%d %s назад", daysPassed, RussianWordForms.getWordForm("день", daysPassed));
+            }
+        }
+    }
+}
