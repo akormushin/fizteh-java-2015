@@ -160,6 +160,7 @@ public class TwitterReader {
             throw new SearchTweetExeption();
         }
     }
+    //Printing user timeline (not a part of the task)
     public static void userStream(ArgsParser argsPars) throws GetTimelineExeption {
         Twitter twitter = new TwitterFactory().getInstance();
         try {
