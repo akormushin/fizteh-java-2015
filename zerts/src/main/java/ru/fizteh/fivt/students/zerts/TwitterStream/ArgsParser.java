@@ -10,7 +10,7 @@ public class ArgsParser {
     @Parameter(names = {"-q", "--query"}, description = "query output")
     private List<String> query = new ArrayList<>();
     @Parameter(names = {"-p", "--place"}, description = "place output")
-    private String place;
+    private String place = "nearby";
     @Parameter(names = "--hideRetweets", description = "no retweets output")
     private boolean noRetweetMode;
     @Parameter(names = {"-l", "--limit"}, description = "limited output")

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions;
+package ru.fizteh.fivt.students.zerts.TwitterStream.exceptions;
 
 public class SearchTweetExeption extends Exception {
     public SearchTweetExeption() {

@@ -1,7 +1,9 @@
 package ru.fizteh.fivt.students.zerts.TwitterStream;
 
-import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.GeoExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GeoExeption;
 import twitter4j.GeoLocation;
+import twitter4j.JSONException;
+import twitter4j.JSONObject;
 
 import java.io.*;
 import java.net.URL;
@@ -10,39 +12,51 @@ import static java.lang.Double.parseDouble;
 
 public class GeoParser {
     static final int CITY_PARSER_TAB = 7;
+    static final int TIME_TO_WAIT_FOR_YANDEX = 100;
     private static String getKey() throws IOException, GeoExeption {
         try (BufferedReader in = new BufferedReader(new FileReader(
                 GeoParser.class.getResource("/yandexkey.properties").getFile()))) {
-            String key = in.readLine();
-            in.close();
-            return key;
+            return in.readLine();
         } catch (IOException ioe) {
-            throw new GeoExeption();
+            throw new GeoExeption("Can't read the yandex key. Please, check your keyfile!");
         }
     }
-    public static String getMyPlace() throws IOException, GeoExeption {
+    public static String getMyPlace() throws IOException, JSONException {
         URL getCityName = new URL("http://api.hostip.info/get_json.php");
         BufferedReader in = new BufferedReader(new InputStreamReader(getCityName.openStream()));
         String siteAnswer = in.readLine(), city = "";
         in.close();
-        if (siteAnswer != null && siteAnswer.contains("city")) {
-            int i = siteAnswer.indexOf("city") + CITY_PARSER_TAB;
-            while (siteAnswer.charAt(i) != '"') {
-                city += siteAnswer.charAt(i);
-                i++;
+        JSONObject jsonParse = new JSONObject(siteAnswer);
+        city = jsonParse.getString("city");
+        if (city.equals("(Unknown city)")) {
+            getCityName = new URL("http://ipinfo.io/json");
+            in = new BufferedReader(new InputStreamReader(getCityName.openStream()));
+            siteAnswer = "";
+            while (!siteAnswer.contains("}")) {
+                siteAnswer += in.readLine();
             }
-        } else {
-            throw new GeoExeption();
+            jsonParse = new JSONObject(siteAnswer);
+            city = jsonParse.getString("city");
+            in.close();
         }
         //System.out.println(city);
         return city;
     }
-    public static GeoLocation getCoordinates(String place) throws IOException, GeoExeption {
+    public static GeoLocation getCoordinates(String place) throws IOException, GeoExeption, InterruptedException,
+            JSONException {
+        //System.out.println(place);
         if (place.equals("nearby")) {
             place = getMyPlace();
         }
+        //System.out.println(place);
         URL getTheLL = new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place + "&apikey=" + getKey());
-        BufferedReader in = new BufferedReader(new InputStreamReader(getTheLL.openStream()));
+        BufferedReader in;
+        try {
+            in = new BufferedReader(new InputStreamReader(getTheLL.openStream()));
+        } catch (IOException io) {
+            Thread.sleep(TIME_TO_WAIT_FOR_YANDEX);
+            in = new BufferedReader(new InputStreamReader(getTheLL.openStream()));
+        }
         String xmlParse;
         do {
             xmlParse = in.readLine();
@@ -51,7 +65,6 @@ public class GeoParser {
                 break;
             }
         } while (xmlParse != null);
-        in.close();
         if (xmlParse == null) {
             return null;
         }

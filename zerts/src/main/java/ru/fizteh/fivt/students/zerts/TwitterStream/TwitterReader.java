@@ -2,19 +2,20 @@ package ru.fizteh.fivt.students.zerts.TwitterStream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.GeoExeption;
-import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.GetTimelineExeption;
-import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.NoQueryExeption;
-import ru.fizteh.fivt.students.zerts.TwitterStream.Exeptions.SearchTweetExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GeoExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GetTimelineExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.NoQueryExeption;
+import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.SearchTweetExeption;
 import twitter4j.*;
 
 import java.io.*;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import static java.lang.Thread.*;
 
 public class TwitterReader {
     private static int printedTweets = 0;
-    static final int MILLS_PER_PER = 1000;
     static final int LOCATE_RADIUS = 50;
     static final int RT_MODE = 4;
     static final int LINE_LENGTH = 170;
@@ -30,7 +31,7 @@ public class TwitterReader {
             return;
         }
         try {
-            sleep(MILLS_PER_PER);
+            sleep(TimeUnit.SECONDS.toMillis(1L));
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -89,8 +90,8 @@ public class TwitterReader {
                             //System.out.println(status.getUser().getLocation());
                             try {
                                 tweetLocation = GeoParser.getCoordinates(status.getUser().getLocation());
-                            } catch (GeoExeption geoExeption) {
-                                geoExeption.printStackTrace();
+                            } catch (GeoExeption | InterruptedException | JSONException e) {
+                                e.printStackTrace();
                             }
                         } catch (IOException e) {
                             e.printStackTrace();
@@ -102,8 +103,8 @@ public class TwitterReader {
                         GeoLocation queryLocation = null;
                         try {
                             queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
-                        } catch (GeoExeption geoExeption) {
-                            geoExeption.printStackTrace();
+                        } catch (GeoExeption | InterruptedException | JSONException e) {
+                            e.printStackTrace();
                         }
                         if (queryLocation == null) {
                             throw new GeoExeption();
@@ -123,19 +124,15 @@ public class TwitterReader {
         String[] trackArray = argsPars.getQuery().toArray(new String[argsPars.getQuery().size()]);
         twitterStream.filter(new FilterQuery().track(trackArray));
     }
-    public static void query(ArgsParser argsPars) throws IOException, GeoExeption, SearchTweetExeption {
+    public static void query(ArgsParser argsPars) throws IOException, GeoExeption, SearchTweetExeption,
+            InterruptedException, JSONException {
         Twitter twitter = new TwitterFactory().getInstance();
         try {
-            Query query;
-            if (argsPars.getPlace() != null) {
-                GeoLocation queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
-                if (queryLocation == null) {
-                    throw new GeoExeption();
-                }
-                query = new Query(argsPars.getQuery().toString()).geoCode(queryLocation, LOCATE_RADIUS, "km");
-            } else {
-                query = new Query(argsPars.getQuery().toString());
+            GeoLocation queryLocation = GeoParser.getCoordinates(argsPars.getPlace());
+            if (queryLocation == null) {
+                throw new GeoExeption("Bad query");
             }
+            Query query = new Query(argsPars.getQuery().toString()).geoCode(queryLocation, LOCATE_RADIUS, "km");
             QueryResult result;
             do {
                 result = twitter.search(query);
@@ -161,7 +158,6 @@ public class TwitterReader {
             } while (query != null);
             System.exit(0);
         } catch (TwitterException te) {
-            te.printStackTrace();
             throw new SearchTweetExeption();
         }
     }
@@ -182,9 +178,7 @@ public class TwitterReader {
                 currPage++;
             } while (!tweets.isEmpty());
         } catch (TwitterException te) {
-            te.printStackTrace();
-            System.err.println("Failed to get timeline: " + te.getMessage());
-            throw new GetTimelineExeption();
+            throw new GetTimelineExeption("Can't read the timeline");
         }
     }
     public static void main(String[] args) throws IOException {
@@ -196,24 +190,12 @@ public class TwitterReader {
             }
         } catch (ParameterException pe) {
             System.err.print("Invalid Paramters:\n" + pe.getMessage());
-            System.exit(-1);
         }
-        /*if (argsPars.isHelpMode()) {
-            BufferedReader in = new BufferedReader(new FileReader("./zerts/src/main/java/ru/fizteh"
-                            + "/fivt/students/zerts/TwitterStream/help.txt"));
-            String currentLine = in.readLine();
-            while (currentLine != null) {
-                System.out.println(currentLine);
-                currentLine = in.readLine();
-            }
-            System.exit(0);
-        }*/
         if (argsPars.isStreamMode()) {
             try {
                 stream(argsPars);
-            } catch (NoQueryExeption | GeoExeption noQueryExeption) {
-                noQueryExeption.printStackTrace();
-                System.exit(-1);
+            } catch (NoQueryExeption | GeoExeption e) {
+                e.printStackTrace();
             }
         } else if (argsPars.getQuery() == null) {
             try {
@@ -224,9 +206,8 @@ public class TwitterReader {
         } else {
             try {
                 query(argsPars);
-            } catch (GeoExeption | SearchTweetExeption geoExeption) {
-                geoExeption.printStackTrace();
-                System.exit(-1);
+            } catch (GeoExeption | SearchTweetExeption | InterruptedException | JSONException e) {
+                e.printStackTrace();
             }
         }
     }
