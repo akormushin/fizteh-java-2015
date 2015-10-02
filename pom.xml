@@ -22,8 +22,8 @@
     <modules>
         <module>akormushin</module>
         <module>zerts</module>
-        <!--Add you module here-->
-      </modules>
+        <module>thefacetakt</module>
+    </modules>
 
     <dependencies>
         <dependency>
