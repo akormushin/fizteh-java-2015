@@ -18,6 +18,11 @@ public class FormatUtils {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLUE = "\u001B[34m";
 
+    public static final String[] HOUR_FORMS = new String[]{"часов", "час", "часа"};
+    public static final String[] DAY_FORMS = new String[]{"дней", "день", "дня"};
+    public static final String[] MINUTE_FORMS = new String[]{"минут", "минута", "минуты"};
+    public static final String[] RETWEET_FORMS = new String[]{"ретвитов", "ретвит", "ретвита"};
+
     public static String formatName(String name) {
         return "@" + ANSI_BLUE + name + ANSI_RESET;
     }
@@ -46,17 +51,16 @@ public class FormatUtils {
         if (daysBetween == 1) {
             res.append("вчера");
         } else if (daysBetween > 0) {
-            String[] form = new String[]{"дней", "день", "дня"};
-            res.append(daysBetween).append(" ").append(FormatUtils.getRussianForm(form, daysBetween)).append(" назад");
+            res.append(daysBetween).append(" ").append(FormatUtils.getRussianForm(DAY_FORMS, daysBetween))
+                    .append(" назад");
         } else {
             long hours = ChronoUnit.HOURS.between(date, now);
             long minutes = ChronoUnit.MINUTES.between(date, now);
             if (hours > 0) {
-                String[] form = new String[]{"часов", "час", "часа"};
-                res.append(hours).append(" ").append(FormatUtils.getRussianForm(form, hours)).append(" назад");
+                res.append(hours).append(" ").append(FormatUtils.getRussianForm(HOUR_FORMS, hours)).append(" назад");
             } else if (minutes > 2) {
-                String[] form = new String[]{"минут", "минуту", "минуты"};
-                res.append(minutes).append(" ").append(FormatUtils.getRussianForm(form, minutes)).append(" назад");
+                res.append(minutes).append(" ").append(FormatUtils.getRussianForm(MINUTE_FORMS, minutes))
+                        .append(" назад");
             } else {
                 res.append("только что");
             }
@@ -81,10 +85,9 @@ public class FormatUtils {
         }
         formattedTweet.append(tweet.getText());
         if (!isRetweet) {
-            String[] form = new String[]{"ретвитов", "ретвит", "ретвита"};
             int retweets = tweet.getRetweetCount();
             formattedTweet.append(" (").append(retweets).append(" ")
-                    .append(FormatUtils.getRussianForm(form, retweets)).append(")");
+                    .append(FormatUtils.getRussianForm(RETWEET_FORMS, retweets)).append(")");
         }
         return formattedTweet.toString();
     }

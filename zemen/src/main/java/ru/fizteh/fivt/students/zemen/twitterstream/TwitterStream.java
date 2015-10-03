@@ -90,9 +90,6 @@ public class TwitterStream {
         Twitter twitter = TwitterFactory.getSingleton();
         Query query = new Query(String.join(" ", arguments.getKeywords()));
         query.setGeoCode(location, KM_RADIUS, Query.KILOMETERS);
-        if (arguments.getLimit() > 0) {
-            query.setCount(arguments.getLimit());
-        }
         QueryResult response;
         try {
             response = twitter.search(query);
@@ -106,11 +103,18 @@ public class TwitterStream {
             System.out.println("Не найдены :(");
             return;
         }
+        int remainingTweets = arguments.getLimit();
         for (Status tweet : response.getTweets()) {
             if (tweet.isRetweet() && arguments.isHideRetweets()) {
                 continue;
             }
             System.out.println(FormatUtils.formatAll(tweet, arguments));
+            if (remainingTweets >= 0) {
+                --remainingTweets;
+                if (remainingTweets <= 0) {
+                    break;
+                }
+            }
         }
     }
 }

@@ -55,10 +55,8 @@ public class GeoUtils {
     public static GeoLocation getGeoLocationByIP()
             throws IOException, JSONException, LocationNotFoundException {
         URL getMyFuckingLocation = new URL("https://wtfismyip.com/json");
-        BufferedReader in = null;
-        GeoLocation location = null;
-        try {
-            in = new BufferedReader(new InputStreamReader(getMyFuckingLocation.openStream()));
+        GeoLocation location;
+        try (BufferedReader in = new BufferedReader(new InputStreamReader(getMyFuckingLocation.openStream()))) {
             StringBuilder responseBuilder = new StringBuilder();
             String newLine;
             while ((newLine = in.readLine()) != null) {
@@ -67,10 +65,6 @@ public class GeoUtils {
             JSONObject myFuckingLocation = new JSONObject(responseBuilder.toString());
             String address = myFuckingLocation.getString("YourFuckingLocation");
             location = getGeoLocationByAddress(address);
-        } finally {
-            if (in != null) {
-                in.close();
-            }
         }
         return location;
     }
