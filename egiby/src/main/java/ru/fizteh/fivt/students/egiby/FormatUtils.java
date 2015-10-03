@@ -11,19 +11,19 @@ import java.time.temporal.ChronoUnit;
  */
 public class FormatUtils {
 
-    private static final Long FIVE = 5L;
-    private static final Long ONE = 1L;
-    private static final Long TEN = 10L;
+    private static final long FIVE = 5L;
+    private static final long ONE = 1L;
+    private static final long TEN = 10L;
     private static final String[] DAYS = {"день", "дня", "дней"};
     private static final String[] HOURS = {"час", "часа", "часов"};
     private static final String[] MINUTES = {"минуту", "минуты", "минут"};
 
-    private static String formatTime(Long number, String[] form) {
-        if (number == ONE) {
+    private static String formatNumber(long number, String[] form) {
+        if (number % TEN == ONE) {
             return number + " " + form[0];
         }
 
-        if (number > ONE && number < FIVE) {
+        if (number % TEN > ONE && number % TEN < FIVE) {
             return number + " " + form[1];
         }
 
@@ -39,17 +39,19 @@ public class FormatUtils {
         if (ChronoUnit.MINUTES.between(tweetTime, current) < 2) {
             timeString = "только что";
         } else if (ChronoUnit.HOURS.between(tweetTime, current) < 1) {
-            timeString = formatTime(ChronoUnit.MINUTES.between(tweetTime, current) % TEN, MINUTES) + " назад";
+            timeString = formatNumber(ChronoUnit.MINUTES.between(tweetTime, current), MINUTES) + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, current) < 1) {
-            timeString = formatTime(ChronoUnit.HOURS.between(tweetTime, current) % TEN, HOURS) + " назад";
+            timeString = formatNumber(ChronoUnit.HOURS.between(tweetTime, current), HOURS) + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, current) == 1) {
             timeString = "вчера";
         } else {
-            timeString = formatTime(ChronoUnit.DAYS.between(tweetTime, current) % TEN, DAYS) + " назад";
+            timeString = formatNumber(ChronoUnit.DAYS.between(tweetTime, current), DAYS) + " назад";
         }
 
         return "[" + timeString + "] ";
     }
+
+    private static final String[] RETWEETS = {"ретвит", "ретвита", "ретвитов"};
 
     public static String formatTweet(Status tweet, boolean isStream) {
         String formattedTweet = new String("");
@@ -69,7 +71,7 @@ public class FormatUtils {
         formattedTweet += tweet.getText();
 
         if (!isRetweet) {
-            formattedTweet += " (" + tweet.getRetweetCount() + " ретвитов)";
+            formattedTweet += " (" + formatNumber(tweet.getRetweetCount(), RETWEETS) + ")";
         }
 
         return formattedTweet;

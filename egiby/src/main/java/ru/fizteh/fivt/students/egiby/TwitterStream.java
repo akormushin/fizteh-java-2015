@@ -49,16 +49,16 @@ public class TwitterStream {
 
             List<Status> tweets = result.getTweets();
             for (Status tweet : tweets) {
-                if (numberOfTweets == jcp.getNumberTweets()) {
-                    return;
-                }
-
                 if (tweet.isRetweet() && jcp.isHideRetweets()) {
                     continue;
                 }
 
                 System.out.println(FormatUtils.formatTweet(tweet, false));
+
                 numberOfTweets++;
+                if (numberOfTweets == jcp.getNumberTweets()) {
+                    return;
+                }
             }
 
             query = result.nextQuery();
@@ -82,6 +82,7 @@ public class TwitterStream {
                 }
             }
         };
+
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(listener);
         twitterStream.filter(jcp.getKeyword());
