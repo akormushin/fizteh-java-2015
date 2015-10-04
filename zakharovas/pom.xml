@@ -45,7 +45,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>ru.fizteh.fivt.students.zakharovas.TwitterStream.TwitterStreamMain</mainClass>
+              <mainClass>ru.fizteh.fivt.students.zakharovas.twitterstream.TwitterStreamMain</mainClass>
             </manifest>
           </archive>
           <descriptorRefs>

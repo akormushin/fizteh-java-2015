@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zakharovas.TwitterStream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream;
 
 
 import com.google.maps.GeoApiContext;
