@@ -24,33 +24,41 @@ public class FormatMaster {
     private static final String[] MINUTES_FORMS = {"минуту", "минуты", "минут"};
     private static final String[] HOURS_FORMS = {"час", "часа", "часов"};
     private static final String[] DAYS_FORMS = {"день", "дня", "дней"};
+
+    private static final String[][] TIME_FORMS = {MINUTES_FORMS, HOURS_FORMS, DAYS_FORMS};
+
     private static final String[] RETWEET_FORMS = {"ретвит", "ретвита", "ретвитов"};
 
-    enum ETime {
-        MINUTE,
-        HOUR,
-        DAY
+    private enum ETime {
+        MINUTE (0),
+        HOUR (1),
+        DAY (2);
+
+        private int type;
+
+        private int getType() {
+            return type;
+        }
+
+        ETime(int type) {
+            this.type = type;
+        }
     }
 
-    private static int getCorrectForm(long number) {
+    private static ETime getCorrectForm(long number) {
         if (number % GET_LAST_NUM == NUMBER_ONE && number % GET_LAST_TWO_NUMS != NUMBER_ELEVEN) {
-            return 0;
+            return ETime.MINUTE;
         }
         if (number % GET_LAST_NUM > NUMBER_ONE && number % GET_LAST_NUM < NUMBER_FIVE
                 && !(number % GET_LAST_TWO_NUMS >= NUMBER_ELEVEN && number % GET_LAST_TWO_NUMS <= NUMBER_NINETEEN)) {
-            return 1;
+            return ETime.HOUR;
         }
-        return 2;
+        return ETime.DAY;
     }
 
     private static String getTimeString(long number, ETime type) {
-        if (type == ETime.MINUTE) {
-            return " " + MINUTES_FORMS[getCorrectForm(number)] + " назад";
-        } else if (type == ETime.HOUR) {
-            return " " + HOURS_FORMS[getCorrectForm(number)] + " назад";
-        } else {
-            return " " + DAYS_FORMS[getCorrectForm(number)] + " назад";
-        }
+        ETime correctForm = getCorrectForm(number);
+        return " " + TIME_FORMS[type.getType()][correctForm.getType()];
     }
 
 
@@ -77,30 +85,28 @@ public class FormatMaster {
     }
 
     public static String format(Status s, boolean isHideRetweets, boolean isStream) {
-        String result = "";
+        StringBuilder result = new StringBuilder("");
         if (!isStream) {
             String time = formatTime(s.getCreatedAt());
-            result = "[" + time + "] ";
+            result.append("[" + time + "]");
         }
         if (!isHideRetweets) {
             if (s.isRetweet()) {
-                result += "@" + s.getUser().getName() + " ретвитнул @"
-                        + s.getRetweetedStatus().getUser().getName() + ": " + s.getRetweetedStatus().getText();
+                result.append("@" + s.getUser().getName() + " ретвитнул @"
+                        + s.getRetweetedStatus().getUser().getName() + ": " + s.getRetweetedStatus().getText());
             } else {
-                result += "@" + s.getUser().getName() + ": " + s.getText();
+                result.append("@" + s.getUser().getName() + ": " + s.getText());
                 if (s.getRetweetCount() != 0) {
-                    result += " (" + Long.toString(s.getRetweetCount()) + " "
-                            + RETWEET_FORMS[getCorrectForm(s.getRetweetCount())] + ")";
+                    result.append(" (" + Long.toString(s.getRetweetCount()) + " "
+                            + RETWEET_FORMS[getCorrectForm(s.getRetweetCount()).getType()] + ")");
                 }
             }
-            result += SEPARATOR;
-            return result;
+            result.append(SEPARATOR);
+            return result.toString();
         } else if (!s.isRetweeted()) {
-            result += "@" + s.getUser().getName() + ": " + s.getText() + SEPARATOR;
-            return result;
+            result.append("@" + s.getUser().getName() + ": " + s.getText() + SEPARATOR);
+            return result.toString();
         }
         return "";
     }
-
-
 }

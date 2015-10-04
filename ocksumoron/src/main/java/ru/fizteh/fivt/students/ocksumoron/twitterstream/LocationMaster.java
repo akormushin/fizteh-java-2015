@@ -53,22 +53,23 @@ public class LocationMaster {
         try {
             if (place.equals("nearby")) {
                 Document document = documentResolver(new URL("http://api.hostip.info/"));
-                Element section = (Element) document.getElementsByTagName("gml:name").item(1);
+                NodeList requiredTagList = document.getElementsByTagName("gml:name");
+                if (requiredTagList.getLength() < 2) {
+                    return new Location(-1);
+                }
+                Element section = (Element) requiredTagList.item(1);
                 place = section.getTextContent();
             }
 
             Document document = documentResolver(new URL("https://geocode-maps.yandex.ru/1.x/?geocode=" + place));
-            if (document.getElementsByTagName("pos").getLength() != 0) {
-
-                GeoLocation centerPos = getCoordinates(document.getElementsByTagName("pos"));
-                GeoLocation swPos = getCoordinates(document.getElementsByTagName("lowerCorner"));
-                GeoLocation nePos = getCoordinates(document.getElementsByTagName("upperCorner"));
-                double res = getRes(swPos, nePos);
-
-                return new Location(centerPos, swPos, nePos, res);
-            } else {
+            if (document.getElementsByTagName("pos").getLength() == 0) {
                 return new Location(-1);
             }
+            GeoLocation centerPos = getCoordinates(document.getElementsByTagName("pos"));
+            GeoLocation swPos = getCoordinates(document.getElementsByTagName("lowerCorner"));
+            GeoLocation nePos = getCoordinates(document.getElementsByTagName("upperCorner"));
+            double res = getRes(swPos, nePos);
+            return new Location(centerPos, swPos, nePos, res);
         } catch (IOException | ParserConfigurationException | SAXException e) {
             e.printStackTrace();
         }

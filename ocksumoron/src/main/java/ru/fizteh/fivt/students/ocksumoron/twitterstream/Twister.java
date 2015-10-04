@@ -9,24 +9,23 @@ import twitter4j.*;
 
 public class Twister {
 
-    private static final long MILISEC_IN_SEC = 1000;
+    private static final long MILLISEC_IN_SEC = 1000;
 
     public static void main(String[] args)  {
         JCommanderProperties jcp = new JCommanderProperties();
         try {
-            new JCommander(jcp, args);
+            JCommander jParser = new JCommander(jcp, args);
+            if (jcp.isPrintHelp()) {
+                jParser.usage();
+            }
+            if (!jcp.isStream()) {
+                printTweets(jcp);
+            } else {
+                printStream(jcp);
+            }
         } catch (Exception e) {
             e.printStackTrace();
             new JCommander(jcp).usage();
-            System.exit(1);
-        }
-        if (jcp.isPrintHelp()) {
-            new JCommander(jcp, args).usage();
-        }
-        if (!jcp.isStream()) {
-            printTweets(jcp);
-        } else {
-            printStream(jcp);
         }
     }
 
@@ -58,37 +57,39 @@ public class Twister {
         FormatMaster formatter = new FormatMaster();
         LocationMaster locationMaster = new LocationMaster();
         Location location = locationMaster.getLocation(jcp.getPlace());
-        if (location.getError() != 0) {
-            System.err.println("Bad location");
-            System.exit(1);
-        }
-        FilterQuery filterQuery = new FilterQuery();
-        String[] keyword = {jcp.getQuery()};
+        if (location.getError() == 0) {
+            FilterQuery filterQuery = new FilterQuery();
+            String[] keyword = {jcp.getQuery()};
 
-        double[][] locationBox = {{location.getLongitudeSWCorner(), location.getLatitudeSWCorner()},
-                                {location.getLongitudeNECorner(), location.getLatitudeNECorner()}};
+            double[][] locationBox = {{location.getLongitudeSWCorner(), location.getLatitudeSWCorner()},
+                    {location.getLongitudeNECorner(), location.getLatitudeNECorner()}};
 
-        filterQuery.track(keyword);
+            filterQuery.track(keyword);
 
-        filterQuery.locations(locationBox);
+            filterQuery.locations(locationBox);
 
-        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
-        twitterStream.addListener(new StatusAdapter() {
-            @Override
-            public void onStatus(Status status) {
-                try {
-                    Thread.sleep(MILISEC_IN_SEC);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+            TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+
+            twitterStream.addListener(new StatusAdapter() {
+                @Override
+                public void onStatus(Status status) {
+                    try {
+                        Thread.sleep(MILLISEC_IN_SEC);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.print(formatter.format(status, jcp.isHideRetweets(), true));
                 }
-                System.out.print(formatter.format(status, jcp.isHideRetweets(), true));
-            }
 
-            @Override
-            public void onException(Exception ex) {
-                ex.printStackTrace();
-            }
-        });
-        twitterStream.filter(filterQuery);
+                @Override
+                public void onException(Exception ex) {
+                    TwitterException twex = (TwitterException) ex;
+                    twex.printStackTrace();
+                }
+            });
+            twitterStream.filter(filterQuery);
+        } else {
+            System.err.println("Bad location");
+        }
     }
 }
