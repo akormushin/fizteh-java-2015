@@ -5,7 +5,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -36,8 +35,9 @@ public class TwitterStreamMain {
         } else {
             try {
                 geoLocator = new GeoLocator(commandLineArgs.getLocation());
-            } catch (IOException e) {
+            } catch (Exception e) {
                 System.err.println(e.getMessage());
+                System.exit(1);
             }
             if (commandLineArgs.getStringForQuery().isEmpty()) {
                 System.err.println("Empty search");
@@ -50,7 +50,7 @@ public class TwitterStreamMain {
                     searchMode(commandLineArgs);
                 } catch (TwitterException e) {
                     System.err.println(e.getMessage());
-
+                    System.exit(1);
                 }
             }
         }
@@ -132,6 +132,10 @@ public class TwitterStreamMain {
             if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
                 tweetsForOutput.add(tweet);
             }
+        }
+        if (tweetsForOutput.isEmpty()) {
+            System.out.println("No tweets for this search has been found");
+            return;
         }
         for (Status tweet : tweetsForOutput) {
             System.out.println(StringFormater.tweetForOutput(tweet));
