@@ -21,13 +21,13 @@ public class TwitterStreamMain {
         try {
             jCommander = new JCommander(commandLineArgs, separatedArgs);
         } catch (ParameterException pe) {
-            System.err.println(pe.getMessage());
+            System.err.println("Problems with parametes " + pe.getMessage());
             System.exit(1);
         }
         try {
             checkArguments(commandLineArgs, jCommander);
         } catch (ParameterException pe) {
-            System.err.println(pe.getMessage());
+            System.err.println("Problems with parametes " + pe.getMessage());
             System.exit(1);
         }
         if (commandLineArgs.getHelp()) {
@@ -36,7 +36,7 @@ public class TwitterStreamMain {
             try {
                 geoLocator = new GeoLocator(commandLineArgs.getLocation());
             } catch (Exception e) {
-                System.err.println(e.getMessage());
+                System.err.println("Problems with geolocation " + e.getMessage());
                 System.exit(1);
             }
             if (commandLineArgs.getStringForQuery().isEmpty()) {
@@ -49,7 +49,7 @@ public class TwitterStreamMain {
                 try {
                     searchMode(commandLineArgs);
                 } catch (TwitterException | IllegalStateException e) {
-                    System.err.println(e.getMessage());
+                    System.err.println("Problems with search mode " + e.getMessage());
                     System.exit(1);
                 }
             }
@@ -93,12 +93,11 @@ public class TwitterStreamMain {
         query.setCount(Integer.MAX_VALUE);
         query.geoCode(geoLocator.getLocationForSearch(), geoLocator.getRadius(), Query.KILOMETERS.toString());
         List<Status> tweets = new ArrayList<>();
-        while(true) {
+        while (true) {
             try {
                 tweets = twitter.search(query).getTweets();
                 break;
-            }
-            catch (TwitterException te) {
+            } catch (TwitterException te) {
                 if (te.isCausedByNetworkIssue()) {
                     System.err.println("Connection problem. Reconnecting");
                     try {

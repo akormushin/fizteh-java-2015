@@ -49,8 +49,7 @@ public class GeoLocator {
 
     private void enableGoogleMaps() throws IOException {
         Properties properties = new Properties();
-        if (this.getClass().getResourceAsStream("/googlemaps.properties") == null)
-        {
+        if (this.getClass().getResourceAsStream("/googlemaps.properties") == null) {
             throw new NoSuchElementException("No flie with googlemaps properties");
         }
         try (InputStream inputStream = this.getClass().getResourceAsStream("/googlemaps.properties")) {
@@ -74,8 +73,7 @@ public class GeoLocator {
         } catch (Exception e) {
             throw new GeoSearchException(e.getMessage());
         }
-        if(results.length == 0 || results[0] == null)
-        {
+        if (results.length == 0 || results[0] == null) {
             throw new GeoSearchException("Location has not been found");
         }
         locationCenter = new double[]{results[0].geometry.location.lat, results[0].geometry.location.lng};
@@ -83,7 +81,7 @@ public class GeoLocator {
             calcBordersByCenter();
             return;
         }
-        borders = new double[][] { {results[0].geometry.bounds.southwest.lat, results[0].geometry.bounds.southwest.lng},
+        borders = new double[][]{{results[0].geometry.bounds.southwest.lat, results[0].geometry.bounds.southwest.lng},
                 {results[0].geometry.bounds.northeast.lat, results[0].geometry.bounds.northeast.lng}};
         radius = calcRadius(results[0]);
     }
@@ -95,8 +93,8 @@ public class GeoLocator {
         double lng1 = Math.toRadians(result.geometry.bounds.northeast.lng);
         double lng2 = Math.toRadians(result.geometry.bounds.southwest.lng);
         double dLng = lng2 - lng1;
-        double angleDistance = Math.atan(Math.sqrt(Math.pow(Math.cos(lat2)* Math.sin(dLng), 2.0)
-                + Math.pow(Math.cos(lat1)* Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng), 2.0))
+        double angleDistance = Math.atan(Math.sqrt(Math.pow(Math.cos(lat2) * Math.sin(dLng), 2.0)
+                + Math.pow(Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLng), 2.0))
                 / (Math.sin(lat1) * Math.sin(lat2) + Math.cos(lat1) * Math.cos(lat2) * Math.cos(dLng)));
         return EARTH_RADIUS * angleDistance;
 
@@ -157,10 +155,8 @@ public class GeoLocator {
     }
 }
 
-class GeoSearchException extends Exception
-{
-    public GeoSearchException(String errorMessage)
-    {
+class GeoSearchException extends Exception {
+    GeoSearchException(String errorMessage) {
         super(errorMessage);
     }
 
