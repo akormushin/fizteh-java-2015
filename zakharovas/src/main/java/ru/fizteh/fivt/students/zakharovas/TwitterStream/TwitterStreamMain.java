@@ -5,6 +5,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,11 +25,20 @@ public class TwitterStreamMain {
             System.err.println(pe.getMessage());
             System.exit(1);
         }
-        checkArguments(commandLineArgs, jCommander);
+        try {
+            checkArguments(commandLineArgs, jCommander);
+        } catch (ParameterException pe) {
+            System.err.println(pe.getMessage());
+            System.exit(1);
+        }
         if (commandLineArgs.getHelp()) {
             helpMode(jCommander);
         } else {
-            geoLocator = new GeoLocator(commandLineArgs.getLocation());
+            try {
+                geoLocator = new GeoLocator(commandLineArgs.getLocation());
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
             if (commandLineArgs.getStringForQuery().isEmpty()) {
                 System.err.println("Empty search");
                 System.exit(1);
@@ -36,7 +46,12 @@ public class TwitterStreamMain {
             if (commandLineArgs.getStreamMode()) {
                 streamMode(commandLineArgs);
             } else {
-                searchMode(commandLineArgs);
+                try {
+                    searchMode(commandLineArgs);
+                } catch (TwitterException e) {
+                    System.err.println(e.getMessage());
+
+                }
             }
         }
     }
@@ -98,7 +113,7 @@ public class TwitterStreamMain {
         }
     }
 
-    private static void searchMode(CommandLineArgs commandLineArgs) {
+    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException {
         String search = String.join(" ", commandLineArgs.getStringForQuery());
 
         Twitter twitter = TwitterFactory.getSingleton();
@@ -106,12 +121,8 @@ public class TwitterStreamMain {
         query.setCount(Integer.MAX_VALUE);
         query.geoCode(geoLocator.getLocationForSearch(), geoLocator.getRadius(), Query.KILOMETERS.toString());
         List<Status> tweets = new ArrayList<>();
-        try {
-            tweets = twitter.search(query).getTweets();
-        } catch (TwitterException te) {
-            System.err.println(te.getMessage());
-            System.exit(1);
-        }
+        tweets = twitter.search(query).getTweets();
+
         //System.out.println(tweets.size());
         List<Status> tweetsForOutput = new ArrayList<>();
         for (Status tweet : tweets) {
@@ -135,13 +146,13 @@ public class TwitterStreamMain {
 
 
     private static void checkArguments(CommandLineArgs commandLineArgs,
-                                       JCommander jCommander) {
+                                       JCommander jCommander) throws ParameterException {
         if (commandLineArgs.getStreamMode()
                 && commandLineArgs.getLimit()
                 != commandLineArgs.DEFAULT_LIMIT) {
             jCommander.usage();
-            System.err.println("Stream mode does not have limits");
-            System.exit(1);
+            ParameterException parameterException = new ParameterException("Stream mode does not have limits");
+            throw parameterException;
         }
 
     }
