@@ -92,7 +92,7 @@ public class TwitterStreamMain {
         Query query = new Query(search);
         query.setCount(Integer.MAX_VALUE);
         query.geoCode(geoLocator.getLocationForSearch(), geoLocator.getRadius(), Query.KILOMETERS.toString());
-        List<Status> tweets = new ArrayList<>();
+        List<Status> tweets;
         while (true) {
             try {
                 tweets = twitter.search(query).getTweets();

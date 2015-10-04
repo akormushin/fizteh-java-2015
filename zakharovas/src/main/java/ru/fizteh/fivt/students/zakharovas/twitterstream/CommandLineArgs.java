@@ -33,7 +33,7 @@ public class CommandLineArgs {
     }
 
     @Parameter(names = {"--query", "-q"}, description = "Keyword for search",
-            variableArity = true)
+            variableArity = true, required = true)
     private List<String> stringForQuery = new ArrayList<>();
     @Parameter(names = {"--help", "-h"}, help = true,
             description = "Activates HelpMode")
