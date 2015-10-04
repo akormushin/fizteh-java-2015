@@ -11,26 +11,31 @@ import java.net.URL;
 
 class TrackMe {
     private JSONObject object;
-    TrackMe() {
+    TrackMe() throws JSONException, IOException {
         String url = "http://ipinfo.io/json";
         try {
             String jsonText = IOUtils.toString(new URL(url));
             object = new JSONObject(jsonText);
         } catch (JSONException e) {
             System.out.println("Problems with parsing JSON while trying to track you : " + e.getMessage());
+            throw e;
         } catch (MalformedURLException e) {
             System.out.println("Problems with URL: " + url + " while trying to track you : " + e.getMessage());
+            throw e;
         } catch (IOException e) {
             System.out.println("Problems with reading from URL : " + e.getMessage());
+            throw e;
         }
 
     }
-    String getPlace() {
+
+    String getPlace() throws JSONException {
         String place = null;
         try {
             place = object.getString("city");
         } catch (JSONException e) {
             System.out.println("Problems extracting your city from JSON : " + e.getMessage());
+            throw e;
         }
         return place;
     }

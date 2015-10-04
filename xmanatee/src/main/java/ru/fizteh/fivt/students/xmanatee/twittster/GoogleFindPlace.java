@@ -17,32 +17,30 @@ class GoogleFindPlace {
     private static final double R = 6371;
     private GeocodingResult[] result;
     private double radius;
-    GoogleFindPlace(String place) {
+    GoogleFindPlace(String place) throws Exception {
 
         if (place.equals("nearby")) {
             place = new TrackMe().getPlace();
         }
 
+        String apiKey = getKeyFromProperties();
         GeoApiContext context = new GeoApiContext()
-                .setApiKey(getKeyFromProperties());
-        try {
-            result = GeocodingApi.geocode(context, place).await();
-        } catch (Exception e) {
-            System.out.println("Problems with finding specified place: " + e.getMessage());
-        }
+                .setApiKey(apiKey);
+
+        result = GeocodingApi.geocode(context, place).await();
         radius = calculateRadius();
     }
 
-    private String getKeyFromProperties() {
+    private String getKeyFromProperties() throws IOException {
         Properties prop = new Properties();
         try (InputStream input = new FileInputStream("twitter4j.properties")) {
             prop.load(input);
         } catch (FileNotFoundException e) {
             System.out.println("Problems finding .properties file : " + e.getMessage());
-            System.exit(1);
+            throw e;
         } catch (IOException e) {
             System.out.println("Problems reading .properties file : " + e.getMessage());
-            System.exit(1);
+            throw e;
         }
         return prop.getProperty("googleApiKey");
     }

@@ -60,7 +60,7 @@ public class Twittster {
     }
 
     static final int DELAY_X = 1000;
-    public static void runStreamer(Parameters parameters) {
+    public static void runStreamer(Parameters parameters) throws Exception {
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 
         StatusAdapter listener = new StatusAdapter() {
@@ -94,7 +94,7 @@ public class Twittster {
         }
     }
 
-    public static Query composeQuery(Parameters parameters) {
+    public static Query composeQuery(Parameters parameters) throws Exception {
         Query query = new Query();
         String queryText = parameters.getQuery();
         query.setCount(parameters.getLimit());
@@ -111,20 +111,14 @@ public class Twittster {
         return query;
     }
 
-    public static FilterQuery composeFilter(Parameters parameters) {
+    public static FilterQuery composeFilter(Parameters parameters) throws Exception {
         FilterQuery filter = new FilterQuery();
         filter.track(parameters.getQuery());
 
         if (!parameters.getPlace().isEmpty()) {
-            try {
-                GoogleFindPlace gmp = new GoogleFindPlace(parameters.getPlace());
-                filter.locations(gmp.getBounds());
-            } catch (Exception e) {
-                System.out.println("Problems with finding the place ...");
-//                System.out.println(ANSI_RED + "LALKA" + e.getMessage() + ANSI_RESET);
-                //e.printStackTrace();
-                System.exit(1);
-            }
+            GoogleFindPlace gmp = new GoogleFindPlace(parameters.getPlace());
+            filter.locations(gmp.getBounds());
+
         }
         return filter;
     }
