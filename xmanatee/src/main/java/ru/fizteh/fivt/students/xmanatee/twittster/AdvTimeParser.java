@@ -17,7 +17,7 @@ class AdvTimeParser {
         LocalDateTime curDate = LocalDateTime.now();
         long dMinutes = ChronoUnit.MINUTES.between(dateToFormat, curDate);
         long dHours = ChronoUnit.HOURS.between(dateToFormat, curDate);
-        long days = curDate.getDayOfYear() - dateToFormat.getDayOfYear();
+        long days = curDate.toLocalDate().toEpochDay() - dateToFormat.toLocalDate().toEpochDay();
 
         if (dMinutes < 2) {
             formattedTime = "только что";

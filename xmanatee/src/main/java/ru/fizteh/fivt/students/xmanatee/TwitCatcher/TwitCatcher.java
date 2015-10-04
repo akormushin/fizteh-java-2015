@@ -1,6 +1,10 @@
 package ru.fizteh.fivt.students.xmanatee.TwitCatcher;
 
 import twitter4j.*;
+import twitter4j.conf.ConfigurationBuilder;
+
+import java.io.*;
+import java.util.Properties;
 //import twitter4j.auth.OAuth2Token;
 
 public class TwitCatcher {
@@ -20,5 +24,36 @@ public class TwitCatcher {
             System.out.println("Failed to retweet: " + te.getMessage());
             System.exit(-1);
         }
+    }
+
+    public static ConfigurationBuilder getOAuthConfigurationBuilder() {
+        ConfigurationBuilder cb = new ConfigurationBuilder();
+
+        Properties prop = new Properties();
+
+        try (InputStream input = new FileInputStream(".properties")) {
+            prop.load(input);
+        } catch (FileNotFoundException e) {
+            System.out.println("Problems finding file : " + e.getMessage());
+            System.exit(1);
+        } catch (IOException e) {
+            System.out.println("Problems reading file : " + e.getMessage());
+            System.exit(1);
+        }
+
+
+        String consumerKey = prop.getProperty("consumerKey");
+        String consumerSecret = prop.getProperty("consumerSecret");
+        String accessToken = prop.getProperty("accessToken");
+        String accessTokenSecret = prop.getProperty("accessTokenSecret");
+
+        cb.setDebugEnabled(false);
+        cb.setPrettyDebugEnabled(false);
+        cb.setOAuthConsumerKey(consumerKey);
+        cb.setOAuthConsumerSecret(consumerSecret);
+        cb.setOAuthAccessToken(accessToken);
+        cb.setOAuthAccessTokenSecret(accessTokenSecret);
+
+        return cb;
     }
 }

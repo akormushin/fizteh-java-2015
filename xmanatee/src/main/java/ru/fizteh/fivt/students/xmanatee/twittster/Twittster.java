@@ -161,36 +161,4 @@ public class Twittster {
         System.out.println(output);
     }
 
-    /*
-    public static ConfigurationBuilder getOAuthConfigurationBuilder() {
-        ConfigurationBuilder cb = new ConfigurationBuilder();
-
-        Properties prop = new Properties();
-
-        try (InputStream input = new FileInputStream(".properties")) {
-            prop.load(input);
-        } catch (FileNotFoundException e) {
-            System.out.println("Problems finding file : " + e.getMessage());
-            System.exit(1);
-        } catch (IOException e) {
-            System.out.println("Problems reading file : " + e.getMessage());
-            System.exit(1);
-        }
-
-
-        String consumerKey = prop.getProperty("consumerKey");
-        String consumerSecret = prop.getProperty("consumerSecret");
-        String accessToken = prop.getProperty("accessToken");
-        String accessTokenSecret = prop.getProperty("accessTokenSecret");
-
-        cb.setDebugEnabled(false);
-        cb.setPrettyDebugEnabled(false);
-        cb.setOAuthConsumerKey(consumerKey);
-        cb.setOAuthConsumerSecret(consumerSecret);
-        cb.setOAuthAccessToken(accessToken);
-        cb.setOAuthAccessTokenSecret(accessTokenSecret);
-
-        return cb;
-    }
-    */
 }
