@@ -202,7 +202,8 @@ public class TwitterStream {
                 "----------------------------------------------"
                         + "------------------------------------------");
         twitter = TwitterFactory.getSingleton();
-        parameters.query += " +exclude:retweets";
+        if (parameters.hideRetweets)
+            parameters.query += " +exclude:retweets";
         if (parameters.stream) {
             streamTweets();
         } else {
