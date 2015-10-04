@@ -1,10 +1,10 @@
-Put your twitter4j keys and tokens and Google API keys into mykeys.properties in a following format :
+Put your twitter4j keys and tokens and Google API keys into twitter4j.properties in a following format :
 
-consumerKey=**************************
-consumerSecret=**************************
-accessToken=**************************
-accessTokenSecret=**************************
-googleApiKey=**************************
+oauth.consumerKey=******************************
+oauth.consumerSecret=******************************
+oauth.accessToken=******************************
+oauth.accessTokenSecret=******************************
+googleApiKey=******************************
 
 After compilation you can run program with:
 

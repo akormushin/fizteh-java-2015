@@ -35,7 +35,7 @@ class GoogleFindPlace {
 
     private String getKeyFromProperties() {
         Properties prop = new Properties();
-        try (InputStream input = new FileInputStream("mykeys.properties")) {
+        try (InputStream input = new FileInputStream("twitter4j.properties")) {
             prop.load(input);
         } catch (FileNotFoundException e) {
             System.out.println("Problems finding .properties file : " + e.getMessage());

@@ -1,16 +1,11 @@
 package ru.fizteh.fivt.students.xmanatee.twittster;
 
 import twitter4j.*;
-import twitter4j.conf.ConfigurationBuilder;
-
-import java.io.*;
 import java.util.*;
-
 import static java.lang.Thread.sleep;
 
 public class Twittster {
     public static final int MAX_NUMBER_OF_TRIES = 5;
-    public static final int MAGIC_NUMBER = 100;
 
     public static void main(String[] args) {
         System.out.println(ANSI_YELLOW + "YOU'RE RUNNING TWITTSTER" + ANSI_RESET);
@@ -34,8 +29,7 @@ public class Twittster {
     }
 
     public static void runSearch(Parameters parameters) throws Exception {
-        ConfigurationBuilder cb = getOAuthConfigurationBuilder();
-        Twitter twitter = new TwitterFactory(cb.build()).getInstance();
+        Twitter twitter = new TwitterFactory().getInstance();
         Query query = composeQuery(parameters);
 
 
@@ -67,8 +61,7 @@ public class Twittster {
 
     static final int DELAY_X = 1000;
     public static void runStreamer(Parameters parameters) {
-        ConfigurationBuilder cb = getOAuthConfigurationBuilder();
-        TwitterStream twitterStream = new TwitterStreamFactory(cb.build()).getInstance();
+        TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 
         StatusAdapter listener = new StatusAdapter() {
             @Override
@@ -143,37 +136,38 @@ public class Twittster {
 
     public static final Integer RT_PREFIX_LENGTH = 3;
     public static void displayTweet(Status tweet, boolean showTime) {
-        String formattedTweet = "";
+        StringBuilder builder = new StringBuilder();
         String tweetText = tweet.getText();
         if (showTime) {
-            formattedTweet += "[" + new AdvTimeParser(tweet.getCreatedAt()).get() + "] ";
+            builder.append("[").append(new AdvTimeParser(tweet.getCreatedAt()).get()).append("] ");
         }
-        formattedTweet += "@" + tweet.getUser().getScreenName() + ": ";
+        builder.append("@").append(tweet.getUser().getScreenName()).append(": ");
+
         if (tweet.isRetweet()) {
-            formattedTweet += "ретвитнул ";
+            builder.append("ретвитнул ");
             tweetText = tweetText.substring(RT_PREFIX_LENGTH);
-        } else {
-            Integer retweetedCount = tweet.getRetweetCount();
-            if (retweetedCount > 0) {
-                Word4declension retweetWord = new Word4declension("ретвит", "ретвита", "ретвитов");
-                tweetText += ANSI_GREEN + " (" + retweetedCount + " "
-                        + retweetWord.declension4Number(retweetedCount) + ")" + ANSI_RESET;
-            }
         }
-        formattedTweet += tweetText;
-        formattedTweet = formattedTweet.replaceAll("@(\\w+): ", ANSI_BLUE + "@$1" + ANSI_RESET + ": ");
+        builder.append(tweetText);
 
+        Integer retweetedCount = tweet.getRetweetCount();
+        if (!tweet.isRetweet() & (retweetedCount > 0)) {
+            Word4declension retweetWord = new Word4declension("ретвит", "ретвита", "ретвитов");
+            builder.append(ANSI_GREEN).append(" (").append(retweetedCount).append(" ")
+                    .append(retweetWord.declension4Number(retweetedCount)).append(")").append(ANSI_RESET);
+        }
 
-        formattedTweet += ANSI_YELLOW + "." + ANSI_RESET;
-        System.out.println(formattedTweet);
+        String output = builder.toString();
+        output = output.replaceAll("@(\\w+): ", ANSI_BLUE + "@$1" + ANSI_RESET + ": ");
+        System.out.println(output);
     }
 
+    /*
     public static ConfigurationBuilder getOAuthConfigurationBuilder() {
         ConfigurationBuilder cb = new ConfigurationBuilder();
 
         Properties prop = new Properties();
 
-        try (InputStream input = new FileInputStream("mykeys.properties")) {
+        try (InputStream input = new FileInputStream(".properties")) {
             prop.load(input);
         } catch (FileNotFoundException e) {
             System.out.println("Problems finding file : " + e.getMessage());
@@ -198,4 +192,5 @@ public class Twittster {
 
         return cb;
     }
+    */
 }
