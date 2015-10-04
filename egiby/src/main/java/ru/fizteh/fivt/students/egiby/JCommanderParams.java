@@ -6,8 +6,6 @@ import com.beust.jcommander.Parameter;
  * Created by egiby on 29.09.15.
  */
 public class JCommanderParams {
-    public static final Integer DEFAULT_NUMBER_OF_TWEETS = 100;
-
     @Parameter(names = {"--query", "-q"}, description = "Поиск по строке")
     private String keyword = new String();
 
@@ -18,13 +16,13 @@ public class JCommanderParams {
     private boolean hideRetweets = false;
 
     @Parameter(names = {"--limit", "-l"}, description = "Количество твитов. Неприменимо вместе с --stream")
-    private Integer limit = DEFAULT_NUMBER_OF_TWEETS;
+    private Integer limit = null;
 
     @Parameter(names = {"--help", "-h"}, description = "Вывести эту справку")
     private boolean help = false;
 
     @Parameter(names = {"--place", "-p"}, description = "Поиск по месту")
-    private String location = new String();
+    private String location = null;
 
     public String getKeyword() {
         return keyword;

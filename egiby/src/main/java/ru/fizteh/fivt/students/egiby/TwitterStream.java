@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class TwitterStream {
+    public static final Integer DEFAULT_NUMBER_OF_TWEETS = 100;
+
     public static void main(String[] args) {
         JCommanderParams jcp = new JCommanderParams();
         JCommander jcm = new JCommander(jcp, args);
@@ -19,7 +21,7 @@ public class TwitterStream {
         }
 
         if (jcp.isStream()) {
-            if (jcp.getNumberTweets() != JCommanderParams.DEFAULT_NUMBER_OF_TWEETS) {
+            if (jcp.getNumberTweets() != null) {
                 printHelp(jcm);
             }
             getStream(jcp);
@@ -40,11 +42,21 @@ public class TwitterStream {
     private static void printAllTweets(JCommanderParams jcp) throws TwitterException {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query(jcp.getKeyword());
+
+        if (jcp.getLocation() != null) {
+            query.setGeoCode(LocationUtils.getLocationByName(jcp.getLocation()), 30, Query.KILOMETERS);
+        }
+
+        int numberOfTweets = 0;
+
+        int limit = DEFAULT_NUMBER_OF_TWEETS;
+
+        if (jcp.getNumberTweets() != null) {
+            limit = jcp.getNumberTweets();
+        }
+
         QueryResult result;
-
-        Integer numberOfTweets = 0;
-
-        while (numberOfTweets < jcp.getNumberTweets() && query != null) {
+        while (numberOfTweets < limit && query != null) {
             result = twitter.search(query);
 
             List<Status> tweets = result.getTweets();
@@ -56,7 +68,7 @@ public class TwitterStream {
                 System.out.println(FormatUtils.formatTweet(tweet, false));
 
                 numberOfTweets++;
-                if (numberOfTweets == jcp.getNumberTweets()) {
+                if (numberOfTweets == limit) {
                     return;
                 }
             }
@@ -85,6 +97,13 @@ public class TwitterStream {
 
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(listener);
-        twitterStream.filter(jcp.getKeyword());
+
+        FilterQuery filter = new FilterQuery(jcp.getKeyword());
+
+        if (jcp.getLocation() != null) {
+            filter.locations(LocationUtils.getLocationBoxByName(jcp.getLocation()));
+        }
+
+        twitterStream.filter(filter);
     }
 }
