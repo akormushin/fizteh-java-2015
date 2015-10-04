@@ -23,7 +23,7 @@
         <module>akormushin</module>
         <!--Add you module here-->
         <module>xmanatee</module>
-    </modules>
+  </modules>
 
     <dependencies>
         <dependency>
@@ -42,7 +42,7 @@
 
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
+            <artifactId>hamcrest-all</artifactId>
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
