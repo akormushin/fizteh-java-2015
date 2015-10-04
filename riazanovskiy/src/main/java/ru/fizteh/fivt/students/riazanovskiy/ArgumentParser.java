@@ -15,8 +15,9 @@ class ArgumentParser {
     @Parameter(names = {"--hideRetweets"}, description = "Hides retweets if set")
     private boolean hideRetweets;
 
-    @Parameter(names = {"--limit", "-l"}, description = "Maximum number of tweets to show. Incompatible with --stream")
-    private Integer limit;
+    @Parameter(names = {"--limit", "-l"}, description = "Maximum number of tweets to show."
+            + " Actual number of printed tweets may be less. Incompatible with --stream")
+    private Integer limit = null;
 
     @Parameter(names = {"--help", "-h"}, help = true, description = "Displays this help and exits")
     private boolean help;
@@ -33,8 +34,8 @@ class ArgumentParser {
         return stream;
     }
 
-    public boolean isHideRetweets() {
-        return hideRetweets;
+    public boolean isShowRetweets() {
+        return !hideRetweets;
     }
 
     public Integer getLimit() {
