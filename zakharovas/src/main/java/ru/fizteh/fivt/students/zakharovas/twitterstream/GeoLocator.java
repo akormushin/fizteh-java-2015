@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Properties;
 
 public class GeoLocator {
@@ -25,7 +26,7 @@ public class GeoLocator {
     private double[] locationCenter;
     private GeoApiContext context;
 
-    public GeoLocator(List<String> locationInList) throws Exception {
+    public GeoLocator(List<String> locationInList) throws IOException, GeoSearchException {
         location = String.join(" ", locationInList);
         if (location.isEmpty()) {
             location = "nearby";
@@ -34,8 +35,8 @@ public class GeoLocator {
         setCoordinates();
     }
 
-    public double[] getLocationForStream() {
-        return null;
+    public double[][] getLocationForStream() {
+        return borders;
     }
 
     public GeoLocation getLocationForSearch() {
@@ -48,7 +49,11 @@ public class GeoLocator {
 
     private void enableGoogleMaps() throws IOException {
         Properties properties = new Properties();
-        try (InputStream inputStream = this.getClass().getResourceAsStream("/googlemaps.properties");) {
+        if (this.getClass().getResourceAsStream("/googlemaps.properties") == null)
+        {
+            throw new NoSuchElementException("No flie with googlemaps properties");
+        }
+        try (InputStream inputStream = this.getClass().getResourceAsStream("/googlemaps.properties")) {
             properties.load(inputStream);
         }
         String googleKey = properties.getProperty("googleMapsKey");
@@ -78,8 +83,8 @@ public class GeoLocator {
             calcBordersByCenter();
             return;
         }
-        borders = new double[][] {{results[0].geometry.bounds.northeast.lat, results[0].geometry.bounds.northeast.lng},
-                {results[0].geometry.bounds.southwest.lat, results[0].geometry.bounds.southwest.lng}};
+        borders = new double[][] { {results[0].geometry.bounds.southwest.lat, results[0].geometry.bounds.southwest.lng},
+                {results[0].geometry.bounds.northeast.lat, results[0].geometry.bounds.northeast.lng}};
         radius = calcRadius(results[0]);
     }
 
@@ -130,8 +135,8 @@ public class GeoLocator {
         double angle = Math.asin(radius / Math.sqrt(2.0) / EARTH_RADIUS);
 
         for (int i = 0; i < numberCoordinates.length; ++i) {
-            borders[0][i] = numberCoordinates[i] + angle;
-            borders[1][i] = numberCoordinates[i] - angle;
+            borders[0][i] = numberCoordinates[i] - angle;
+            borders[1][i] = numberCoordinates[i] + angle;
         }
     }
 

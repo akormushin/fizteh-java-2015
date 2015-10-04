@@ -48,7 +48,7 @@ public class TwitterStreamMain {
             } else {
                 try {
                     searchMode(commandLineArgs);
-                } catch (TwitterException e) {
+                } catch (TwitterException | IllegalStateException e) {
                     System.err.println(e.getMessage());
                     System.exit(1);
                 }
@@ -60,40 +60,12 @@ public class TwitterStreamMain {
         twitter4j.TwitterStream twitterStream =
                 TwitterStreamFactory.getSingleton();
         Queue<Status> tweetQueue = new LinkedList<>();
-        StatusListener listener = new StatusListener() {
+        StatusListener listener = new StatusAdapter() {
             @Override
             public void onStatus(Status tweet) {
                 if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
                     tweetQueue.add(tweet);
                 }
-            }
-
-            @Override
-            public void onDeletionNotice(StatusDeletionNotice
-                                                 statusDeletionNotice) {
-
-            }
-
-            @Override
-            public void onTrackLimitationNotice(int i) {
-
-            }
-
-            @Override
-            public void onScrubGeo(long l, long l1) {
-
-            }
-
-            @Override
-            public void onStallWarning(StallWarning stallWarning) {
-
-            }
-
-            @Override
-            public void onException(Exception e) {
-                e.getMessage();
-                System.exit(1);
-
             }
         };
         twitterStream.addListener(listener);
@@ -113,7 +85,7 @@ public class TwitterStreamMain {
         }
     }
 
-    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException {
+    private static void searchMode(CommandLineArgs commandLineArgs) throws IllegalStateException, TwitterException {
         String search = String.join(" ", commandLineArgs.getStringForQuery());
 
         Twitter twitter = TwitterFactory.getSingleton();
@@ -121,7 +93,24 @@ public class TwitterStreamMain {
         query.setCount(Integer.MAX_VALUE);
         query.geoCode(geoLocator.getLocationForSearch(), geoLocator.getRadius(), Query.KILOMETERS.toString());
         List<Status> tweets = new ArrayList<>();
-        tweets = twitter.search(query).getTweets();
+        while(true) {
+            try {
+                tweets = twitter.search(query).getTweets();
+                break;
+            }
+            catch (TwitterException te) {
+                if (te.isCausedByNetworkIssue()) {
+                    System.err.println("Connection problem. Reconnecting");
+                    try {
+                        Thread.sleep(Numbers.SECOND);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    throw te;
+                }
+            }
+        }
 
         //System.out.println(tweets.size());
         List<Status> tweetsForOutput = new ArrayList<>();
