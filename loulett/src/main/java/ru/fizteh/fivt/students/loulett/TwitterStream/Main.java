@@ -2,6 +2,7 @@ package ru.fizteh.fivt.students.loulett.TwitterStream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.ParameterException;
 import twitter4j.*;
 
 import java.time.LocalDateTime;
@@ -17,23 +18,23 @@ class JCommanderPar {
     static final String NEARBY = "nearby";
 
     @Parameter(names = {"--query", "-q"},
-            description = "query",
+            description = "Queries for searching tweets (this argument is requied)",
             variableArity = true)
     private List<String> queries = new ArrayList<>();
 
-    @Parameter(names = {"--place", "-p"}, description = "place")
+    @Parameter(names = {"--place", "-p"}, description = "Place for searching tweets")
     private String place = NEARBY;
 
-    @Parameter(names = {"--stream", "-s"}, description = "stream")
+    @Parameter(names = {"--stream", "-s"}, description = "Enable stream")
     private boolean stream = false;
 
-    @Parameter(names = {"--hideRetweets"}, description = "hide retweets")
+    @Parameter(names = {"--hideRetweets"}, description = "Hide retweets")
     private boolean retweet = false;
 
-    @Parameter(names = {"--limit", "-l"}, description = "limit")
+    @Parameter(names = {"--limit", "-l"}, description = "Limit of tweets. Not usable in stream mode")
     private Integer limit = Integer.MAX_VALUE;
 
-    @Parameter(names = {"--help", "-h"}, description = "help", help = true)
+    @Parameter(names = {"--help", "-h"}, description = "Show help", help = true)
     private boolean help;
 
     public String getPlace() {
@@ -55,6 +56,8 @@ class JCommanderPar {
     public Integer getLimit() {
         return limit;
     }
+
+    public boolean getHelp() { return help; }
 }
 
 public class Main {
@@ -117,7 +120,17 @@ public class Main {
 
     public static void main(String[] args) throws TwitterException {
         JCommanderPar jCommanderParameters = new JCommanderPar();
-        JCommander jCommander = new JCommander(jCommanderParameters, args);
+        try {
+            JCommander jCommander = new JCommander(jCommanderParameters, args);
+            if (jCommanderParameters.getHelp()) {
+                throw new ParameterException("");
+            }
+        } catch (ParameterException pe) {
+            JCommander jCommander = new JCommander(jCommanderParameters, args);
+            jCommander.setProgramName("TwitterStream");
+            jCommander.usage();
+            return;
+        }
 
         if (!jCommanderParameters.getStream()) {
 
