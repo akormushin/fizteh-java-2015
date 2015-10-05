@@ -33,22 +33,22 @@ public class TimeParser {
         System.out.print(goneTime + " ");
         if (goneTime % TEN_MOD >= FIVE || goneTime % TEN_MOD == 0 || (goneTime % HUNDRED_MOD > TEN_MOD
                 && goneTime % HUNDRED_MOD < TWENTY)) {
-            System.out.print(WORDS[mode][FIRST_FORM]);
+            Printer.print(WORDS[mode][FIRST_FORM]);
         } else if (goneTime % TEN_MOD == 1) {
-            System.out.print(WORDS[mode][SECOND_FORM]);
+            Printer.print(WORDS[mode][SECOND_FORM]);
         } else {
-            System.out.print(WORDS[mode][THIRD_FORM]);
+            Printer.print(WORDS[mode][THIRD_FORM]);
         }
         if (mode < RT_MODE) {
-            System.out.print(" назад");
+            Printer.print(" назад");
         }
     }
     public static void printGoneDate(long givenTime) {
         long nowTime = System.currentTimeMillis(), goneTime = nowTime - givenTime;
         //System.out.print("Время: " + tweetTime + " " + currTime + "   ");
-        System.out.print("[");
+        Printer.print("[");
         if (goneTime <= 2 * TimeUnit.SECONDS.toMillis(1L)) {
-            System.out.print("Только что");
+            Printer.print("Только что");
         } else if (goneTime < TimeUnit.MINUTES.toMillis(1L)) {
             rightWordPrinting(goneTime / TimeUnit.SECONDS.toMillis(1L), SEC_MODE);
         } else if (goneTime < TimeUnit.HOURS.toMillis(1L)) {
@@ -58,10 +58,10 @@ public class TimeParser {
             rightWordPrinting(goneTime / TimeUnit.HOURS.toSeconds(1L), HOUR_MODE);
         } else if (new Date(givenTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().
                 equals(LocalDate.now().minusDays(1))) {
-            System.out.print("Вчера");
+            Printer.print("Вчера");
         } else {
             rightWordPrinting(goneTime / TimeUnit.DAYS.toMillis(1L), DAY_MODE);
         }
-        System.out.print("] ");
+        Printer.print("] ");
     }
 }
