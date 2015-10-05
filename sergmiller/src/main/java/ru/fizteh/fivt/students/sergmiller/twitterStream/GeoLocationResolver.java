@@ -2,9 +2,9 @@ package ru.fizteh.fivt.students.sergmiller.twitterStream;
 
 
 import com.beust.jcommander.internal.Maps;
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.collect.Iterables;
+//import com.google.common.base.Function;
+//import com.google.common.base.Joiner;
+//import com.google.common.collect.Iterables;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.fizteh.fivt.students.sergmiller.twitterStream.exceptions.GettingMyLocationException;
@@ -23,6 +23,7 @@ import java.nio.charset.Charset;
 //import java.util.ArrayList;
 //import java.util.DoubleSummaryStatistics;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javafx.util.Pair;
 
@@ -36,6 +37,7 @@ import javafx.util.Pair;
 
 final class GeoLocationResolver {
     public static final int MAX_QUANTITY_OF_TRIES = 2;
+    static final double EARTH_RADIUS = 6371;
 
     public static Pair<GeoLocation, Double> getGeoLocation(final String geoRequest)
             throws IOException, JSONException {
@@ -62,7 +64,7 @@ final class GeoLocationResolver {
         northEastBoundLongitude = northEastBound.getDouble("lng");
         southWestBoundLatitude = southWestBound.getDouble("lat");
         southWestBoundLongitude = southWestBound.getDouble("lng");
-        approximatedRadius = TwitterStream.getSphereDist(
+        approximatedRadius = getSphereDist(
                 northEastBoundLatitude, northEastBoundLongitude,
                 southWestBoundLatitude, southWestBoundLongitude
         );
@@ -72,12 +74,16 @@ final class GeoLocationResolver {
 
     public static String readAll(final Reader rd) throws IOException {
         final StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
+        try {
+            int cp;
+            while ((cp = rd.read()) != -1) {
+                sb.append((char) cp);
+            }
+        } finally {
+            return sb.toString();
         }
-        return sb.toString();
     }
+
 
     public static JSONObject read(final String url) throws IOException, JSONException {
         final InputStream is = new URL(url).openStream();
@@ -92,26 +98,29 @@ final class GeoLocationResolver {
         }
     }
 
+        public static double getSphereDist(double latitude1, double longitude1,
+                                                         double latitude2, double longitude2) {
+        latitude1 = Math.toRadians(latitude1);
+        latitude2 = Math.toRadians(latitude2);
+        longitude1 = Math.toRadians(longitude1);
+        longitude2 = Math.toRadians(longitude2);
+        return EARTH_RADIUS
+                * Math.acos(Math.sin(latitude1)
+                * Math.sin(latitude2)
+                + Math.cos(latitude1)
+                * Math.cos(latitude2)
+                * Math.cos(longitude1 - longitude2));
+    }
 
     private static String encodeParams(final Map<String, String> params) {
-        final String paramsUrl = Joiner.on('&').join(
-                Iterables.transform(params.entrySet()
-                        , new Function<Map.Entry<String, String>, String>() {
-
-                    @Override
-                    public String apply(final Map.Entry<String, String> input) {
-                        try {
-                            final StringBuffer buffer = new StringBuffer();
-                            buffer.append(input.getKey());
-                            buffer.append('=');
-                            buffer.append(URLEncoder.encode(input.getValue(), "utf-8"));
-                            return buffer.toString();
-                        } catch (final UnsupportedEncodingException e) {
-                            throw new RuntimeException(e);
-                        }
-                    }
-                }));
-        return paramsUrl;
+        String query = params.entrySet().stream().map(param -> {
+            try {
+                return URLEncoder.encode(param.getKey(), "UTF-8") + "=" + URLEncoder.encode(param.getValue(), "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                throw new RuntimeException(e);
+            }
+        }).collect(Collectors.joining("&"));
+        return query;
     }
 
     public static String getNameOfCurrentLocation()
@@ -138,7 +147,8 @@ final class GeoLocationResolver {
                 ++numberOfTries;
             }
         }
-        while (numberOfTries < TwitterStream.MAX_QUANTITY_OF_TRIES);
+        while (numberOfTries < MAX_QUANTITY_OF_TRIES);
         throw new GettingMyLocationException();
     }
 }
+

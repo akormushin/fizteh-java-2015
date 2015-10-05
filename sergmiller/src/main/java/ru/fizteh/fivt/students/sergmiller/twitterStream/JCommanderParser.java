@@ -11,10 +11,7 @@ import java.util.List;
 
 class JCommanderParser {
     @Parameter
-    private List<String> parameters = new ArrayList<>();
     public static final int DEFAULT_TWEETS_LIMIT = 100;
-
-    private boolean isLocate = false;
 
     @Parameter(names = {"--stream", "-s"},
             description = "Если параметр задан, то приложение"
@@ -27,11 +24,11 @@ class JCommanderParser {
     private boolean help = false;
 
     @Parameter(names = {"--hideRetweets"},
-            description = "если параметр задан, то ретвиты фильтруются")
+            description = "Если параметр задан, то ретвиты фильтруются.")
     private boolean hideRetweets = false;
 
     @Parameter(names = {"--query", "-q"},
-            description = "tweets with keyword or query")
+            description = "Ключевые слова для запроса.")
     private List<String> query = new ArrayList<>();
 
     @Parameter(names = {"--limit", "-l"},
@@ -40,7 +37,8 @@ class JCommanderParser {
     private Integer limit = DEFAULT_TWEETS_LIMIT;
 
     @Parameter(names = {"--place", "-p"},
-            description = "Искать по заданному региону.")
+            description = "Искать по заданному региону."
+                        + "Если регион равен nearby ищет твиты рядом")
     private String location = "";
 
 
@@ -66,9 +64,5 @@ class JCommanderParser {
 
     public String getLocation() {
         return location;
-    }
-
-    public boolean isLocate() {
-        return isLocate;
     }
 } //Thread.sleep(10000) <- sleep

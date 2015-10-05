@@ -2,6 +2,8 @@ package ru.fizteh.fivt.students.sergmiller.twitterStream;
 //import  ru.fizteh.fivt.students.sergmiller.twitterStream.GeolocationResolver;
 
 import com.beust.jcommander.ParameterException;
+//import org.json.*;
+import org.json.JSONException;
 import ru.fizteh.fivt.students.sergmiller.twitterStream.exceptions.GettingMyLocationException;
 import twitter4j.*;
 import twitter4j.StatusListener;
@@ -13,7 +15,10 @@ import com.beust.jcommander.JCommander;
 //import java.time.Instant;
 //import java.time.Period;
 //import java.net.MalformedURLException;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
+//import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.io.IOException;
 //import java.time.LocalDateTime;
@@ -77,52 +82,93 @@ final class TwitterStream {
      */
     public static void printTwitterStream(
             final JCommanderParser jCommanderParsed) {
+        String curLocationRequest = "";
+        Pair<GeoLocation, Double> geoParams = new Pair(new GeoLocation(0, 0), new Double(0));
+        try {
+            if (!jCommanderParsed.getLocation().equals("")) {
+                if (jCommanderParsed.getLocation().equals(NEARBY)) {
+                    curLocationRequest = GeoLocationResolver.getNameOfCurrentLocation();
+                } else {
+                    curLocationRequest = jCommanderParsed.getLocation();
+                }
+                geoParams = GeoLocationResolver
+                        .getGeoLocation(curLocationRequest);
+            }
+        } catch (IOException | JSONException | GettingMyLocationException e) {
+            e.getMessage();
+            System.err.println("Не могу определить регион=(\n" + "Поиск по World:");
+            curLocationRequest = "World";
+        }
+
+
         twitter4j.TwitterStream twStream = twitter4j
                 .TwitterStreamFactory.getSingleton();
 
         //   Location curLocation = getCurLocation(twStream, jCommanderParsed);
+        //  Query query = new
 
+        final double locationLatitude = geoParams.getKey().getLatitude();
+        final double locationLongitude = geoParams.getKey().getLongitude();
+        final double locationRadius = geoParams.getValue();
         StatusListener listener = new StatusAdapter() {
             @Override
             public void onStatus(final Status status) {
                 if (jCommanderParsed.isHideRetweets() && status.isRetweet()) {
                     return;
                 }
+
+                if (!jCommanderParsed.getLocation().equals("")) {
+                    final double curTweetLatitude;
+                    final double curTweetLongitude;
+                    if (status.getGeoLocation() != null) {
+                        curTweetLatitude = status.getGeoLocation().getLatitude();
+                        curTweetLongitude = status.getGeoLocation().getLongitude();
+
+                    } else {
+                        if (status.getUser().getLocation() != null) {
+                            try {
+                                GeoLocation curTweetLocation = GeoLocationResolver.getGeoLocation(
+                                        status.getUser().getLocation()).getKey();
+                                curTweetLatitude = curTweetLocation.getLatitude();
+                                curTweetLongitude = curTweetLocation.getLongitude();
+                            } catch (IOException | org.json.JSONException e) {
+                                return;
+                            }
+                        } else {
+                            return;
+                        }
+                    }
+
+                    if (GeoLocationResolver.getSphereDist(
+                            locationLatitude,
+                            locationLongitude,
+                            curTweetLatitude,
+                            curTweetLongitude) > locationRadius) {
+                        return;
+                    }
+                }
+
                 printTweet(status, jCommanderParsed);
+                try {
+                    Thread.sleep(MILISECONDS_IN_SECONDS);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         };
-
-        //   FilterQuery query = new FilterQuery(jCommanderParsed.getQuery());
-        //  GeoQuery curGeoQuery = new GeoQuery(jCommanderParsed.getLocation());
-        //  ResponseList<Place> correctPlaces
-        // = twStream.searchPlaces(curGeoQuery);
-        ArrayList<GeoQuery> points = new ArrayList<>();
         String[] queries = jCommanderParsed
                 .getQuery().toArray(
                         new String[jCommanderParsed.getQuery().size()]);
         twStream.addListener(listener);
-        twStream.filter(new FilterQuery().track(queries));
-        //  twStream.filter(new Filter.
+        if (!jCommanderParsed.getQuery().equals("")) {
+            twStream.filter(new FilterQuery().track(queries));
+        } else {
+            twStream.sample();
+        }
     }
 
-    static final double EARTH_RADIUS = 6371;
     static final String RADIUS_UNIT = "km";
     static final String NEARBY = "nearby";
-
-
-    public static double getSphereDist(double latitude1, double longitude1,
-                                       double latitude2, double longitude2) {
-        latitude1 = Math.toRadians(latitude1);
-        latitude2 = Math.toRadians(latitude2);
-        longitude1 = Math.toRadians(longitude1);
-        longitude2 = Math.toRadians(longitude2);
-        return EARTH_RADIUS
-                * Math.acos(Math.sin(latitude1)
-                * Math.sin(latitude2)
-                + Math.cos(latitude1)
-                * Math.cos(latitude2)
-                * Math.cos(longitude1 - longitude2));
-    }
 
     /**
      * Mod with print limited quantity of text.
@@ -137,14 +183,14 @@ final class TwitterStream {
             try {
                 Twitter twitter = TwitterFactory.getSingleton();
 
-                String joinedQuery = "*";
+                String joinedQuery = "";
                 if (!jCommanderParsed.getQuery().isEmpty()) {
                     joinedQuery = String.join(" ", jCommanderParsed.getQuery());
                 }
                 Query query = new Query(joinedQuery);
                 String curLocationRequest = "";
                 try {
-                    if (jCommanderParsed.getLocation() != "") {
+                    if (!jCommanderParsed.getLocation().equals("")) {
                         if (jCommanderParsed.getLocation().equals(NEARBY)) {
                             curLocationRequest = GeoLocationResolver.getNameOfCurrentLocation();
                         } else {
@@ -153,17 +199,19 @@ final class TwitterStream {
                         Pair<GeoLocation, Double> geoParams = GeoLocationResolver
                                 .getGeoLocation(curLocationRequest);
                         query.geoCode(geoParams.getKey(), geoParams.getValue(), RADIUS_UNIT);
-                        System.out.println("location is " + curLocationRequest
+                        System.out.println("Location is " + curLocationRequest
                                 + ", latitude :"
                                 + geoParams.getKey().getLatitude()
                                 + " longitude :"
                                 + geoParams.getKey().getLongitude()
                                 + ", radius(km): "
-                                + geoParams.getValue());
+                                + geoParams.getValue()
+                                + "\n"
+                                + tweetsSeparator());
                     }
-                } catch (IOException | GettingMyLocationException e) {
+                } catch (IOException | JSONException | GettingMyLocationException e) {
                     e.getMessage();
-                    System.out.println("Не могу определить регион=(\n" + "Поиск по World:");
+                    System.err.println("Не могу определить регион=(\n" + "Поиск по World:");
                     curLocationRequest = "World";
                 }
 
@@ -187,7 +235,7 @@ final class TwitterStream {
                 }
 
                 if (!existTweets) {
-                    System.out.println("\nПо запросу "
+                    System.err.println("\nПо запросу "
                                     + String.join(", "
                                     , jCommanderParsed.getQuery())
                                     + " для "
@@ -206,8 +254,8 @@ final class TwitterStream {
             } catch (TwitterException twExp) {
                 ++currentQuantityOfTries;
                 if (currentQuantityOfTries == MAX_QUANTITY_OF_TRIES) {
-                    System.out.println(twExp.getMessage());
-                    System.err.println("Что-то пошло не так=(\n"
+                    System.err.println(twExp.getMessage()
+                            + "\nЧто-то пошло не так=(\n"
                             + "Проверьте наличие соединия.");
                     return;
                 }
@@ -221,53 +269,39 @@ final class TwitterStream {
      * @param createdTime is time of create status
      * @return new string with special format
      */
-    public static String getTime(final long createdTime) {
-        long currentTime = System.currentTimeMillis();
-        long todaySeconds = LocalTime.now().toSecondOfDay();
-        long seconds = (long) (currentTime - createdTime)
-                / (MILISECONDS_IN_SECONDS);
-
-        int minutes = (int) (currentTime - createdTime)
-                / (MILISECONDS_IN_SECONDS * SECONDS_IN_MINUTE);
-
-        int hours = (int) (currentTime - createdTime)
-                / (MILISECONDS_IN_SECONDS * SECONDS_IN_MINUTE * MINUTES_IN_HOUR);
-
-        int days = (int) (currentTime - createdTime)
-                / (MILISECONDS_IN_SECONDS * SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY);
-        if (seconds < TWO * SECONDS_IN_MINUTE) {
+    public static String getTime(LocalDateTime createdTime) {
+        LocalDateTime currentTime = LocalDateTime.now();
+        long minutes;
+        long hours;
+        long days;
+        if (ChronoUnit.MINUTES.between(createdTime, currentTime) < TWO) {
             return "Только что";
         }
 
-        if (minutes < MINUTES_IN_HOUR) {
-            return minutes + " " + getDeclensionForm("минута", minutes) + " назад";
+        if (ChronoUnit.HOURS.between(createdTime, currentTime) < 1) {
+            minutes = ChronoUnit.MINUTES.between(createdTime, currentTime);
+            return minutes + " " + getDeclensionForm(Word.MINUTE, minutes) + " назад";
         }
 
-        if (todaySeconds - seconds > 0) {
-            return hours + " " + getDeclensionForm("час", hours) + " назад";
-        } else {
-            if (seconds - todaySeconds
-                    < SECONDS_IN_MINUTE * MINUTES_IN_HOUR * HOURS_IN_DAY) {
-                return "Вчера";
-            } else {
-                return days + " " + getDeclensionForm("день", days) + " назад";
-            }
+        if (ChronoUnit.DAYS.between(createdTime, currentTime) < 1) {
+            hours = ChronoUnit.HOURS.between(createdTime, currentTime);
+            return hours + " " + getDeclensionForm(Word.HOUR, hours) + " назад";
         }
+
+        if (ChronoUnit.DAYS.between(createdTime, currentTime) == 1) {
+            return "Вчера";
+        }
+
+        days = ChronoUnit.DAYS.between(createdTime, currentTime);
+        return days + getDeclensionForm(Word.DAY, days) + "назад";
     }
 
     private static String[] retweetForms = {"ретвит", "ретвитов", "ретвита"};
     private static String[] minuteForms = {"минута", "минут", "минуты"};
     private static String[] hourForms = {"час", "часов", "часа"};
     private static String[] dayForms = {"день", "дней", "дня"};
-/*
-    /**
-     * Ansesstor method.
-     * @param numberOfForm number in array
-     * @return string
-     *//*
-    public static String getRetweetForm(final int numberOfForm) {
-        return retweetForms[numberOfForm];
-    }*/
+
+    public enum Word { RETWEET, MINUTE, HOUR, DAY }
 
     /**
      * Getting correct form for current word.
@@ -276,19 +310,19 @@ final class TwitterStream {
      * @param numberOfForm is number of correct form for @word in array of forms
      * @return correct form of @word
      */
-    public static String getForm(final String word, final int numberOfForm) {
+    public static String getForm(Word word, final int numberOfForm) {
         String form = new String();
         switch (word) {
-            case "ретвит":
+            case RETWEET:
                 form = retweetForms[numberOfForm];
                 break;
-            case "минута":
+            case MINUTE:
                 form = minuteForms[numberOfForm];
                 break;
-            case "час":
+            case HOUR:
                 form = hourForms[numberOfForm];
                 break;
-            case "день":
+            case DAY:
                 form = dayForms[numberOfForm];
                 break;
             default:
@@ -304,13 +338,13 @@ final class TwitterStream {
      * @param count is quantity of object with name @word
      * @return string with correct form of @word
      */
-    public static String getDeclensionForm(final String word, final int count) {
+    public static String getDeclensionForm(Word word, final long count) {
         if (count % MOD100 >= LEFT_BOUND_MOD_100
                 && count % MOD100 <= RIGHT_BOUND_MOD_100) {
             return getForm(word, 1);
         }
 
-        int countMod10 = count % MOD10;
+        long countMod10 = count % MOD10;
         if (countMod10 == ONE) {
             return getForm(word, 0);
         }
@@ -331,11 +365,14 @@ final class TwitterStream {
 
     static void exitWithCtrlD() {
         Scanner scan = new Scanner(System.in);
-        while (scan.hasNext()) {
-            int oneStatement = 0;
+        try {
+            while (scan.hasNext()) {
+                int someNeverUsedStatement = 0;
+            }
+        } finally {
+            scan.close();
+            System.exit(0);
         }
-        scan.close();
-        //System.exit(0);
     }
 
     /**
@@ -349,7 +386,9 @@ final class TwitterStream {
 
         try {
             JCommander jCommanderSettings = new JCommander(jCommanderParsed, args);
-            if (jCommanderParsed.isHelp() || jCommanderParsed.getQuery().size() == 0) {
+            if (jCommanderParsed.isHelp()
+                    || (!jCommanderParsed.isStream()
+                    && jCommanderParsed.getQuery().size() == 0)) {
                 throw new ParameterException("");
             }
         } catch (ParameterException pe) {
@@ -364,11 +403,16 @@ final class TwitterStream {
             printLocation = jCommanderParsed.getLocation();
         }
 
+        String printedQuery = String.join(", ", jCommanderParsed.getQuery());
+        if (printedQuery.equals("")) {
+            printedQuery = "-";
+        }
         System.out.println("Твиты по запросу "
-                        + String.join(", ", jCommanderParsed.getQuery())
+                        + printedQuery
                         + " для " + printLocation
                         + tweetsSeparator()
         );
+
 
         if (jCommanderParsed.isStream()) {
             printTwitterStream(jCommanderParsed);
@@ -400,7 +444,8 @@ final class TwitterStream {
     public static void printTweet(final Status status,
                                   final JCommanderParser jCommanderParsed) {
         if (!jCommanderParsed.isStream()) {
-            System.out.print(getTime(status.getCreatedAt().getTime()) + " ");
+            System.out.print("[" + getTime(status.getCreatedAt().toInstant()
+                    .atZone(ZoneId.systemDefault()).toLocalDateTime()) + "] ");
         }
         System.out.print(
                 highlightUserName(status.getUser().getScreenName()));
@@ -410,7 +455,7 @@ final class TwitterStream {
                             + " ("
                             + status.getRetweetCount()
                             + " "
-                            + getDeclensionForm("ретвит", status.getRetweetCount())
+                            + getDeclensionForm(Word.RETWEET, status.getRetweetCount())
                             + ")"
             );
         } else {
