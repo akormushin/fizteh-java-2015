@@ -52,7 +52,9 @@ public class GeoApi {
             List<Place> places = twitter.searchPlaces(geoQuery);
             if (places.size() == 0) {
                 System.err.println("Нет такого места");
-                System.exit(1);
+                return new double[] {
+                    0, 0, 0
+                };
             }
             double minlat = INF, maxlat = -INF, minlong = INF, maxlong = -INF;
             for (GeoLocation g : places.get(0).getBoundingBoxCoordinates()[0]) {
