@@ -29,7 +29,7 @@ class GeocodeWrapper {
     }
 
     public static LatLng getCoordinatesByString(String place) {
-        if (place.equals("nearby")) {
+        if ("nearby".equals(place)) {
             try {
                 return getCoordinatesByIp();
             } catch (Exception e) {
