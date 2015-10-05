@@ -15,7 +15,7 @@ public class TwitterStreamMain {
     private static GeoLocator geoLocator;
 
     public static void main(String[] args) {
-        String[] separatedArgs = ArgumentSepatator.separateArguments(args);
+        String[] separatedArgs = StringFormater.separateArguments(args);
         CommandLineArgs commandLineArgs = new CommandLineArgs();
         JCommander jCommander = null;
         try {
