@@ -3,11 +3,8 @@ package ru.fizteh.fivt.students.w4r10ck1337.twitterstream;
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
 
-import java.io.InputStream;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 import com.beust.jcommander.Parameter;
@@ -177,7 +174,8 @@ public class TwitterStream {
             }
             try {
                 Thread.sleep(
-                        Math.max(1000 - System.currentTimeMillis() + prev, 0));
+                        Math.max(TimeUnit.SECONDS.toMillis(1)
+                                - System.currentTimeMillis() + prev, 0));
             } catch (Exception e) {
                 System.err.println("Ошибка ожидания");
             }
@@ -204,8 +202,9 @@ public class TwitterStream {
                 "----------------------------------------------"
                         + "------------------------------------------");
         twitter = TwitterFactory.getSingleton();
-        if (parameters.hideRetweets)
+        if (parameters.hideRetweets) {
             parameters.query += " +exclude:retweets";
+        }
         if (parameters.stream) {
             streamTweets();
         } else {
