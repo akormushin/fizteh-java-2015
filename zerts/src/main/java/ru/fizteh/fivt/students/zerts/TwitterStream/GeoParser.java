@@ -7,6 +7,7 @@ import twitter4j.JSONObject;
 
 import java.io.*;
 import java.net.URL;
+import java.util.Objects;
 
 import static java.lang.Double.parseDouble;
 
@@ -21,25 +22,29 @@ public class GeoParser {
             throw new GeoExeption("Can't read the yandex key. Please, check your keyfile!");
         }
     }
-    public static String getMyPlace() throws IOException, JSONException {
+    public static String getMyPlace() throws IOException, JSONException, GeoExeption {
         URL getCityName = new URL("http://api.hostip.info/get_json.php");
-        BufferedReader in = new BufferedReader(new InputStreamReader(getCityName.openStream()));
-        String siteAnswer = in.readLine(), city = "";
-        in.close();
-        JSONObject jsonParse = new JSONObject(siteAnswer);
-        city = jsonParse.getString("city");
-        if (city.equals("(Unknown city)")) {
-            getCityName = new URL("http://ipinfo.io/json");
-            in = new BufferedReader(new InputStreamReader(getCityName.openStream()));
-            siteAnswer = "";
-            while (!siteAnswer.contains("}")) {
-                siteAnswer += in.readLine();
-            }
-            jsonParse = new JSONObject(siteAnswer);
+        String city = "";
+        try (BufferedReader apihostipIn = new BufferedReader(new InputStreamReader(getCityName.openStream()))) {
+            String siteAnswer = apihostipIn.readLine();
+            JSONObject jsonParse = new JSONObject(siteAnswer);
             city = jsonParse.getString("city");
-            in.close();
+            if (Objects.equals("(Unknown city)", city)) {
+                getCityName = new URL("http://ipinfo.io/json");
+                try (BufferedReader ipinfoIn = new BufferedReader(new InputStreamReader(getCityName.openStream()))){
+                    siteAnswer = "";
+                    while (!siteAnswer.contains("}")) {
+                        siteAnswer += ipinfoIn.readLine();
+                    }
+                    jsonParse = new JSONObject(siteAnswer);
+                    city = jsonParse.getString("city");
+                }
+            }
         }
         //System.out.println(city);
+        if (Objects.equals(city, "")) {
+            throw new GeoExeption("Can't detect your location");
+        }
         return city;
     }
     public static GeoLocation getCoordinates(String place) throws IOException, GeoExeption, InterruptedException,
