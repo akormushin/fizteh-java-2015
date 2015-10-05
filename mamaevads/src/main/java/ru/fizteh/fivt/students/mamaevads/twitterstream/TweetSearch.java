@@ -3,7 +3,7 @@ import twitter4j.*;
 import java.util.List;
 
 public class TweetSearch {
-    public static void NoStreamSearch(Arguments arguments)throws TweetSearchException{
+    public static void noStreamSearch(Arguments arguments) throws TweetSearchException {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query(arguments.getQuery());
         int lim = arguments.getLimit();
@@ -15,20 +15,23 @@ public class TweetSearch {
                 List<Status> tweets = queryresult.getTweets();
                 for (Status status : tweets) {
                     if (!arguments.isHideRetweets() || !status.isRetweet()) {
-                        try{
+                        try {
                             System.out.print(MakeMassage.info(status) + "\n");
                             any = true;
                             lim--;
-                            if (lim == 0) return;
-                        }
-                        catch (LostInformationException ex){
+                            if (lim == 0) {
+                                return;
+                            }
+                        } catch (LostInformationException ex) {
                             System.out.print("Message part was lost.");
                         }
                     }
                 }
                 query = queryresult.nextQuery();
                 if (query == null) {
-                    if (!any) System.out.print("No tweets found.");
+                    if (!any) {
+                        System.out.print("No tweets found.");
+                    }
                     return;
                 }
             }
@@ -43,14 +46,13 @@ public class TweetSearch {
         StatusListener listener = new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
-                if (!arguments.isHideRetweets() || !status.isRetweet())
-                    try{
+                if (!arguments.isHideRetweets() || !status.isRetweet()) {
+                    try {
                         System.out.print(MakeMassage.info(status) + "\n");
+                    } catch (LostInformationException ex) {
+                        System.out.print("Message part was lost.");
                     }
-                    catch (LostInformationException ex){
-                    System.out.print("Message part was lost.");
-                    }
-
+                }
             }
         };
         String[] query = {arguments.getQuery()};

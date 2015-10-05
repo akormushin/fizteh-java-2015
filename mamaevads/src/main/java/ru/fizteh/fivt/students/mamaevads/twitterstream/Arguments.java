@@ -3,22 +3,23 @@ package ru.fizteh.fivt.students.mamaevads.twitterstream;
 import com.beust.jcommander.Parameter;
 
 public class Arguments {
-    @Parameter(names = {"-q", "--query"},
+    private final int maxLimit = 100;
+    @Parameter(names = { "-q", "--query" },
             description = "ключевые слова для поиска")
     private String query = "";
-    @Parameter(names = {"-p", "--place"},
+    @Parameter(names = { "-p", "--place" },
             description = "поиск твитов в некотором регионе")
     private String place = "";
-    @Parameter(names = {"-l", "--limit"},
+    @Parameter(names = { "-l", "--limit" },
             description = "количество твитов")
-    private Integer limit = 100;
-    @Parameter(names = {"-s", "--stream"},
+    private Integer limit = maxLimit;
+    @Parameter(names = { "-s", "--stream" },
             description = "вывод твитов в стриминге")
     private boolean stream = false;
-    @Parameter(names = {"--hideRetweets"},
+    @Parameter(names = { "--hideRetweets" },
             description = "скрывать ретвиты")
     private boolean hideRetweets = false;
-    @Parameter(names = {"-h", "--help"},
+    @Parameter(names = { "-h", "--help" },
             description = "помошь")
     private boolean help = false;
 
@@ -47,3 +48,4 @@ public class Arguments {
         return help;
     }
 }
+
