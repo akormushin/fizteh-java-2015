@@ -42,6 +42,10 @@ class ArgumentParser {
         return limit;
     }
 
+    public void setLimit(Integer limit) {
+        this.limit = limit;
+    }
+
     public boolean isHelp() {
         return help;
     }
