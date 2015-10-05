@@ -2,7 +2,9 @@ package ru.fizteh.fivt.students.zakharovas.twitterstream;
 
 import twitter4j.Status;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class StringFormater {
@@ -38,54 +40,24 @@ public class StringFormater {
     }
 
     public static String dateFormater(Date date) {
-        Calendar currentDate = Calendar.getInstance();
-        Calendar tweetDate = Calendar.getInstance();
-        currentDate.add(Calendar.MINUTE, Numbers.NOW_CONSTANT);
-        tweetDate.setTime(date);
-        if (tweetDate.after(currentDate)) {
+        LocalDateTime tweetTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        LocalDateTime currentTime = LocalDateTime.now();
+        long minuteDifference = ChronoUnit.MINUTES.between(tweetTime, currentTime);
+        long hourDifference = ChronoUnit.HOURS.between(tweetTime, currentTime);
+        long daysDifference = tweetTime.toLocalDate().until(currentTime.toLocalDate(), ChronoUnit.DAYS);
+        if (minuteDifference < Numbers.NOW_CONSTANT) {
             return "только что";
         }
-        currentDate.set(Calendar.MINUTE, 0);
-        currentDate.set(Calendar.HOUR_OF_DAY, 0);
-        currentDate.set(Calendar.MILLISECOND, 0);
-        currentDate.set(Calendar.SECOND, 0);
-        currentDate.add(Calendar.DAY_OF_MONTH, -1);
-        if (tweetDate.after(currentDate)) {
-            currentDate.add(Calendar.DAY_OF_MONTH, 1);
-            if (tweetDate.after(currentDate)) {
-                //today
-                currentDate = Calendar.getInstance();
-                currentDate.set(Calendar.MINUTE, 0);
-                currentDate.set(Calendar.SECOND, 0);
-                currentDate.set(Calendar.MILLISECOND, 0);
-                if (tweetDate.after(currentDate)) {
-                    //in this hour
-                    currentDate = Calendar.getInstance();
-                    int minuteDifference = currentDate.get(Calendar.MINUTE) - tweetDate.get(Calendar.MINUTE);
-                    return minuteDifference + " " + fineWords(minuteDifference, ENDING_MUNUTES) + " назад";
-                } else {
-                    currentDate = Calendar.getInstance();
-                    int hourDifference = currentDate.get(Calendar.HOUR_OF_DAY) - tweetDate.get(Calendar.HOUR_OF_DAY);
-                    return hourDifference + " " + fineWords(hourDifference, ENDING_HOURS) + " назад";
-                }
-            } else {
-                return "вчера";
+        if (daysDifference == 0) {
+            //today
+            if (hourDifference == 0) {
+                return minuteDifference + " " + fineWords((int) minuteDifference, ENDING_MUNUTES) + " назад";
             }
-
-        } else {
-            currentDate = Calendar.getInstance();
-            currentDate.set(Calendar.MINUTE, 0);
-            currentDate.set(Calendar.SECOND, 0);
-            currentDate.set(Calendar.HOUR_OF_DAY, 0);
-            currentDate.set(Calendar.MILLISECOND, 0);
-            tweetDate.set(Calendar.MINUTE, 0);
-            tweetDate.set(Calendar.SECOND, 0);
-            tweetDate.set(Calendar.HOUR_OF_DAY, 0);
-            tweetDate.set(Calendar.MILLISECOND, 0);
-            Long dayDifference = (currentDate.getTimeInMillis() - tweetDate.getTimeInMillis()) / DAY;
-            return dayDifference.toString() + " " + fineWords(dayDifference.intValue(), ENDING_DAYS) + " назад";
+            return hourDifference + " " + fineWords((int) hourDifference, ENDING_HOURS) + " назад";
+        } else if (daysDifference == 1) {
+            return "вчера";
         }
-
+        return daysDifference + " " + fineWords((int) daysDifference, ENDING_DAYS) + " назад";
 
     }
 
