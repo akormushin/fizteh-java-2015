@@ -30,12 +30,14 @@ public class GeoApi {
             }
             location = String.valueOf(c).
                     split("\"loc\": \"")[1].split("\"")[0];
+            is.close();
         } catch (Exception e) {
             System.err.println(
                     "Не получается определить местоположение,"
                             + " попробуйте использовать --place");
             return null;
         }
+
         return new double[]{
                 Double.parseDouble(location.split(",")[0]),
                 Double.parseDouble(location.split(",")[1]),

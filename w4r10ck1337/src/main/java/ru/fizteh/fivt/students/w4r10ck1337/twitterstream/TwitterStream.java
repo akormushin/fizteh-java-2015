@@ -8,11 +8,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
 import com.beust.jcommander.Parameter;
 
 
 public class TwitterStream {
-    private static final int SECOND = 1000;
     private static final int INF = 1000000000;
     private static final int Q_LIMIT = 100;
     private static final int FUCKING_27 = 27;
@@ -114,7 +115,7 @@ public class TwitterStream {
         double[] location = GeoApi.getLocation(parameters.place, twitter);
         while (location == null) {
             try {
-                Thread.sleep(2 * SECOND);
+                TimeUnit.SECONDS.sleep(1);
             } catch (Exception e) {
                 System.err.println("Ошибка ожидания");
             }
@@ -140,14 +141,14 @@ public class TwitterStream {
                     System.err.println("Ошибка соединения");
                 }
                 try {
-                    Thread.sleep(SECOND);
+                    TimeUnit.SECONDS.sleep(1);
                 } catch (Exception e) {
                     System.err.println("Ошибка ожидания");
                 }
             }
             if (tweets.size() == 0) {
                 System.out.println("Не найдены твиты по запросу");
-                System.exit(0);
+                return;
             }
             tweets.forEach(t -> printTweet(t));
             searchQuery.setMaxId(tweets.get(tweets.size() - 1).getId() - 1);
@@ -169,13 +170,14 @@ public class TwitterStream {
                     System.err.println("Ошибка соединения");
                 }
                 try {
-                    Thread.sleep(2 * SECOND);
+                    TimeUnit.SECONDS.sleep(1);
                 } catch (Exception e) {
                     System.err.println("Ошибка ожидания");
                 }
             }
             try {
-                Thread.sleep(System.currentTimeMillis() - prev);
+                Thread.sleep(
+                        Math.max(1000 - System.currentTimeMillis() + prev, 0));
             } catch (Exception e) {
                 System.err.println("Ошибка ожидания");
             }
