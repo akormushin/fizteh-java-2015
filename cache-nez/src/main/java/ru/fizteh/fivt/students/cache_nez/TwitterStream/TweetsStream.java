@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import twitter4j.*;
 
 import java.io.IOException;
+import java.util.concurrent.CompletionException;
 
 
 /**
@@ -16,7 +17,7 @@ public class TweetsStream {
     public static final int EXIT_FAILURE = 1;
     public static final boolean STREAM_MODE_ON = true;
 
-    public static void twitterStream(ParseArguments description) throws IOException, GeoException {
+    public static void twitterStream(ParseArguments description) {
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
         StatusListener listener = new StatusAdapter() {
             @Override
@@ -24,9 +25,11 @@ public class TweetsStream {
                 if (status.isRetweet()) {
                     if (!description.doHideRetweets()) {
                         System.out.println(TextFormatter.getRetweetText(status, STREAM_MODE_ON));
+                        System.out.println(TextFormatter.getSeparator());
                     }
                 } else {
                     System.out.println(TextFormatter.getTweetText(status, STREAM_MODE_ON));
+                    System.out.println(TextFormatter.getSeparator());
                 }
             }
 
@@ -35,7 +38,11 @@ public class TweetsStream {
         FilterQuery filterQuery = new FilterQuery();
         filterQuery.track(query);
         if (!description.getLocation().equals("everywhere")) {
-            filterQuery.locations(GeoLocater.getBoundingBox(description.getLocation()));
+            try {
+                filterQuery.locations(GeoLocater.getBoundingBox(description.getLocation()));
+            } catch (GeoException e) {
+                System.err.println(e.getMessage() + "; let's go without place parameter");
+            }
         }
         twitterStream.addListener(listener);
         twitterStream.filter(filterQuery);
@@ -67,9 +74,8 @@ public class TweetsStream {
 
         try {
             TweetsRetriever.getTweets(parseArgs);
-        } catch (TwitterException | GeoException | IOException e) {
+        } catch (CompletionException e) {
             System.err.println("Error: " +  e.getMessage());
-            e.printStackTrace();
             System.exit(EXIT_FAILURE);
         }
     }

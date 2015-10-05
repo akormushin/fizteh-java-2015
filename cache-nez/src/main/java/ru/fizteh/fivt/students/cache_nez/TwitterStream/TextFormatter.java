@@ -15,34 +15,46 @@ import java.util.Date;
 public class TextFormatter {
     public static final String ANSI_RESET = "\u001B[0m";
     public static final String ANSI_BLUE = "\u001B[34m";
+    public static final int SEPARATOR_LENGTH = 155;
 
     static String getRetweetText(Status status, boolean streamMode) {
         /*remove prefix "<person> retweeted <person>"*/
         String[] splitText = status.getText().split(":", 2);
 
-        String text = "";
+        StringBuilder text = new StringBuilder("");
         if (!streamMode) {
-            text = "[" + TimeConverter.getRelativeTime(status.getCreatedAt()) + "] ";
+            text.append("[").append(TimeConverter.getRelativeTime(status.getCreatedAt(), LocalDateTime.now()))
+                    .append("] ");
         }
-        text += ANSI_BLUE + "@" + status.getUser().getScreenName() + ANSI_RESET;
-        text += " ретвитнул " + ANSI_BLUE + "@" + status.getRetweetedStatus().getUser().getScreenName()
-                + ANSI_RESET;
-        text += ": " + splitText[1];
-        return text;
+        text.append(ANSI_BLUE + "@").append(status.getUser().getScreenName()).append(ANSI_RESET);
+        text.append(" ретвитнул " + ANSI_BLUE + "@")
+                .append(status.getRetweetedStatus().getUser().getScreenName()).append(ANSI_RESET);
+        text.append(": ").append(splitText[1]);
+        return text.toString();
     }
 
     static String getTweetText(Status status, boolean streamMode) {
-        String text = "";
+        StringBuilder text = new StringBuilder("");
         if (!streamMode) {
-            text = "[" + TimeConverter.getRelativeTime(status.getCreatedAt()) + "] ";
+            text.append("[").append(TimeConverter.getRelativeTime(status.getCreatedAt(), LocalDateTime.now()))
+                    .append("] ");
         }
-        text += ANSI_BLUE + "@" + status.getUser().getScreenName() + ANSI_RESET;
-        text += ": " + status.getText();
+        text.append(ANSI_BLUE + "@").append(status.getUser().getScreenName()).append(ANSI_RESET);
+        text.append(": ").append(status.getText());
         if (status.getRetweetCount() > 0) {
             int retweets = status.getRetweetCount();
-            text += " (" + retweets + Declenser.getDeclension(retweets, Declenser.ToDeclense.RETWEET) + ")";
+            text.append(" (").append(retweets).append(Declenser.getDeclension(retweets, Declenser.ToDeclense.RETWEET))
+                    .append(")");
         }
-        return  text;
+        return text.toString();
+    }
+
+    static String getSeparator() {
+        StringBuilder separator = new StringBuilder(SEPARATOR_LENGTH);
+        for (int i = 0; i < SEPARATOR_LENGTH; ++i) {
+            separator.append("-");
+        }
+        return separator.toString();
     }
 
 }
@@ -57,9 +69,9 @@ class Declenser {
     private static final int EXCEPTION_END = 14;
     private static final int FIRST_MODULO = 100;
     private static final int SECOND_MODULO = 10;
-    private static final String[] FIRST_TYPE = {"минуту", "час", "день", "ретвит"};
-    private static final String[] SECOND_TYPE = {"минуты", "часа", "дня", "ретвита"};
-    private static final String[] THIRD_TYPE = {"минут", "часов", "дней", "ретвитов"};
+    private static final String[] FIRST_TYPE = {" минуту", " час", " день", " ретвит"};
+    private static final String[] SECOND_TYPE = {" минуты", " часа", " дня", " ретвита"};
+    private static final String[] THIRD_TYPE = {" минут", " часов", " дней", " ретвитов"};
 
 
     public static String getDeclension(long numeral, ToDeclense word) {
@@ -86,9 +98,8 @@ class TimeConverter {
     private static final int HOURS_IN_DAY = 60;
 
 
-    public static String getRelativeTime(Date date) {
+    public static String getRelativeTime(Date date, LocalDateTime currentDate) {
         LocalDateTime tweetDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime currentDate = LocalDateTime.now();
         if (currentDate.minus(TWO_MINUTES).isBefore(tweetDate)) {
             return "только что";
         }

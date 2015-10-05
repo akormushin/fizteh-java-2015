@@ -3,7 +3,8 @@ package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 /**
  * Created by cache-nez on 9/29/15.
  */
-public class GeoPosition {
+public class
+        GeoPosition {
     private double latitude;
     private double longitude;
 

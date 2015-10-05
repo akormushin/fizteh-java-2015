@@ -3,10 +3,13 @@ package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.Scanner;
+import java.util.Properties;
 
 /**
  * Created by cache-nez on 9/29/15.
@@ -14,13 +17,18 @@ import java.util.Scanner;
 
 class GeoException extends Exception {
 
-    GeoException() {
-    }
-
     GeoException(String message) {
         super(message);
     }
 }
+
+class NoKeyFoundException extends Exception {
+
+    NoKeyFoundException(String message) {
+        super(message);
+    }
+}
+
 
 class HttpConnect {
 
@@ -105,42 +113,45 @@ public class GeoLocater {
     }
 
 
-    static String getKey() throws IOException {
+    static String getKey() throws NoKeyFoundException, IOException {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        File keyFile;
-        try {
-            keyFile = new File(classLoader.getResource(YANDEX_KEYS_FILE).getFile());
-        } catch (NullPointerException ex) {
-            throw new FileNotFoundException("Yandex key not found");
+        Properties yandex = new Properties();
+        InputStream inputStream = classLoader.getResourceAsStream(YANDEX_KEYS_FILE);
+        if (inputStream == null) {
+            throw new NoKeyFoundException("File yandex.properties not found");
         }
-
-        String key = "";
-        try (Scanner scanner = new Scanner(keyFile)) {
-            while (scanner.hasNextLine() && key.matches("\\s*")) {
-                key = scanner.nextLine();
-            }
-
-        } catch (RuntimeException e) {
-            throw new IOException("No key in the resource file");
-        }
-        if (key.equals("")) {
-            throw new IOException("No key in the resource file");
+        yandex.load(inputStream);
+        String key = yandex.getProperty("key");
+        if (key == null) {
+            throw new NoKeyFoundException("key=<key> not found in the properties file");
         }
         return key;
     }
 
-    public static GeoPosition getLocation(String location) throws IOException, GeoException {
-        String key = getKey();
-        String request = YANDEX_URL + location + "&key=" + key + "&format=json";
-        String answer = HttpConnect.getAnswer(request);
+    public static GeoPosition getLocation(String location) throws GeoException {
+        String key = null;
+        String answer = null;
+        try {
+            key = getKey();
+            String request = YANDEX_URL + location + "&key=" + key + "&format=json";
+            answer = HttpConnect.getAnswer(request);
+        } catch (NoKeyFoundException | IOException e) {
+            throw new GeoException("Location failed");
+        }
 
         return parseAnswer(answer);
     }
 
-    public static double[][] getBoundingBox(String location) throws IOException, GeoException {
-        String key = getKey();
-        String request = YANDEX_URL + location + "&key=" + key + "&format=json";
-        String answer = HttpConnect.getAnswer(request);
+    public static double[][] getBoundingBox(String location) throws GeoException {
+        String key = null;
+        String answer = null;
+        try {
+            key = getKey();
+            String request = YANDEX_URL + location + "&key=" + key + "&format=json";
+            answer = HttpConnect.getAnswer(request);
+        } catch (NoKeyFoundException | IOException e) {
+            throw new GeoException("Location failed");
+        }
 
         return parseBoundingBox(answer);
     }
