@@ -113,14 +113,17 @@ public class GeoLocater {
     }
 
 
-    static String getKey() throws NoKeyFoundException, IOException {
+    static String getKey() throws NoKeyFoundException {
         ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         Properties yandex = new Properties();
-        InputStream inputStream = classLoader.getResourceAsStream(YANDEX_KEYS_FILE);
-        if (inputStream == null) {
-            throw new NoKeyFoundException("File yandex.properties not found");
+        try (InputStream inputStream = classLoader.getResourceAsStream(YANDEX_KEYS_FILE)) {
+            if (inputStream == null) {
+                throw new NoKeyFoundException("File yandex.properties not found");
+            }
+            yandex.load(inputStream);
+        } catch (IOException e) {
+            throw new NoKeyFoundException("Error while reading from yandex.properties");
         }
-        yandex.load(inputStream);
         String key = yandex.getProperty("key");
         if (key == null) {
             throw new NoKeyFoundException("key=<key> not found in the properties file");
