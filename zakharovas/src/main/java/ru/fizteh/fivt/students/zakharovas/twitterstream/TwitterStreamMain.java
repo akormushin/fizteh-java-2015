@@ -32,6 +32,7 @@ public class TwitterStreamMain {
         }
         if (commandLineArgs.getHelp()) {
             helpMode(jCommander);
+            System.exit(0);
         } else {
             try {
                 geoLocator = new GeoLocator(commandLineArgs.getLocation());
@@ -133,7 +134,6 @@ public class TwitterStreamMain {
 
     private static void helpMode(JCommander jCommander) {
         jCommander.usage();
-        System.exit(0);
     }
 
 
