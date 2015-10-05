@@ -37,12 +37,14 @@ public class TweetsStream {
         String[] query = {description.getQuery()};
         FilterQuery filterQuery = new FilterQuery();
         filterQuery.track(query);
-        if (!description.getLocation().equals("everywhere")) {
-            try {
+        try {
+            if (description.getLocation().equals("nearby")) {
+                filterQuery.locations(GeoLocater.getBoundingBoxByIP());
+            } else {
                 filterQuery.locations(GeoLocater.getBoundingBox(description.getLocation()));
-            } catch (GeoException e) {
-                System.err.println(e.getMessage() + "; let's go without place parameter");
             }
+        } catch (GeoException e) {
+            System.err.println(e.getMessage() + "; let's go without place parameter");
         }
         twitterStream.addListener(listener);
         twitterStream.filter(filterQuery);

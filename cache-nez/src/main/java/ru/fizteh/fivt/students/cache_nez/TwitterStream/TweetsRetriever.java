@@ -21,16 +21,18 @@ public class TweetsRetriever {
             Query query = new Query(description.getQuery());
             int limit = description.getTweetsLimit();
             query.setCount(limit);
-            if (!description.getLocation().equals("everywhere")) {
-                GeoPosition position = null;
-                try {
+            GeoPosition position = null;
+            try {
+                if (description.getLocation().equals("nearby")) {
+                    position = GeoLocater.getLocationByIP();
+                } else {
                     position = GeoLocater.getLocation(description.getLocation());
-                    GeoLocation location = new GeoLocation(position.getLatitude(), position.getLongitude());
-                    query.setGeoCode(location, RADIUS, Query.Unit.km);
-                } catch (GeoException e) {
-                    System.err.println(e.getMessage() + "; let's go without place parameter");
                 }
+            } catch (GeoException e) {
+                System.err.println(e.getMessage() + "; let's go without place parameter");
             }
+            GeoLocation location = new GeoLocation(position.getLatitude(), position.getLongitude());
+            query.setGeoCode(location, RADIUS, Query.Unit.km);
             QueryResult result = null;
             List<Status> tweets;
             do {

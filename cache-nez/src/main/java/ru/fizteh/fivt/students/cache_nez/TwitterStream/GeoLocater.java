@@ -33,8 +33,8 @@ class NoKeyFoundException extends Exception {
 class HttpConnect {
 
     public static String getAnswer(String request) throws IOException {
-        URL yandex = new URL(request);
-        URLConnection connection = yandex.openConnection();
+        URL site = new URL(request);
+        URLConnection connection = site.openConnection();
         StringBuilder answer = new StringBuilder();
         try (InputStreamReader streamReader =  new InputStreamReader(connection.getInputStream());
             BufferedReader bufferedReader = new BufferedReader(streamReader)) {
@@ -145,6 +145,18 @@ public class GeoLocater {
         return parseAnswer(answer);
     }
 
+    public static GeoPosition getLocationByIP() throws GeoException {
+        String request = "http://ipinfo.io/loc";
+        String answer = null;
+        try {
+            answer = HttpConnect.getAnswer(request);
+        } catch (IOException e) {
+            throw new GeoException("Location by IP failed");
+        }
+        String[] coordinates = answer.split(",");
+        return new GeoPosition(Double.parseDouble(coordinates[0]), Double.parseDouble(coordinates[1]));
+    }
+
     public static double[][] getBoundingBox(String location) throws GeoException {
         String key = null;
         String answer = null;
@@ -159,8 +171,14 @@ public class GeoLocater {
         return parseBoundingBox(answer);
     }
 
-    public static GeoPosition getLocationByIP(String ip) {
-
-        return new GeoPosition();
+    public static double[][] getBoundingBoxByIP() throws GeoException {
+        String request = "http://ipinfo.io/city";
+        String location = null;
+        try {
+            location = HttpConnect.getAnswer(request);
+        } catch (IOException e) {
+            throw new GeoException("Location by IP failed");
+        }
+        return getBoundingBox(location);
     }
 }
