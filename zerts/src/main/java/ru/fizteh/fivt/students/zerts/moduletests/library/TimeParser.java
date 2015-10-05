@@ -1,4 +1,6 @@
-package ru.fizteh.fivt.students.zerts.TwitterStream;
+package ru.fizteh.fivt.students.zerts.moduletests.library;
+
+import ru.fizteh.fivt.students.zerts.TwitterStream.Printer;
 
 import java.time.LocalDate;
 import java.time.ZoneId;

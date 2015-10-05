@@ -6,6 +6,7 @@ import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GeoExeption;
 import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GetTimelineExeption;
 import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.NoQueryExeption;
 import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.SearchTweetExeption;
+import ru.fizteh.fivt.students.zerts.moduletests.library.*;
 import twitter4j.*;
 
 import java.io.*;
@@ -27,7 +28,7 @@ public class TwitterReader {
         }
         if (argsPars.isStreamMode()) {
             try {
-                TwitterStream.stream(argsPars);
+                ru.fizteh.fivt.students.zerts.moduletests.library.TwitterStream.stream(argsPars);
             } catch (NoQueryExeption | GeoExeption e) {
                 e.printStackTrace();
             }

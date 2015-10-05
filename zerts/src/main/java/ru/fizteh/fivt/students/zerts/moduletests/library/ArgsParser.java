@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zerts.TwitterStream;
+package ru.fizteh.fivt.students.zerts.moduletests.library;
     import com.beust.jcommander.Parameter;
 
     import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zerts.TwitterStream;
+package ru.fizteh.fivt.students.zerts.moduletests.library;
 
 import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GeoExeption;
 import twitter4j.GeoLocation;
@@ -31,7 +31,7 @@ public class GeoParser {
             city = jsonParse.getString("city");
             if (Objects.equals("(Unknown city)", city)) {
                 getCityName = new URL("http://ipinfo.io/json");
-                try (BufferedReader ipinfoIn = new BufferedReader(new InputStreamReader(getCityName.openStream()))){
+                try (BufferedReader ipinfoIn = new BufferedReader(new InputStreamReader(getCityName.openStream()))) {
                     siteAnswer = "";
                     while (!siteAnswer.contains("}")) {
                         siteAnswer += ipinfoIn.readLine();
@@ -113,3 +113,4 @@ public class GeoParser {
         return distance < radius;
     }
 }
+

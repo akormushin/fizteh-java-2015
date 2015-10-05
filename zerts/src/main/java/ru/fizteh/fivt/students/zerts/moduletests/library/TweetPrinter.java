@@ -1,5 +1,6 @@
-package ru.fizteh.fivt.students.zerts.TwitterStream;
+package ru.fizteh.fivt.students.zerts.moduletests.library;
 
+import ru.fizteh.fivt.students.zerts.TwitterStream.Printer;
 import twitter4j.Status;
 
 import java.util.concurrent.TimeUnit;

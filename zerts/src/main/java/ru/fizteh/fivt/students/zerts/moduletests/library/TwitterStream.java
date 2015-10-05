@@ -1,5 +1,6 @@
-package ru.fizteh.fivt.students.zerts.TwitterStream;
+package ru.fizteh.fivt.students.zerts.moduletests.library;
 
+import ru.fizteh.fivt.students.zerts.TwitterStream.TwitterReader;
 import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.GeoExeption;
 import ru.fizteh.fivt.students.zerts.TwitterStream.exceptions.NoQueryExeption;
 import twitter4j.*;
