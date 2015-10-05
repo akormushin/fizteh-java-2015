@@ -62,7 +62,6 @@ public class Main {
     static final int FIVE = 5;
     static final int ELEVEN = 11;
     static final int TWELVE = 12;
-    static final int RT_SUB = 4;
     static final int HUNDRED = 100;
 
     private static void printMinuses() {
@@ -120,39 +119,66 @@ public class Main {
         JCommanderPar jCommanderParameters = new JCommanderPar();
         JCommander jCommander = new JCommander(jCommanderParameters, args);
 
-        try {
-            Twitter twitter = TwitterFactory.getSingleton();
-            Query query = new Query(jCommanderParameters.getQueries());
-            query.setCount(jCommanderParameters.getLimit());
-            QueryResult result = twitter.search(query);
-            List<Status> tweets = result.getTweets();
-            Collections.reverse(tweets);
+        if (!jCommanderParameters.getStream()) {
 
-            if (tweets.size() == 0) {
-                System.err.print("Не найдено ни одного твита.");
-                System.exit(0);
-            }
+            try {
+                Twitter twitter = TwitterFactory.getSingleton();
+                Query query = new Query(jCommanderParameters.getQueries());
+                query.setCount(jCommanderParameters.getLimit());
+                QueryResult result = twitter.search(query);
+                List<Status> tweets = result.getTweets();
+                Collections.reverse(tweets);
 
-            for (Status status : tweets) {
-                if (!status.isRetweet()) {
-                    printMinuses();
-                    System.out.println("["
-                            + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
-                            + "] @" + status.getUser().getScreenName() + ": "
-                            + status.getText() + retweetsCount(status.getRetweetCount()));
-                } else if (!jCommanderParameters.getHideRetweets()) {
-                    printMinuses();
-                    System.out.println("["
-                            + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
-                            + "] @" + status.getUser().getScreenName() + " ретвитнул "
-                            + status.getRetweetedStatus().getUser().getScreenName() + ": "
-                            + status.getRetweetedStatus().getText()
-                            + retweetsCount(status.getRetweetCount()));
+                if (tweets.size() == 0) {
+                    System.err.print("Не найдено ни одного твита.");
+                    System.exit(0);
                 }
+
+                for (Status status : tweets) {
+                    if (!status.isRetweet()) {
+                        printMinuses();
+                        System.out.println("["
+                                + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
+                                + "] @" + status.getUser().getScreenName() + ": "
+                                + status.getText() + retweetsCount(status.getRetweetCount()));
+                    } else if (!jCommanderParameters.getHideRetweets()) {
+                        printMinuses();
+                        System.out.println("["
+                                + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
+                                + "] @" + status.getUser().getScreenName() + " ретвитнул @"
+                                + status.getRetweetedStatus().getUser().getScreenName() + ": "
+                                + status.getRetweetedStatus().getText()
+                                + retweetsCount(status.getRetweetCount()));
+                    }
+                }
+            } catch (TwitterException te) {
+                System.err.println("Something get wrong" + te.getMessage());
+                System.exit(-1);
             }
-        } catch (TwitterException te) {
-            System.err.println("Something get wrong" + te.getMessage());
-            System.exit(-1);
+
+        } else {
+            TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
+            twitterStream.addListener(new StatusAdapter() {
+                @Override
+                public void onStatus(Status status) {
+                    if (!status.isRetweet()) {
+                        printMinuses();
+                        System.out.println("@" + status.getUser().getScreenName() + ": "
+                                + status.getText() + retweetsCount(status.getRetweetCount()));
+                    } else if (!jCommanderParameters.getHideRetweets()) {
+                        printMinuses();
+                        System.out.println("@" + status.getUser().getScreenName() + " ретвитнул @"
+                                + status.getRetweetedStatus().getUser().getScreenName() + ": "
+                                + status.getRetweetedStatus().getText()
+                                + retweetsCount(status.getRetweetCount()));
+                    }
+                }
+            });
+
+            String[] trackArray = new String[1];
+            trackArray[0] = jCommanderParameters.getQueries();
+            FilterQuery filterQuery = new FilterQuery(0, new long[0], trackArray);
+            twitterStream.filter(filterQuery);
         }
     }
 }
