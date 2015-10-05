@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static java.util.stream.Collectors.toCollection;
+
 /**
  * Created by kormushin on 22.09.15.
  */
@@ -12,7 +14,7 @@ import java.util.List;
 @XmlType
 @XmlAccessorType(XmlAccessType.FIELD)
 @DatabaseTable
-public class Group {
+public class Group implements Cloneable {
 
     @PrimaryKey
     @XmlAttribute
@@ -53,4 +55,16 @@ public class Group {
                 + '}';
     }
 
+    @Override
+    public Group clone() {
+        try {
+            Group clone = (Group) super.clone();
+            clone.setStudents(students.stream()
+                    .map(Student::clone)
+                    .collect(toCollection(ArrayList::new)));
+            return clone;
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
+    }
 }
