@@ -57,7 +57,9 @@ class JCommanderPar {
         return limit;
     }
 
-    public boolean getHelp() { return help; }
+    public boolean getHelp() {
+        return help;
+    }
 }
 
 public class Main {
