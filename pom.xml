@@ -21,9 +21,11 @@
 
     <modules>
         <module>akormushin</module>
-        <module>zakharovas</module>
+        <module>ocksumoron</module>
         <module>thefacetakt</module>
-  </modules>
+        <module>andrewgark</module>
+        <module>zakharovas</module>
+    </modules>
 
     <dependencies>
         <dependency>
