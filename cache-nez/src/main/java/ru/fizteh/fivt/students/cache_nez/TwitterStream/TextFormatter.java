@@ -108,11 +108,11 @@ class TimeConverter {
             delta = ChronoUnit.MINUTES.between(tweetDate, currentDate);
             return delta + Declenser.getDeclension(delta, Declenser.ToDeclense.MINUTE) + " назад";
         }
-        if (tweetDate.toLocalDate().equals(LocalDate.now())) {
+        if (tweetDate.toLocalDate().equals(currentDate.toLocalDate())) {
             delta = ChronoUnit.HOURS.between(tweetDate, currentDate);
             return delta + Declenser.getDeclension(delta, Declenser.ToDeclense.HOUR) + " назад";
         }
-        if (tweetDate.toLocalDate().equals(LocalDate.now().minusDays(1))) {
+        if (tweetDate.toLocalDate().equals(currentDate.minusDays(1).toLocalDate())) {
             return "вчера";
         }
         delta = ChronoUnit.DAYS.between(tweetDate, currentDate);
