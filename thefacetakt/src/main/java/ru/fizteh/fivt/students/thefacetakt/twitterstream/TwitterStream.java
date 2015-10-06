@@ -13,8 +13,10 @@ import ru.fizteh.fivt.students.thefacetakt
         .twitterstream.exceptions.NoKeyException;
 import twitter4j.*;
 
+import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.util.*;
+
 
 
 public class TwitterStream {
@@ -35,11 +37,11 @@ public class TwitterStream {
         }
     }
 
-    static void printSeparator() {
+    static void printSeparator(PrintStream out) {
         for (int i = 0; i < MINUSES_COUNT; ++i) {
-            System.out.print("-");
+            out.print("-");
         }
-        System.out.println();
+        out.println();
     }
 
     static Location resolveLocation(String passedLocation)
@@ -54,48 +56,43 @@ public class TwitterStream {
         return result;
     }
 
-
-
     static final String ANSI_RESET = "\u001B[0m";
     static final String ANSI_BLUE = "\u001B[34m";
-    static void printNick(String nick) {
-
-        System.out.print("@" + ANSI_BLUE + nick + ": " + ANSI_RESET);
+    static void printNick(String nick, PrintStream out) {
+        out.print("@" + ANSI_BLUE + nick + ": " + ANSI_RESET);
     }
 
-
-    //RT @nick:
-    static final int RT_SPACE_AT_LENGTH = 4;
-    static void printTweet(Status status) {
-        printNick(status.getUser().getScreenName());
+    static void printTweet(Status status, PrintStream out) {
+        printNick(status.getUser().getScreenName(), out);
         if (!status.isRetweet()) {
-            System.out.print(status.getText());
+            out.print(status.getText());
 
             if (status.getRetweetCount() != 0) {
-                System.out.print(" ("
+                out.print(" ("
                         + status.getRetweetCount() + " "
                         + Declenser.retweetDeclension(status.getRetweetCount())
                         + ")"
                 );
             }
         } else {
-            System.out.print("ретвитнул ");
-            String[] splittedText = status.getText().split(":");
+            out.print("ретвитнул ");
+            String[] splitText = status.getText().split(":");
 
-            String originalNick = splittedText[0].substring(RT_SPACE_AT_LENGTH);
-            printNick(originalNick);
-            ArrayList<String> originalText = new ArrayList<String>(
-                    Arrays.asList(splittedText)
-                    .subList(1, splittedText.length -  1)
+            printNick(status.getRetweetedStatus().getUser().getScreenName(),
+                    out);
+            ArrayList<String> originalText = new ArrayList<>(
+                    Arrays.asList(splitText)
+                    .subList(1, splitText.length -  1)
             );
 
-            System.out.print(String.join(":", originalText));
+            out.print(String.join(":", originalText));
         }
-        System.out.println();
+        out.println();
     }
 
     static void printTweetsOnce(JCommanderSetting jCommanderSettings,
-                              Location currentLocation, String queryString) {
+                                Location currentLocation, String queryString,
+                                PrintStream out) throws TwitterException {
 
         int numberOfTries = 0;
 
@@ -120,66 +117,39 @@ public class TwitterStream {
                 Collections.reverse(tweets);
 
                 if (tweets.isEmpty()) {
-                    System.out.println("Не найдено ни одного твита");
-                    printSeparator();
+                    out.println("Не найдено ни одного твита");
+                    printSeparator(out);
                 }
 
                 for (Status status : tweets) {
                     if (!status.isRetweet()
                             || !jCommanderSettings.isHideRetweets()) {
 
-                        System.out.print("["
+                        out.print("["
                                 + TimeFormatter.formatTime(currentTime,
                                 status.getCreatedAt().getTime()) + "] ");
 
-                        printTweet(status);
+                        printTweet(status, out);
 
-                        printSeparator();
+                        printSeparator(out);
                     }
                 }
                 numberOfTries = MAX_NUMBER_OF_TRIES;
             } catch (TwitterException te) {
                 ++numberOfTries;
                 if (numberOfTries == MAX_NUMBER_OF_TRIES) {
-                    System.out.println(te.getMessage());
-                    System.err.println("Something went terribly wrong, "
+                    throw new TwitterException(te.getMessage()
+                            + "\n" + "Something went terribly wrong, "
                             + "probably - connection + error");
-                    System.exit(1);
                 }
             }
         } while (numberOfTries < MAX_NUMBER_OF_TRIES);
     }
 
-    static double sqr(double x) {
-        return x * x;
-    }
 
-    //https://en.wikipedia.org/wiki/Great-circle_distance#Formulas
-    static final double EARTH_RADIUS = 6371;
-    static final double RADIANS_IN_DEGREE = Math.PI / 180;
-
-    static double toRadians(double angle) {
-        return angle * RADIANS_IN_DEGREE;
-    }
-
-    static double sphereDistance(double phi1, double lambda1,
-                                 double phi2, double lambda2) {
-        phi1 = toRadians(phi1);
-        phi2 = toRadians(phi2);
-        lambda1 = toRadians(lambda1);
-        lambda2 = toRadians(lambda2);
-
-        double deltaPhi = phi2 - phi1;
-        double deltaLambda = lambda2 - lambda1;
-
-        return 2 * Math.asin(Math.sqrt(sqr(Math.sin(deltaPhi / 2))
-                + Math.cos(phi1) * Math.cos(phi2)
-                        * sqr(Math.sin(deltaLambda / 2))))
-                * EARTH_RADIUS;
-    }
 
     static void printTwitterStream(JCommanderSetting jCommanderSetting,
-                                   Location currentLocation) {
+                                   Location currentLocation, PrintStream out) {
 
         twitter4j.TwitterStream twitterStream =
                 new TwitterStreamFactory().getInstance();
@@ -193,7 +163,7 @@ public class TwitterStream {
                     return;
                 }
 
-                Location tweetLocation = null;
+                Location tweetLocation;
                 if (status.getGeoLocation() != null) {
                     tweetLocation = new Location(
                             status.getGeoLocation().getLatitude(),
@@ -214,15 +184,14 @@ public class TwitterStream {
                     }
                 }
 
-                assert tweetLocation != null;
-
-                if (sphereDistance(tweetLocation.getLatitude(),
-                        tweetLocation.getLongitude(),
-                        currentLocation.getLatitude(),
-                        currentLocation.getLongitude()
+                if (SphereDistanceResolver
+                        .sphereDistance(tweetLocation.getLatitude(),
+                                tweetLocation.getLongitude(),
+                                currentLocation.getLatitude(),
+                                currentLocation.getLongitude()
                         ) < RADIUS) {
-                    printTweet(status);
-                    printSeparator();
+                    printTweet(status, out);
+                    printSeparator(out);
                 }
             }
         });
@@ -235,16 +204,15 @@ public class TwitterStream {
     }
 
     static void readUntilCtrlD() {
-        Scanner scanner = new Scanner(System.in);
-        while (scanner.hasNext()) {
-            int checkstyleWantAtLeastOneStatement = 0;
-            // waiting for end of input
+        try (Scanner scanner = new Scanner(System.in)) {
+            while (scanner.hasNext()) {
+                scanner.next();
+            }
         }
-        scanner.close();
         System.exit(0);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws TwitterException {
 
         JCommanderSetting jCommanderSettings = new JCommanderSetting();
 
@@ -279,12 +247,13 @@ public class TwitterStream {
         System.out.println("Твиты по запросу "
                 + queryString + " для "
                 + currentLocation.getName());
-        printSeparator();
+        printSeparator(System.out);
 
         if (!jCommanderSettings.isStream()) {
-            printTweetsOnce(jCommanderSettings, currentLocation, queryString);
+            printTweetsOnce(jCommanderSettings, currentLocation
+                    , queryString, System.out);
         } else {
-            printTwitterStream(jCommanderSettings, currentLocation);
+            printTwitterStream(jCommanderSettings, currentLocation, System.out);
             readUntilCtrlD();
         }
     }
