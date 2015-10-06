@@ -21,7 +21,9 @@
 
     <modules>
         <module>akormushin</module>
+        <module>ocksumoron</module>
         <module>thefacetakt</module>
+        <module>andrewgark</module>
         <module>zemen</module>
         <!--Add you module here-->
     </modules>
