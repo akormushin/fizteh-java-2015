@@ -22,7 +22,7 @@ public class GeoParser {
             throw new GeoExeption("Can't read the yandex key. Please, check your keyfile!");
         }
     }
-    public static String getMyPlace() throws IOException, JSONException, GeoExeption {
+    public static String getMyPlace() throws IOException, JSONException {
         URL getCityName = new URL("http://api.hostip.info/get_json.php");
         String city = "";
         try (BufferedReader apihostipIn = new BufferedReader(new InputStreamReader(getCityName.openStream()))) {
@@ -42,9 +42,6 @@ public class GeoParser {
             }
         }
         //System.out.println(city);
-        if (Objects.equals(city, "")) {
-            throw new GeoExeption("Can't detect your location");
-        }
         return city;
     }
     public static GeoLocation getCoordinates(String place) throws IOException, GeoExeption, InterruptedException,
