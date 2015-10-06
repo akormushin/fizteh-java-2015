@@ -11,13 +11,12 @@ import org.json.JSONObject;
 import twitter4j.GeoLocation;
 import twitter4j.GeoQuery;
 
-import javax.xml.ws.WebServiceClient;
 import java.io.*;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Map;
+
 
 import static java.lang.Math.*;
 

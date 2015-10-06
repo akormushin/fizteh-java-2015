@@ -7,8 +7,6 @@ import twitter4j.*;
 import java.io.IOException;
 import java.util.List;
 import java.util.Scanner;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import static java.lang.Thread.sleep;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.getGeolocation;
@@ -128,7 +126,7 @@ public class TwitterStream {
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
-            System.exit(-1);
+            return;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -175,7 +173,7 @@ public class TwitterStream {
         } catch (TwitterException te) {
             te.printStackTrace();
             System.out.println("Failed to search tweets: " + te.getMessage());
-            System.exit(-1);
+            return;
         } catch (IOException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
