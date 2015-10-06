@@ -37,10 +37,6 @@ class JCommanderPar {
     @Parameter(names = {"--help", "-h"}, description = "Show help", help = true)
     private boolean help;
 
-    public String getPlace() {
-        return place;
-    }
-
     public String getQueries() {
         return String.join(" ", queries);
     }
@@ -65,6 +61,7 @@ class JCommanderPar {
 public class Main {
     static final int TEN = 10;
     static final int FIVE = 5;
+    static final int THREE = 3;
     static final int ELEVEN = 11;
     static final int TWELVE = 12;
     static final int HUNDRED = 100;
@@ -73,16 +70,22 @@ public class Main {
         System.out.println(new String(new char[HUNDRED]).replace('\0', '-'));
     }
 
+    private static String russianEnding(int count, int flag) {
+        String[][] ending = {{"ретвитов", "ретвит", "ретвита"}, {"минут", "минуту", "минуты"}, {"часов", "час", "часа"}, {"дней", "день", "дня"}};
+
+        if (count % TEN >= FIVE || count % HUNDRED == ELEVEN
+                || count % HUNDRED == TWELVE || count % TEN == 0) {
+            return count + " " + ending[flag][0];
+        } else if (count % TEN == 1) {
+            return count + " " + ending[flag][1];
+        } else {
+            return count + " " + ending[flag][2];
+        }
+    }
+
     private static String retweetsCount(int retweets) {
 
-        if (retweets % TEN > FIVE || retweets % HUNDRED == ELEVEN
-                || retweets % HUNDRED == TWELVE || retweets % TEN == 0) {
-            return " (" + retweets + " ретвитов)";
-        } else if (retweets % TEN == 1) {
-            return " (" + retweets + " ретвит)";
-        } else {
-            return " (" + retweets + " ретвита)";
-        }
+        return "(" + russianEnding(retweets, 0) + ")";
     }
     private static String timeFromPublish(long timeCreateTwit, long currentTime) {
         LocalDateTime currTime = new Date(currentTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -92,31 +95,15 @@ public class Main {
             return "Только что";
         } else if (ChronoUnit.HOURS.between(tweetTime, currTime) == 0) {
             long minutes = ChronoUnit.MINUTES.between(tweetTime, currTime);
-            if (minutes % TEN > FIVE || minutes == ELEVEN || minutes == TWELVE) {
-                return minutes + " минут назад";
-            } else if (minutes % TEN == 1) {
-                return minutes + " минуту назад";
-            } else {
-                return minutes + " минуты назад";
-            }
+            return russianEnding((int) minutes, 1) + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, currTime) == 0) {
             long hours = ChronoUnit.HOURS.between(tweetTime, currTime);
-            if (hours % TEN > FIVE || hours == ELEVEN || hours == TWELVE) {
-                return hours + " часов назад";
-            } else if (hours % TEN == 1) {
-                return hours + " час назад";
-            } else {
-                return hours + " часа назад";
-            }
+            return russianEnding((int) hours, 2) + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, currTime) == 1) {
             return "вчера";
         } else {
             long days = ChronoUnit.DAYS.between(tweetTime, currTime);
-            if (days % TEN < FIVE && days != ELEVEN && days != TWELVE) {
-                return days + " дня назад";
-            } else {
-                return days + " дней назад";
-            }
+            return russianEnding((int) days, THREE) + " назад";
         }
     }
 
