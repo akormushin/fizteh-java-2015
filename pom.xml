@@ -21,8 +21,10 @@
 
     <modules>
         <module>akormushin</module>
+        <module>ocksumoron</module>
         <module>thefacetakt</module>
         <module>riazanovskiy</module>
+        <module>andrewgark</module>
         <!--Add you module here-->
     </modules>
 
