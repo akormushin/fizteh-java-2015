@@ -26,23 +26,36 @@ public class StringFormater {
     }
 
     public static String tweetForOutputWithoutDate(Status tweet) {
-        String formatedTweet = "";
+        StringBuilder formatedTweet = new StringBuilder();
         if (!tweet.isRetweet()) {
-            formatedTweet += COLOR_BLUE
-                    + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
-                    + tweet.getText();
+            formatedTweet.append(COLOR_BLUE);
+            formatedTweet.append(" @");
+            formatedTweet.append(tweet.getUser().getName());
+            formatedTweet.append(COLOR_RESET);
+            formatedTweet.append(": ");
+            formatedTweet.append(tweet.getText());
             if (tweet.getRetweetCount() > 0) {
-                formatedTweet += "(" + tweet.getRetweetCount() + " "
-                        + fineWords(tweet.getRetweetCount(), ENDING_RETWEETS) + ")";
+                formatedTweet.append("(");
+                formatedTweet.append(tweet.getRetweetCount());
+                formatedTweet.append(" ");
+                formatedTweet.append(fineWords(tweet.getRetweetCount(), ENDING_RETWEETS));
+                formatedTweet.append(")");
             }
         } else {
-            formatedTweet += COLOR_BLUE
-                    + " @" + tweet.getUser().getName() + COLOR_RESET + ": "
-                    + "ретвитнул " + COLOR_BLUE + "@"
-                    + tweet.getRetweetedStatus().getUser().getName() + COLOR_RESET
-                    + ": " + tweet.getRetweetedStatus().getText();
+            formatedTweet.append(COLOR_BLUE);
+            formatedTweet.append(" @");
+            formatedTweet.append(tweet.getUser().getName());
+            formatedTweet.append(COLOR_RESET);
+            formatedTweet.append(": ");
+            formatedTweet.append("ретвитнул ");
+            formatedTweet.append(COLOR_BLUE);
+            formatedTweet.append("@");
+            formatedTweet.append(tweet.getRetweetedStatus().getUser().getName());
+            formatedTweet.append(COLOR_RESET);
+            formatedTweet.append(": ");
+            formatedTweet.append(tweet.getRetweetedStatus().getText());
         }
-        return formatedTweet;
+        return formatedTweet.toString();
     }
 
 

@@ -21,7 +21,7 @@ public class GeoLocator {
     private static final double EARTH_RADIUS = 6371;
     private static final double DEFAULT_RADIUS = 100;
     private String location;
-    private double radius = 0;
+    private double radius;
     private double[][] borders;
     private double[] locationCenter;
     private GeoApiContext context;
