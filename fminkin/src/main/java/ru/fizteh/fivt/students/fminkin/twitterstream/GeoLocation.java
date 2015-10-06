@@ -13,14 +13,10 @@ import java.util.Properties;
  */
 public class GeoLocation {
     private static String googleMapsKey;
-    public static Location getLocationGoogle(String base) throws IOException {
+    public static Location getLocationGoogle(String base) throws IOException, URISyntaxException, JSONException {
         Properties properties = new Properties();
-        try (InputStream input = GeoLocation.class.getResourceAsStream("/geo.properties")) {
-            properties.load(input);
-        } catch (IOException e) {
-            System.err.println("IOException has occured");
-            e.printStackTrace();
-        }
+        InputStream input = GeoLocation.class.getResourceAsStream("/geo.properties");
+        properties.load(input);
 
         googleMapsKey = properties.getProperty("google");
         if (googleMapsKey == null) {
@@ -31,25 +27,18 @@ public class GeoLocation {
         base = base.replaceAll(", ", ",+");
         String name = "https://maps.googleapis.com/maps/api/geocode/json?address=" + base + "&key=" + googleMapsKey;
         URL u;
-        try {
-            u = new URL(name);
-            u.toURI();
-        } catch (URISyntaxException e) {
-            System.err.println("URI Syntax Exception has occured");
-            return null;
-        }
 
-        try {
-            org.json.JSONObject json = JsonReader.readJsonFromUrl(u.toString());
-            json = json
-                    .getJSONArray("results")
-                    .getJSONObject(0)
-                    .getJSONObject("geometry")
-                    .getJSONObject("location");
-            return new Location(Double.parseDouble(json.getString("lat")), Double.parseDouble(json.getString("lng")));
-        } catch (JSONException e) {
-            System.err.println("JSONException has occured");
-            return null;
-        }
+        u = new URL(name);
+        u.toURI();
+
+
+        org.json.JSONObject json = JsonReader.readJsonFromUrl(u.toString());
+        json = json
+                .getJSONArray("results")
+                .getJSONObject(0)
+                .getJSONObject("geometry")
+                .getJSONObject("location");
+        return new Location(Double.parseDouble(json.getString("lat")), Double.parseDouble(json.getString("lng")));
+
     }
 }

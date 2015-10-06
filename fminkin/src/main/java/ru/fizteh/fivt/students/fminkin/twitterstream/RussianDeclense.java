@@ -7,8 +7,8 @@ public class RussianDeclense {
     public static final Integer MODULE_CONSTANT = 20;
     public static final Integer MODULE_VALUE_FIRST = 1;
     public static final Integer MODULE_VALUE_SECOND = 2;
-    public static final Integer MODULE_VALUE_THIRD = 1;
-    public static final Integer MODULE_VALUE_FOURTH = 1;
+    public static final Integer MODULE_VALUE_THIRD = 3;
+    public static final Integer MODULE_VALUE_FOURTH = 4;
     static final String[] HOURS = {"час", "часа", "часов"};
     static final String[] DAYS = {"день", "дня", "дней"};
     static final String[] MINUTES = {"минута", "минуты",

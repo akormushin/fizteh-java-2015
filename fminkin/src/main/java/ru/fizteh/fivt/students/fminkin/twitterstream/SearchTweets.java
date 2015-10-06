@@ -53,42 +53,38 @@ public class SearchTweets {
             }
         } else {
             System.out.print("ретвитнул ");
-            String[] tokens = tweet.getText().split(":"); //tokens[0] contains name RT @NICK
-            System.out.println(tokens[0].substring(SYMBOLS_BEFORE_NAME)
-                    + tweet.getText().substring(tokens[0].length())); //3 symbols
+            System.out.print(tweet.getRetweetedStatus().getUser().getScreenName() + ": ");
+            tweet = tweet.getRetweetedStatus();
+            System.out.println(tweet.getText());
+
         }
         for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
             System.out.print("-");
         }
         System.out.println();
     }
-    public static void search(JCommanderConfig jcc, Location curLoc) {
+    public static void search(JCommanderConfig jcc, Location curLoc) throws TwitterException {
         Twitter twitter = new TwitterFactory().getInstance();
-        try {
-            Query query = new Query(jcc.getQueries().toString()).geoCode(
-                   new GeoLocation(curLoc.getLatitude(), curLoc.getLongitude()), RAD, METRIC_CHAR);
-            query.setCount(jcc.getTweetsLimit());
-            QueryResult result = twitter.search(query);
-            List<Status> tweets = result.getTweets();
-            if (tweets.isEmpty()) {
-                System.out.println("Нет результатов");
-                for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
-                    System.out.print("-");
-                }
-                System.out.println();
+
+        Query query = new Query(jcc.getQueries().toString()).geoCode(
+                new GeoLocation(curLoc.getLatitude(), curLoc.getLongitude()), RAD, METRIC_CHAR);
+        query.setCount(jcc.getTweetsLimit());
+        QueryResult result = twitter.search(query);
+        List<Status> tweets = result.getTweets();
+        if (tweets.isEmpty()) {
+            System.out.println("Нет результатов");
+            for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
+                System.out.print("-");
             }
-            for (Status tweet : tweets) {
-                if (!tweet.isRetweet() || !jcc.isRetweetsHidden()) {
-                    System.out.print("[" + TimeAlign.printTime(
-                            System.currentTimeMillis() - tweet.getCreatedAt().getTime()) + "] ");
-                    printTweet(tweet);
-                }
-            }
-            System.exit(0);
-        } catch (TwitterException te) {
-            te.printStackTrace();
-            System.err.println("Failed to search tweets: " + te.getMessage());
-            System.exit(-1);
+            System.out.println();
         }
+        for (Status tweet : tweets) {
+            if (!tweet.isRetweet() || !jcc.isRetweetsHidden()) {
+                System.out.print("[" + TimeAlign.printTime(
+                        System.currentTimeMillis() - tweet.getCreatedAt().getTime()) + "] ");
+                printTweet(tweet);
+            }
+        }
+
     }
 }

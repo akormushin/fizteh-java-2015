@@ -4,8 +4,6 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 
 import twitter4j.*;
-
-import java.io.IOException;
 import java.util.Scanner;
 
 /**
@@ -41,9 +39,10 @@ public class TwitterStream {
         Location loc = new Location();
         try {
             loc = GeoLocation.getLocationGoogle(jcc.getLocation());
-        } catch (IOException e) {
+        } catch (Throwable e) {
             System.out.println("IOException has occured");
             e.printStackTrace();
+            return;
         }
         System.out.println("Твитты по запросу " + jcc.getQueries() + " для " + jcc.getLocation());
         for (int i = 0; i < MINUSES_COUNT; ++i) {
@@ -52,11 +51,17 @@ public class TwitterStream {
         System.out.println();
 
         SearchTweets tweetSearch = new SearchTweets();
-        if (jcc.isStream()) {
-            tweetSearch.handleStream(jcc, loc);
-            waitCtrlD();
-        } else {
-            tweetSearch.search(jcc, loc);
+        try {
+            if (jcc.isStream()) {
+                tweetSearch.handleStream(jcc, loc);
+                waitCtrlD();
+            } else {
+                tweetSearch.search(jcc, loc);
+                tweetSearch.search(jcc, loc);
+            }
+        } catch (Throwable e) {
+            System.out.println("tweetSeartch Failed\n");
+            return;
         }
 
     }
