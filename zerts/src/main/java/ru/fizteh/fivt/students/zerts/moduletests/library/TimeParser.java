@@ -57,12 +57,12 @@ public class TimeParser {
             rightWordPrinting(goneTime / TimeUnit.MINUTES.toMillis(1L), MIN_MODE);
         } else if (new Date(givenTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().
                 equals(LocalDate.now())) {
-            rightWordPrinting(goneTime / TimeUnit.HOURS.toSeconds(1L), HOUR_MODE);
+            rightWordPrinting(goneTime / TimeUnit.HOURS.toMillis(1L), HOUR_MODE);
         } else if (new Date(givenTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDate().
                 equals(LocalDate.now().minusDays(1))) {
             Printer.print("Вчера");
         } else {
-            rightWordPrinting(goneTime / TimeUnit.DAYS.toMillis(1L), DAY_MODE);
+            rightWordPrinting((goneTime + TimeUnit.DAYS.toMillis(1L) - 1) / TimeUnit.DAYS.toMillis(1L), DAY_MODE);
         }
         Printer.print("] ");
     }

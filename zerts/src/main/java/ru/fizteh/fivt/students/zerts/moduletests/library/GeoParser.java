@@ -95,15 +95,11 @@ public class GeoParser {
         return number * number;
     }
     static final double EARTH_RADIUS = 6371;
-    static final double RADIANS_IN_DEGREE = Math.PI / 180;
-    private static double toRadians(double angle) {
-        return angle * RADIANS_IN_DEGREE;
-    }
     public static boolean near(GeoLocation first, GeoLocation second, double radius) {
-        double firstLatitude = toRadians(first.getLatitude());
-        double firstLongtitute = toRadians(first.getLongitude());
-        double secondLatitude = toRadians(second.getLatitude());
-        double secondLongtitude = toRadians(second.getLongitude());
+        double firstLatitude = Math.toRadians(first.getLatitude());
+        double firstLongtitute = Math.toRadians(first.getLongitude());
+        double secondLatitude = Math.toRadians(second.getLatitude());
+        double secondLongtitude = Math.toRadians(second.getLongitude());
         double deltaPhi = secondLatitude - firstLatitude;
         double deltaLambda = secondLongtitude - firstLongtitute;
 

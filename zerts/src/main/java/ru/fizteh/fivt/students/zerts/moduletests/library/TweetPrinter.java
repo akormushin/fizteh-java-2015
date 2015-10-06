@@ -28,23 +28,16 @@ public class TweetPrinter {
         }
         printedTweets++;
         Printer.print("@" + tweet.getUser().getScreenName() + ": ");
-        int start = 0;
         String text = tweet.getText();
         if (tweet.isRetweet()) {
             if (argsPars.isNoRetweetMode()) {
                 return;
             }
             Printer.print("ретвитнул ");
-            while (text.charAt(start) != '@') {
-                start++;
-            }
-        }
-        for (int i = start; i < text.length(); i++) {
-            if (text.charAt(i) != '\n') {
-                Printer.print(text.charAt(i));
-            } else {
-                Printer.print(" ");
-            }
+            Printer.print("@" + tweet.getRetweetedStatus().getUser().getScreenName());
+            Printer.print(tweet.getRetweetedStatus().getText());
+        } else {
+            Printer.print(tweet.getText());
         }
         if (!argsPars.isStreamMode() && !tweet.isRetweet() && tweet.getRetweetCount() != 0) {
             Printer.print(" (");
