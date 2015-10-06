@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.riazanovskiy.TwitterStream;
 
 import java.time.*;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 class RecentDateFormatter {
@@ -22,7 +23,7 @@ class RecentDateFormatter {
             long hoursPassed = timePassed.toHours();
             return String.format("%d %s назад", hoursPassed, RussianWordForms.getWordForm("час", hoursPassed));
         } else {
-            int daysPassed = Period.between(then.toLocalDate(), now.toLocalDate()).getDays();
+            long daysPassed = ChronoUnit.DAYS.between(then.toLocalDate(), now.toLocalDate());
             if (daysPassed == 1) {
                 return "вчера";
             } else {
