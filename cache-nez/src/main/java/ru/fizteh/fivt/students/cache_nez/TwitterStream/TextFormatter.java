@@ -3,7 +3,6 @@ package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 import twitter4j.Status;
 
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
