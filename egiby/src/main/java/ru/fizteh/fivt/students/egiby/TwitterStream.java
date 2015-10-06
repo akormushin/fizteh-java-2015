@@ -11,7 +11,6 @@ import java.util.concurrent.TimeUnit;
 
 public class TwitterStream {
     public static final int DEFAULT_NUMBER_OF_TWEETS = 100;
-    public static final int RADIUS = 30;
 
     public static void main(String[] args) {
         JCommanderParams jcp = new JCommanderParams();
@@ -45,7 +44,8 @@ public class TwitterStream {
         Query query = new Query(jcp.getKeyword());
 
         if (jcp.getLocation() != null) {
-            query.setGeoCode(LocationUtils.getLocationByName(jcp.getLocation()), RADIUS, Query.KILOMETERS);
+            query.setGeoCode(LocationUtils.getLocationByName(jcp.getLocation()), LocationUtils.calcRadius(),
+                    Query.KILOMETERS);
         }
 
         int numberOfTweets = 0;

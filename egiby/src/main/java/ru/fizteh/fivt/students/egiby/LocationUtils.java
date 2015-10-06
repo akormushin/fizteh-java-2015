@@ -7,6 +7,7 @@ import twitter4j.JSONObject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.MalformedURLException;
 
 /**
  * Created by egiby on 04.10.15.
@@ -16,10 +17,8 @@ public class LocationUtils {
     private static final String URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=";
 
     private static String getAPIKey() {
-        try {
-            BufferedReader input = new BufferedReader(new FileReader("GoogleMapsAPI.properties"));
+        try (BufferedReader input = new BufferedReader(new FileReader("GoogleMapsAPI.properties"))) {
             String key = input.readLine();
-            input.close();
             return key;
         } catch (IOException e) {
             e.printStackTrace();
@@ -29,10 +28,15 @@ public class LocationUtils {
 
     private static JSONObject getGoogleAPIQuery(String location) {
         String key = getAPIKey();
-        String json = HttpQuery.getQuery(URL + location + "&key=" + key);
+        String json;
+
         try {
+            json = HttpQuery.getQuery(URL + location + "&key=" + key);
             return new JSONObject(json);
         } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        } catch (MalformedURLException e) {
             e.printStackTrace();
             return null;
         }
@@ -75,8 +79,12 @@ public class LocationUtils {
             return coordinateBox;
         } catch (JSONException e) {
             e.printStackTrace();
+            return MOSCOW;
         }
+    }
 
-        return MOSCOW;
+    public static final int DEFAULT_RADIUS = 30;
+    public static long calcRadius() {
+        return DEFAULT_RADIUS;
     }
 }

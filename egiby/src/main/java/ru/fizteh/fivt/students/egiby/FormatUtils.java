@@ -14,16 +14,19 @@ public class FormatUtils {
     private static final long FIVE = 5L;
     private static final long ONE = 1L;
     private static final long TEN = 10L;
+    private static final long ELEVEN = 11L;
+    private static final long HUNDRED = 100L;
+    private static final long TWENTY = 20L;
     private static final String[] DAYS = {"день", "дня", "дней"};
     private static final String[] HOURS = {"час", "часа", "часов"};
     private static final String[] MINUTES = {"минуту", "минуты", "минут"};
 
     private static String formatNumber(long number, String[] form) {
-        if (number % TEN == ONE) {
+        if (number % TEN == ONE && number % HUNDRED != ELEVEN) {
             return number + " " + form[0];
         }
 
-        if (number % TEN > ONE && number % TEN < FIVE) {
+        if (number % TEN > ONE && number % TEN < FIVE && (number % HUNDRED < ELEVEN || number % HUNDRED > TWENTY)) {
             return number + " " + form[1];
         }
 
