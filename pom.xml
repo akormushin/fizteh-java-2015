@@ -23,8 +23,8 @@
         <module>akormushin</module>
         <module>ocksumoron</module>
         <module>thefacetakt</module>
-        <!--Add you module here-->
-  </modules>
+        <module>andrewgark</module>
+    </modules>
 
     <dependencies>
         <dependency>
