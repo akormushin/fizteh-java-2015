@@ -2,32 +2,19 @@ package ru.fizteh.fivt.students.sergmiller.twitterStream;
 
 
 import com.beust.jcommander.internal.Maps;
-//import com.google.common.base.Function;
-//import com.google.common.base.Joiner;
-//import com.google.common.collect.Iterables;
 import org.json.JSONException;
 import org.json.JSONObject;
 import ru.fizteh.fivt.students.sergmiller.twitterStream.exceptions.GettingMyLocationException;
 import twitter4j.GeoLocation;
-
-//import twitter4j.GeoQuery;
-
-//import javax.swing.*;
 import java.io.*;
-//import java.net.MalformedURLException;
-//import java.net.MalformedURLException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
-//import java.util.ArrayList;
-//import java.util.DoubleSummaryStatistics;
 import java.util.Map;
 import java.util.stream.Collectors;
-
 import javafx.util.Pair;
 
-//import javax.xml.stream.Location;
 
 /**
  * Created by sergmiller on 29.09.15.
@@ -98,8 +85,8 @@ final class GeoLocationResolver {
         }
     }
 
-        public static double getSphereDist(double latitude1, double longitude1,
-                                                         double latitude2, double longitude2) {
+    public static double getSphereDist(double latitude1, double longitude1,
+                                       double latitude2, double longitude2) {
         latitude1 = Math.toRadians(latitude1);
         latitude2 = Math.toRadians(latitude2);
         longitude1 = Math.toRadians(longitude1);

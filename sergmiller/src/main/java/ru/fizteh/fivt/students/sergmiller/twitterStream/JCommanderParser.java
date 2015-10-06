@@ -38,7 +38,7 @@ class JCommanderParser {
 
     @Parameter(names = {"--place", "-p"},
             description = "Искать по заданному региону."
-                        + "Если регион равен nearby ищет твиты рядом")
+                    + "Если регион равен nearby ищет твиты рядом")
     private String location = "";
 
 
