@@ -25,74 +25,56 @@ import static java.lang.Math.*;
  */
 public class GetGeolocation {
     public static final String baseUrl = "http://maps.googleapis.com/maps/api/geocode/json";// путь к Geocoding API по HTTP
+    public static final String GeoIPUrl  = "http://ipinfo.io/json";
+    public static final String near = "nearbly";
 
     public static Pair<GeoLocation, Double> getGeolocation(String were) throws IOException {
-        if (were == "nearbly"){
-            GeoLocation location  = getLocationByIP(getCurrentIP());
-            return new Pair<>(new GeoLocation(12,15),5.25);
-
+        if (were.equals(near)) {
+            final JSONObject response = JsonReader.read(GeoIPUrl);
+            String city = response.getString("city");
+            were = city;
         }
-        else{
-            final Map<String, String> params = Maps.newHashMap();
-            params.put("sensor", "false");// исходит ли запрос на геокодирование от устройства с датчиком местоположения
-            params.put("address", were);// адрес, который нужно геокодировать
-            final String url = baseUrl + '?' + encodeParams(params);
-            final JSONObject response = JsonReader.read(url);// делаем запрос к вебсервису и получаем от него ответ
+        final Map<String, String> params = Maps.newHashMap();
+        params.put("sensor", "false");// исходит ли запрос на геокодирование от устройства с датчиком местоположения
+        params.put("address", were);// адрес, который нужно геокодировать
+        final String url = baseUrl + '?' + encodeParams(params);
+        final JSONObject response = JsonReader.read(url);// делаем запрос к вебсервису и получаем от него ответ
 
-            JSONObject location = response.getJSONArray("results").getJSONObject(0);
-            location = location.getJSONObject("geometry");
-            location = location.getJSONObject("location");
-            final double lng = location.getDouble("lng");// долгота
-            final double lat = location.getDouble("lat");// широта
+        JSONObject location = response.getJSONArray("results").getJSONObject(0);
+        location = location.getJSONObject("geometry");
+        location = location.getJSONObject("location");
+        final double lng = location.getDouble("lng");// долгота
+        final double lat = location.getDouble("lat");// широта
 
-            JSONObject south = response.getJSONArray("results").getJSONObject(0);
-            south = south.getJSONObject("geometry");
-            south = south.getJSONObject("bounds");
-            south = south.getJSONObject("southwest");
-            final double southLng = south.getDouble("lng");// долгота
-            final double southLat = south.getDouble("lat");// широта
+        JSONObject south = response.getJSONArray("results").getJSONObject(0);
+        south = south.getJSONObject("geometry");
+        south = south.getJSONObject("bounds");
+        south = south.getJSONObject("southwest");
+        final double southLng = south.getDouble("lng");// долгота
+        final double southLat = south.getDouble("lat");// широта
 
-            JSONObject noth = response.getJSONArray("results").getJSONObject(0);
-            noth = noth.getJSONObject("geometry");
-            noth = noth.getJSONObject("bounds");
-            noth = noth.getJSONObject("northeast");
-            final double nothLng = noth.getDouble("lng");// долгота
-            final double nothLat = noth.getDouble("lat");// широта
+        JSONObject noth = response.getJSONArray("results").getJSONObject(0);
+        noth = noth.getJSONObject("geometry");
+        noth = noth.getJSONObject("bounds");
+        noth = noth.getJSONObject("northeast");
+        final double nothLng = noth.getDouble("lng");// долгота
+        final double nothLat = noth.getDouble("lat");// широта
 
-            GeoLocation northLoc = new GeoLocation(nothLat,nothLng);
-            GeoLocation southLoc = new GeoLocation(southLat,southLng);
-
-
-            final double resultRadius = getDistanse(northLoc,southLoc)/2;
-            GeoLocation result = new GeoLocation(lat,lng);
-            return new Pair<GeoLocation, Double>(result, resultRadius);
-        }
-    }
-
-    private static GeoLocation getLocationByIP(String currentIP) {
+        GeoLocation northLoc = new GeoLocation(nothLat,nothLng);
+        GeoLocation southLoc = new GeoLocation(southLat,southLng);
 
 
-        return null;
+        final double resultRadius = getDistanse(northLoc,southLoc)/2;
+        GeoLocation result = new GeoLocation(lat,lng);
+        return new Pair<GeoLocation, Double>(result, resultRadius);
+
     }
 
 
     public static void reCode() throws IOException {
-        GeoQuery res = new GeoQuery(getCurrentIP());
-        GeoLocation IAmHere = res.getLocation();
-        String lat = null;
-        lat.valueOf(IAmHere.getLatitude());
-        String lng = null;
-        lng.valueOf(IAmHere.getLongitude());
-        final Map<String, String> params = Maps.newHashMap();
-        params.put("language", "ru");// язык данных, на котором мы хотим получить
-        params.put("sensor", "false");// исходит ли запрос на геокодирование от устройства с датчиком местоположения
-        // текстовое значение широты/долготы
-        params.put("latlng", lat+lng );
-        final String url = baseUrl + '?' + encodeParams(params);
-        final JSONObject response = JsonReader.read(url);
-        final JSONObject location = response.getJSONArray("results").getJSONObject(0);
-        final String formattedAddress = location.getString("formatted_address");
-        System.out.println(formattedAddress);
+        final JSONObject response = JsonReader.read(GeoIPUrl);
+        String city = response.getString("city");
+        System.out.println(city);
     }
 
     private static String getCurrentIP() {
@@ -200,34 +182,3 @@ public class GetGeolocation {
         return v*v;
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -5,6 +5,7 @@ import javafx.util.Pair;
 import twitter4j.*;
 
 import java.io.IOException;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Scanner;
 
@@ -63,7 +64,7 @@ public class TwitterStream {
         System.out.print(ANSI_PURPLE + "@" + name + ":" + ANSI_RESET);
     }
     static void printTweet(Status tweet){
-        printTime(tweet.getCreatedAt());
+        printTime(tweet.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         printName(tweet.getUser().getScreenName());
         if (tweet.isRetweet()){
             System.out.print("retweeted ");
@@ -157,7 +158,7 @@ public class TwitterStream {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                    if (tweet.isRetweet() && !filterRetweet){
+                    if (tweet.isRetweet() && !filterRetweet) {
                         printTweet(tweet);
                         sleep(1 * MILISEC_IN_SEC);
                         isAnyTweets = true;
