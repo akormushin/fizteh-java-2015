@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.riazanovskiy;
+package ru.fizteh.fivt.students.riazanovskiy.TwitterStream;
 
 import com.bytebybyte.google.geocoding.service.request.GeocodeRequest;
 import com.bytebybyte.google.geocoding.service.request.GeocodeRequestBuilder;

@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.riazanovskiy;
+package ru.fizteh.fivt.students.riazanovskiy.TwitterStream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
 import com.bytebybyte.google.geocoding.service.response.LatLng;
 import org.fusesource.jansi.Ansi;
+import org.fusesource.jansi.Ansi.Color;
 import org.fusesource.jansi.AnsiConsole;
 import twitter4j.*;
 
@@ -45,7 +46,7 @@ class Main {
             try {
                 printTweets(argumentParser);
                 System.exit(0);
-            } catch (TwitterException e) {
+            } catch (TwitterException ignored) {
                 System.err.println("Trying to reconnect");
             }
         }
@@ -79,7 +80,7 @@ class Main {
                 -> printSingleTweet(status, true));
     }
 
-    private static boolean shouldShowTweet(ArgumentParser argumentParser, Status status) {
+    static boolean shouldShowTweet(ArgumentParser argumentParser, Status status) {
         return (!status.isRetweet() || argumentParser.isShowRetweets())
                 && ((currentLocation == null || (status.getGeoLocation() != null
                 && GeocodeWrapper.isNearby(currentLocation,
@@ -87,7 +88,7 @@ class Main {
                         status.getGeoLocation().getLongitude())))));
     }
 
-    static void printTweetsInStream(final ArgumentParser argumentParser) {
+    static void printTweetsInStream(ArgumentParser argumentParser) {
         TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
 
         twitterStream.addListener(new StatusAdapter() {
@@ -97,7 +98,7 @@ class Main {
                     printSingleTweet(status, false);
                     try {
                         TimeUnit.SECONDS.sleep(1);
-                    } catch (InterruptedException e) {
+                    } catch (InterruptedException ignored) {
                         Thread.currentThread().interrupt();
                     }
                 }
@@ -126,16 +127,16 @@ class Main {
     static void printSingleTweet(Status status, boolean showTime) {
         Ansi formattedTweet = ansi();
         if (showTime) {
-            formattedTweet.a("[" + RecentDateFormatter.format(status.getCreatedAt()) + "] ");
+            formattedTweet.a('[' + RecentDateFormatter.format(status.getCreatedAt()) + "] ");
         }
 
-        formattedTweet.fg(Ansi.Color.BLUE).a("@" + status.getUser().getScreenName()).fg(Ansi.Color.DEFAULT);
+        formattedTweet.fg(Color.BLUE).a('@' + status.getUser().getScreenName()).fg(Color.DEFAULT);
         formattedTweet.a(": ");
 
         if (status.isRetweet()) {
             formattedTweet.a("ретвитнул ");
-            formattedTweet.fg(Ansi.Color.BLUE).a("@" + status.getRetweetedStatus().getUser().getScreenName());
-            formattedTweet.fg(Ansi.Color.DEFAULT).a(": " + status.getText());
+            formattedTweet.fg(Color.BLUE).a('@' + status.getRetweetedStatus().getUser().getScreenName());
+            formattedTweet.fg(Color.DEFAULT).a(": " + status.getText());
         } else {
             formattedTweet.a(status.getText());
             if (status.getRetweetCount() > 0) {

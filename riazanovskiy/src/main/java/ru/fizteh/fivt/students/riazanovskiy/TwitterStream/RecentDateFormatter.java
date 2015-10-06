@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.riazanovskiy;
+package ru.fizteh.fivt.students.riazanovskiy.TwitterStream;
 
 import java.time.*;
 import java.util.Date;
