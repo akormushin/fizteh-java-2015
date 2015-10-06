@@ -1,10 +1,14 @@
-package ru.fizteh.fivt.students.okalitova.TwitterStreamer;
+package ru.fizteh.fivt.students.okalitova.twitterstreamer;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
 
 /**
  * Created by okalitova on 24.09.15.
@@ -13,16 +17,24 @@ public class GoogleFindPlace {
     private static final double R = 6371;
     private GeocodingResult[] result;
     private double radius;
-    GoogleFindPlace(String place) {
-        GeoApiContext context = new GeoApiContext()
-                .setApiKey("AIzaSyCAhkvmjepUzQUh9pA7g0K4QoQY2ncBno8");
-        try {
-            result = GeocodingApi.geocode(context, place).await();
-            radius = calculateRadius();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
+
+    private static String getKey() throws IOException {
+        BufferedReader reader;
+        reader = new BufferedReader(new FileReader("../../googleFindPlace.properties"));
+        StringBuilder sbuild = new StringBuilder();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            sbuild.append(line);
         }
+        String key = sbuild.toString();
+        return key;
+    }
+
+    GoogleFindPlace(String place) throws Exception {
+        GeoApiContext context = new GeoApiContext()
+                .setApiKey(getKey());
+        result = GeocodingApi.geocode(context, place).await();
+        radius = calculateRadius();
     }
 
     private double calculateRadius() {

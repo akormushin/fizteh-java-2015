@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.okalitova.TwitterStreamer;
+package ru.fizteh.fivt.students.okalitova.twitterstreamer;
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
 import java.util.Date;
 import java.util.List;
+import static java.lang.Thread.sleep;
 
 
 public class TwitterStreamer {
@@ -13,47 +14,53 @@ public class TwitterStreamer {
     public static final long MILSEC_IN_MIN = 1000 * 60;
     public static final long MILSEC_IN_HOUR = 1000 * 60 * 60;
     public static final long MILSEC_IN_DAY = 1000 * 60 * 60 * 24;
+    public static final short MINUTS_ID = 0;
+    public static final short HOURS_ID = 1;
+    public static final short DAYS_ID = 2;
     public static final int FIVE = 5;
     public static final int ELEVEN = 11;
     public static final int TWELVE = 12;
     public static final int MOD10 = 10;
+    public static final int PAUSE = 1000;
+    public static final int RADIUS = 1;
 
-    public static String minuts(long minuts) {
-        if (minuts % MOD10 == 1 && minuts != ELEVEN) {
-            return "минутку";
-        } else {
-            if (minuts % MOD10 > 1 && minuts % MOD10 < FIVE
-                    && minuts != TWELVE) {
-                return "минутки";
+    public static String timeUnits(long time, short unit) {
+        if (time % MOD10 == 1 && time != ELEVEN) {
+            if (unit == MINUTS_ID) {
+                return "минутку";
             } else {
-                return "минуток";
+                if (unit == HOURS_ID) {
+                    return "часик";
+                } else {
+                    return "денек";
+                }
+            }
+        } else {
+            if (time % MOD10 > 1 && time % MOD10 < FIVE
+                    && time != TWELVE) {
+                if (unit == MINUTS_ID) {
+                    return "минутки";
+                } else {
+                    if (unit == HOURS_ID) {
+                        return "часика";
+                    } else {
+                        return "денька";
+                    }
+                }
+            } else {
+                if (unit == MINUTS_ID) {
+                    return "минуток";
+                } else {
+                    if (unit == HOURS_ID) {
+                        return "часиков";
+                    } else {
+                        return "деньков";
+                    }
+                }
             }
         }
     }
-    public static String hours(long hours) {
-        if (hours % MOD10 == 1 && hours != ELEVEN) {
-            return "часик";
-        } else {
-            if (hours % MOD10 > 1 && hours % MOD10 < FIVE
-                    && hours != TWELVE) {
-                return "часика";
-            } else {
-                return "часиков";
-            }
-        }
-    }
-    public static String days(long days) {
-        if (days % MOD10 == 1 && days != ELEVEN) {
-            return "денек";
-        } else {
-            if (days % MOD10 > 1 && days % MOD10 < FIVE
-                    && days != TWELVE) {
-                return "денька";
-            } else {
-                return "деньков";
-            }
-        }
-    }
+
     public static boolean today(long time, long currentTime) {
         long pastDays = currentTime / MILSEC_IN_DAY;
         long todayTime = currentTime - pastDays * MILSEC_IN_DAY;
@@ -77,17 +84,17 @@ public class TwitterStreamer {
             System.out.print("только что");
         } else {
             if (hoursBetween < 1) {
-                System.out.print(minBetween + " " + minuts(minBetween)
+                System.out.print(minBetween + " " + timeUnits(minBetween, MINUTS_ID)
                         + " назад");
             } else {
                 if (today(time, currentTime)) {
-                    System.out.print(hoursBetween + " " + hours(hoursBetween)
+                    System.out.print(hoursBetween + " " + timeUnits(hoursBetween, HOURS_ID)
                             + " назад");
                 } else {
                     if (yesterday(time, currentTime)) {
                         System.out.print("вчера");
                     } else {
-                        System.out.print(daysBetween + " " + days(daysBetween)
+                        System.out.print(daysBetween + " " + timeUnits(daysBetween, DAYS_ID)
                                 + " назад");
                     }
                 }
@@ -96,65 +103,63 @@ public class TwitterStreamer {
         System.out.print("]");
     }
 
-    public static Query setQuery(Parameters param) {
+    public static Query setQuery(Parameters param) throws Exception {
         //set query
         Query query = new Query(param.getQuery());
         //set place
-        if (param.getPlace() != "") {
-            GoogleFindPlace googleFindPlace;
-            try {
+        if (!param.getPlace().equals("")) {
+            if (!param.getPlace().equals("nearby")) {
+                GoogleFindPlace googleFindPlace;
                 googleFindPlace = new GoogleFindPlace(param.getPlace());
                 GeoLocation geoLocation;
                 geoLocation = new GeoLocation(googleFindPlace.getLocation().lat,
                         googleFindPlace.getLocation().lng);
                 query.setGeoCode(geoLocation,
                         googleFindPlace.getRadius(), Query.KILOMETERS);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                System.exit(-1);
+            } else {
+                GeoLocation geoLocation;
+                geoLocation = new GeoLocation(Nearby.getLatLng().lat,
+                        Nearby.getLatLng().lng);
+                query.setGeoCode(geoLocation,
+                        RADIUS, Query.KILOMETERS);
             }
         }
         return query;
     }
-    public static void search(Parameters param) {
+    public static void search(Parameters param) throws Exception {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = setQuery(param);
         QueryResult result;
         int limit = param.getLimit();
         int statusCount = 0;
-        try {
-            do {
-                result = twitter.search(query);
-                List<Status> tweets = result.getTweets();
-                for (Status status : tweets) {
-                    printTime(status);
-                    printStatus(status, param.isHideRetwitts());
-                    statusCount++;
-                    limit--;
-                    if (limit == 0) {
-                        break;
-                    }
+        do {
+            result = twitter.search(query);
+            List<Status> tweets = result.getTweets();
+            for (Status status : tweets) {
+                printTime(status);
+                printStatus(status, param.isHideRetwitts());
+                statusCount++;
+                limit--;
+                if (limit == 0) {
+                    break;
                 }
-                query = result.nextQuery();
-            } while (query != null && limit > 0);
-        } catch (TwitterException e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
-        }
+            }
+            query = result.nextQuery();
+        } while (query != null && limit > 0);
         if (statusCount == 0) {
             System.out.println("Подходящих твитов нет");
         }
     }
 
-    public static FilterQuery setFilter(Parameters param) {
+    public static FilterQuery setFilter(Parameters param) throws Exception {
         //set query filter
         String[] trackArray = new String[1];
         trackArray[0] = param.getQuery();
         long[] followArray = new long[0];
         FilterQuery filter = new FilterQuery(0, followArray, trackArray);
         //set place filter
-        if (param.getPlace() != "") {
-            try {
+        if (!param.getPlace().equals("")) {
+            if (!param.getPlace().equals("nearby")) {
                 GoogleFindPlace googleFindPlace;
                 googleFindPlace = new GoogleFindPlace(param.getPlace());
                 double[][] bounds = {{googleFindPlace.getBounds().southwest.lng,
@@ -162,20 +167,27 @@ public class TwitterStreamer {
                         {googleFindPlace.getBounds().northeast.lng,
                                 googleFindPlace.getBounds().northeast.lat}};
                 filter.locations(bounds);
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                System.exit(-1);
+            } else {
+                double[][] bounds = {{Nearby.getBounds().southwest.lng,
+                        Nearby.getBounds().southwest.lat},
+                        {Nearby.getBounds().northeast.lng,
+                                Nearby.getBounds().northeast.lat}};
+                filter.locations(bounds);
             }
         }
         return filter;
     }
     public static void stream(Parameters param,
-                              StatusListener listener) {
+                              StatusListener listener) throws Exception {
         TwitterStream twitterStream;
         twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(listener);
-        FilterQuery filter = setFilter(param);
-        twitterStream.filter(filter);
+        if (param.getQuery() == "" && param.getPlace() == "") {
+            twitterStream.sample();
+        } else {
+            FilterQuery filter = setFilter(param);
+            twitterStream.filter(filter);
+        }
     }
 
     public static void printStatus(Status status, boolean hideRetwitts) {
@@ -203,15 +215,10 @@ public class TwitterStreamer {
 
     public static Parameters getParameters(String[] args) {
         Parameters param = new Parameters();
-        try {
-            JCommander cmd = new JCommander(param, args);
-            if (param.isHelp()) {
-                cmd.usage();
-                System.exit(0);
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
+        JCommander cmd = new JCommander(param, args);
+        if (param.isHelp()) {
+            cmd.usage();
+            System.exit(0);
         }
         System.out.println("query: " + param.getQuery());
         System.out.println("place: " + param.getPlace());
@@ -223,11 +230,11 @@ public class TwitterStreamer {
 
     public static void printHello() {
         System.out.println(ANSI_PURPLE
-                + "~CUTE TwitterStreamer CUTE~"
+                + "~CUTE twitterstreamer CUTE~"
                 + ANSI_RESET);
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
         printHello();
 
@@ -242,6 +249,11 @@ public class TwitterStreamer {
                 @Override
                 public void onStatus(Status status) {
                     printStatus(status, param.isHideRetwitts());
+                    try {
+                        sleep(PAUSE);
+                    } catch (InterruptedException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
 
                 @Override
@@ -261,9 +273,25 @@ public class TwitterStreamer {
                 public void onStallWarning(StallWarning stallWarning) {
                 }
             };
-            stream(param, listener);
+            try {
+                stream(param, listener);
+            } catch (TwitterException e) {
+                System.out.println(e.getMessage());
+                stream(param, listener);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                System.exit(-1);
+            }
         } else {
-            search(param);
+            try {
+                search(param);
+            } catch (TwitterException e) {
+                System.out.println(e.getMessage());
+                search(param);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+                System.exit(-1);
+            }
         }
     }
 }
