@@ -1,11 +1,12 @@
 package ru.fizteh.fivt.students.cache_nez.TwitterStream;
 
 import twitter4j.Status;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAmount;
 import java.util.Date;
 
@@ -94,34 +95,27 @@ class TimeConverter {
 
     private static final TemporalAmount TWO_MINUTES = Duration.ofMinutes(2);
     private static final TemporalAmount HOUR = Duration.ofHours(1);
-    private static final int MINUTES_IN_DAY = 24 * 60;
-    private static final int HOURS_IN_DAY = 60;
 
 
     public static String getRelativeTime(Date date, LocalDateTime currentDate) {
+
         LocalDateTime tweetDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
         if (currentDate.minus(TWO_MINUTES).isBefore(tweetDate)) {
             return "только что";
         }
-        int delta;
+        long delta;
         if (currentDate.minus(HOUR).isBefore(tweetDate)) {
-            delta = currentDate.get(ChronoField.MINUTE_OF_DAY) - tweetDate.get(ChronoField.MINUTE_OF_DAY);
-            if (delta < 0) {
-                delta = MINUTES_IN_DAY + delta;
-            }
+            delta = ChronoUnit.MINUTES.between(tweetDate, currentDate);
             return delta + Declenser.getDeclension(delta, Declenser.ToDeclense.MINUTE) + " назад";
         }
         if (tweetDate.toLocalDate().equals(LocalDate.now())) {
-            delta = currentDate.get(ChronoField.HOUR_OF_DAY) - tweetDate.get(ChronoField.HOUR_OF_DAY);
-            if (delta < 0) {
-                delta = HOURS_IN_DAY + delta;
-            }
+            delta = ChronoUnit.HOURS.between(tweetDate, currentDate);
             return delta + Declenser.getDeclension(delta, Declenser.ToDeclense.HOUR) + " назад";
         }
         if (tweetDate.toLocalDate().equals(LocalDate.now().minusDays(1))) {
             return "вчера";
         }
-        long days = currentDate.getLong(ChronoField.EPOCH_DAY) - tweetDate.getLong(ChronoField.EPOCH_DAY);
-        return  days + Declenser.getDeclension(days, Declenser.ToDeclense.DAY) + " назад";
+        delta = ChronoUnit.DAYS.between(tweetDate, currentDate);
+        return  delta + Declenser.getDeclension(delta, Declenser.ToDeclense.DAY) + " назад";
     }
 }
