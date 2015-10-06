@@ -21,10 +21,12 @@
     
     <modules>
         <module>akormushin</module>
+        <module>ocksumoron</module>
         <module>thefacetakt</module>
         <module>sergmiller</module>
+        <module>andrewgark</module>
     </modules>
-    
+
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
