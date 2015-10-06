@@ -136,7 +136,7 @@ class Main {
         if (status.isRetweet()) {
             formattedTweet.a("ретвитнул ");
             formattedTweet.fg(Color.BLUE).a('@' + status.getRetweetedStatus().getUser().getScreenName());
-            formattedTweet.fg(Color.DEFAULT).a(": " + status.getText());
+            formattedTweet.fg(Color.DEFAULT).a(": " + status.getRetweetedStatus().getText());
         } else {
             formattedTweet.a(status.getText());
             if (status.getRetweetCount() > 0) {
