@@ -22,8 +22,10 @@
     <modules>
         <module>akormushin</module>
         <module>cache-nez</module>
+        <module>ocksumoron</module>
         <module>thefacetakt</module>
-  </modules>
+        <module>andrewgark</module>
+    </modules>
 
     <dependencies>
         <dependency>
