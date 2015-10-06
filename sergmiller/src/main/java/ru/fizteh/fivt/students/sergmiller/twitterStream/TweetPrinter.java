@@ -23,11 +23,11 @@ public class TweetPrinter {
     }
 
     public static String tweetsSeparator() {
-        String separator = "\n";
+        StringBuilder separator = new StringBuilder("\n");
         for (int i = 0; i < SEPARATOR_LENGTH; ++i) {
-            separator += "-";
+            separator.append("-");
         }
-        return separator;
+        return separator.toString();
     }
 
     /**
@@ -38,14 +38,16 @@ public class TweetPrinter {
      */
     public static void printTweet(final Status status,
                                   final JCommanderParser jCommanderParsed) {
+        StringBuilder statusLine = new StringBuilder();
         if (!jCommanderParsed.isStream()) {
-            System.out.print("[" + TimeResolver.getTime(status.getCreatedAt().toInstant()
+            statusLine.append("[" + TimeResolver.getTime(status.getCreatedAt().toInstant()
                     .atZone(ZoneId.systemDefault()).toLocalDateTime()) + "] ");
         }
-        System.out.print(
+
+        statusLine.append(
                 highlightUserName(status.getUser().getScreenName()));
         if (!status.isRetweet()) {
-            System.out.print(
+            statusLine.append(
                     status.getText()
                             + " ("
                             + status.getRetweetCount()
@@ -55,16 +57,16 @@ public class TweetPrinter {
                             + ")"
             );
         } else {
-            System.out.print("ретвитнул ");
+            statusLine.append("ретвитнул ");
             String[] parsedText = status.getText().split(" ");
 
-            System.out.print(
+            statusLine.append(
                     highlightUserName(parsedText[1].split("@|:")[1]));
 
             for (int i = 2; i < parsedText.length; ++i) {
-                System.out.print(" " + parsedText[i]);
+                statusLine.append(" " + parsedText[i]);
             }
         }
-        System.out.println(tweetsSeparator());
+        System.out.println(statusLine.toString() + tweetsSeparator());
     }
 }
