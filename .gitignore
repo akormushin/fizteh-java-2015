@@ -19,3 +19,4 @@ workbench.xmi
 *.swp
 .settings
 .checkstyle
+twitter4j.properties

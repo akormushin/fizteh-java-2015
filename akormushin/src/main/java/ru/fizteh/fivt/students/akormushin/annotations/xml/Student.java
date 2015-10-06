@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.*;
 @XmlRootElement
 @XmlType
 @XmlAccessorType(XmlAccessType.FIELD)
-public class Student {
+public class Student implements Cloneable {
 
     @XmlAttribute
     private String firstName;
@@ -46,5 +46,14 @@ public class Student {
                 + "firstName='" + getFirstName() + '\''
                 + ", secondName='" + getSecondName() + '\''
                 + '}';
+    }
+
+    @Override
+    public Student clone() {
+        try {
+            return (Student) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new IllegalStateException(e);
+        }
     }
 }

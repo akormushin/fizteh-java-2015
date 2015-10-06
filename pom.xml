@@ -22,8 +22,11 @@
     <modules>
         <module>akormushin</module>
         <!--Add you module here-->
-    <module>okalitova</module>
-  </modules>
+    	<module>okalitova</module>
+        <module>ocksumoron</module>
+        <module>thefacetakt</module>
+        <module>andrewgark</module>
+    </modules>
 
     <dependencies>
         <dependency>
@@ -42,7 +45,7 @@
 
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
+            <artifactId>hamcrest-all</artifactId>
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
