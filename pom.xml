@@ -21,14 +21,11 @@
 
     <modules>
         <module>akormushin</module>
-<<<<<<< HEAD
         <module>zerts</module>
         <module>thefacetakt</module>
-=======
         <module>ocksumoron</module>
         <module>thefacetakt</module>
         <module>andrewgark</module>
->>>>>>> akormushin/master
     </modules>
 
     <dependencies>
