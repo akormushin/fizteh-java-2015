@@ -21,7 +21,7 @@ public class TwitCatcher {
             System.exit(0);
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to retweet: " + te.getMessage());
+            System.err.println("Failed to retweet: " + te.getMessage());
             System.exit(-1);
         }
     }
@@ -34,10 +34,10 @@ public class TwitCatcher {
         try (InputStream input = new FileInputStream(".properties")) {
             prop.load(input);
         } catch (FileNotFoundException e) {
-            System.out.println("Problems finding file : " + e.getMessage());
+            System.err.println("Problems finding file : " + e.getMessage());
             System.exit(1);
         } catch (IOException e) {
-            System.out.println("Problems reading file : " + e.getMessage());
+            System.err.println("Problems reading file : " + e.getMessage());
             System.exit(1);
         }
 
