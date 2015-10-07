@@ -102,10 +102,10 @@ public class TwitterStream {
                 if (isLocation) {
                     Pair<GeoLocation, Double> location = getGeolocation(where);
                     query.setGeoCode(location.getKey(), location.getValue(), UNIT_RADIUS);
-                    query.setCount(numberOfTweets);
                 }
             }
             QueryResult result;
+            Integer count = 0;
 
             do {
                 result = twitter.search(query);
@@ -114,6 +114,10 @@ public class TwitterStream {
                     if ((tweet.isRetweet() && !filterRetweet) || !tweet.isRetweet() ){
                         printTweet(tweet);
                         isAnyTweets = true;
+                        ++count;
+                        if (count == numberOfTweets){
+                            break;
+                        }
                     }
                 }
             } while ((query = result.nextQuery()) != null);
