@@ -21,8 +21,10 @@
 
     <modules>
         <module>akormushin</module>
+        <module>ocksumoron</module>
         <module>thefacetakt</module>
         <module>loulett</module>
+        <module>andrewgark</module>
     </modules>
 
     <dependencies>
