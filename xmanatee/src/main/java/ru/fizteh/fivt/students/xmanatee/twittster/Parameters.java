@@ -56,7 +56,7 @@ class Parameters {
                 throw new Exception("Options -s and -l can't go together");
             }
         } catch (Exception e) {
-            System.out.println(e.getMessage());
+            System.err.println(e.getMessage());
             System.exit(1);
         }
     }

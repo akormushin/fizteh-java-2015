@@ -23,7 +23,10 @@
         <module>akormushin</module>
         <!--Add you module here-->
         <module>xmanatee</module>
-  </modules>
+        <module>ocksumoron</module>
+        <module>thefacetakt</module>
+        <module>andrewgark</module>
+    </modules>
 
     <dependencies>
         <dependency>

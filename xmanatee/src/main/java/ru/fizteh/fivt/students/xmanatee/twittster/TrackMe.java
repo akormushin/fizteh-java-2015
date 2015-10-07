@@ -17,13 +17,13 @@ class TrackMe {
             String jsonText = IOUtils.toString(new URL(url));
             object = new JSONObject(jsonText);
         } catch (JSONException e) {
-            System.out.println("Problems with parsing JSON while trying to track you : " + e.getMessage());
+            System.err.println("Problems with parsing JSON while trying to track you : " + e.getMessage());
             throw e;
         } catch (MalformedURLException e) {
-            System.out.println("Problems with URL: " + url + " while trying to track you : " + e.getMessage());
+            System.err.println("Problems with URL: " + url + " while trying to track you : " + e.getMessage());
             throw e;
         } catch (IOException e) {
-            System.out.println("Problems with reading from URL : " + e.getMessage());
+            System.err.println("Problems with reading from URL : " + e.getMessage());
             throw e;
         }
 
@@ -34,7 +34,7 @@ class TrackMe {
         try {
             place = object.getString("city");
         } catch (JSONException e) {
-            System.out.println("Problems extracting your city from JSON : " + e.getMessage());
+            System.err.println("Problems extracting your city from JSON : " + e.getMessage());
             throw e;
         }
         return place;

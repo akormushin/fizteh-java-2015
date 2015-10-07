@@ -36,10 +36,10 @@ class GoogleFindPlace {
         try (InputStream input = new FileInputStream("twitter4j.properties")) {
             prop.load(input);
         } catch (FileNotFoundException e) {
-            System.out.println("Problems finding .properties file : " + e.getMessage());
+            System.err.println("Problems finding .properties file : " + e.getMessage());
             throw e;
         } catch (IOException e) {
-            System.out.println("Problems reading .properties file : " + e.getMessage());
+            System.err.println("Problems reading .properties file : " + e.getMessage());
             throw e;
         }
         return prop.getProperty("googleApiKey");

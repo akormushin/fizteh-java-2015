@@ -8,7 +8,7 @@ public class Twittster {
     public static final int MAX_NUMBER_OF_TRIES = 5;
 
     public static void main(String[] args) {
-        System.out.println(ANSI_YELLOW + "YOU'RE RUNNING TWITTSTER" + ANSI_RESET);
+        System.err.println(ANSI_YELLOW + "YOU'RE RUNNING TWITTSTER" + ANSI_RESET);
         Parameters parameters = new Parameters(args);
 
         if (parameters.isHelp()) {
@@ -23,7 +23,7 @@ public class Twittster {
                 runSearch(parameters);
             }
         } catch (Exception ex) {
-            System.out.println(ex.getMessage());
+            System.err.println(ex.getMessage());
             System.exit(1);
         }
     }
@@ -31,7 +31,6 @@ public class Twittster {
     public static void runSearch(Parameters parameters) throws Exception {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = composeQuery(parameters);
-
 
         QueryResult result = null;
 
@@ -42,7 +41,7 @@ public class Twittster {
                 result = twitter.search(query);
                 break;
             } catch (TwitterException e) {
-                System.out.println("Problems with searching : " + e.getMessage());
+                System.err.println("Problems with searching : " + e.getMessage());
             }
         }
         if (tryNumber == MAX_NUMBER_OF_TRIES) {
@@ -51,7 +50,7 @@ public class Twittster {
 
         List<Status> tweets = result.getTweets();
         if (tweets.size() == 0) {
-            System.out.println("No results");
+            System.err.println("No results");
         } else {
             for (Status tweet : tweets) {
                 displayTweet(tweet, true);
@@ -70,12 +69,12 @@ public class Twittster {
                 try {
                     Thread.sleep(DELAY_X);
                 } catch (InterruptedException e) {
-                    System.out.println(e.getMessage());
+                    System.err.println(e.getMessage());
                 }
             }
             @Override
             public void onException(Exception ex) {
-                System.out.println("Problems listening : " + ex.getMessage());
+                System.err.println("Problems listening : " + ex.getMessage());
             }
         };
 
@@ -88,7 +87,7 @@ public class Twittster {
                 sleep(DELAY_X);
             }
         } catch (InterruptedException e) {
-            System.out.println("Ctrl+D => shutting down twittster");
+            System.err.println("Ctrl+D => shutting down twittster");
             twitterStream.cleanUp();
             twitterStream.shutdown();
         }
@@ -133,9 +132,13 @@ public class Twittster {
         StringBuilder builder = new StringBuilder();
         String tweetText = tweet.getText();
         if (showTime) {
-            builder.append("[").append(new AdvTimeParser(tweet.getCreatedAt()).get()).append("] ");
+            builder.append("[")
+                    .append(new AdvTimeParser(tweet.getCreatedAt()).get())
+                    .append("] ");
         }
-        builder.append("@").append(tweet.getUser().getScreenName()).append(": ");
+        builder.append("@")
+                .append(tweet.getUser().getScreenName())
+                .append(": ");
 
         if (tweet.isRetweet()) {
             builder.append("ретвитнул ");
@@ -146,13 +149,18 @@ public class Twittster {
         Integer retweetedCount = tweet.getRetweetCount();
         if (!tweet.isRetweet() & (retweetedCount > 0)) {
             Word4declension retweetWord = new Word4declension("ретвит", "ретвита", "ретвитов");
-            builder.append(ANSI_GREEN).append(" (").append(retweetedCount).append(" ")
-                    .append(retweetWord.declension4Number(retweetedCount)).append(")").append(ANSI_RESET);
+            builder.append(ANSI_GREEN)
+                    .append(" (")
+                    .append(retweetedCount)
+                    .append(" ")
+                    .append(retweetWord.declension4Number(retweetedCount))
+                    .append(")")
+                    .append(ANSI_RESET);
         }
 
         String output = builder.toString();
         output = output.replaceAll("@(\\w+): ", ANSI_BLUE + "@$1" + ANSI_RESET + ": ");
-        System.out.println(output);
+        System.err.println(output);
     }
 
 }
