@@ -160,14 +160,14 @@ final class TwitterStream {
                         Pair<GeoLocation, Double> geoParams = GeoLocationResolver
                                 .getGeoLocation(curLocationRequest);
                         query.geoCode(geoParams.getKey(), geoParams.getValue(), RADIUS_UNIT);
-                        System.out.println("Location is " + curLocationRequest
+                        /*System.out.println("Location is " + curLocationRequest
                                 + ", latitude :"
                                 + geoParams.getKey().getLatitude()
                                 + " longitude :"
                                 + geoParams.getKey().getLongitude()
                                 + ", radius(km): "
                                 + geoParams.getValue()
-                                + TweetPrinter.tweetsSeparator());
+                                + TweetPrinter.tweetsSeparator());*/
                     }
                 } catch (IOException | JSONException | GettingMyLocationException e) {
                     e.getMessage();
@@ -176,7 +176,6 @@ final class TwitterStream {
                 }
 
                 query.setCount(jCommanderParsed.getLimit());
-
 
                 QueryResult request = twitter.search(query);
 
