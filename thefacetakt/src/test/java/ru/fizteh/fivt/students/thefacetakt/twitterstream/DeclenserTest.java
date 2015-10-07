@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
  * Created by thefacetakt on 06.10.15.
@@ -21,7 +22,7 @@ public class DeclenserTest extends TestCase {
     static final int STEPS = 100;
 
     @Test
-    public void testDeclensionMinutes() {
+    public void testDeclensionMinutes() throws Exception {
         //query -- answer
         Map<Integer, String> answers = new HashMap<>();
         answers.put(1, "минуту");
@@ -36,15 +37,15 @@ public class DeclenserTest extends TestCase {
 
         for (Integer testValue: answers.keySet()) {
             for (int i = 0; i < STEPS; ++i) {
-                assertTrue(Declenser.minutesDeclension(
+                assertThat(Declenser.minutesDeclension(
                         testValue + i * DECLENSION_STEP
-                ).equals(answers.get(testValue)));
+                ), is(answers.get(testValue)));
             }
         }
     }
 
     @Test
-    public void testDeclensionDays() {
+    public void testDeclensionDays() throws Exception {
         //query -- answer
         Map<Integer, String> answers = new HashMap<>();
         answers.put(1, "день");
@@ -59,15 +60,15 @@ public class DeclenserTest extends TestCase {
 
         for (Integer testValue: answers.keySet()) {
             for (int i = 0; i < STEPS; ++i) {
-                assertTrue(Declenser.daysDeclension(
+                assertThat(Declenser.daysDeclension(
                         testValue + i * DECLENSION_STEP
-                ).equals(answers.get(testValue)));
+                ), is(answers.get(testValue)));
             }
         }
     }
 
     @Test
-    public void testDeclensionHours() {
+    public void testDeclensionHours() throws Exception {
         //query -- answer
         Map<Integer, String> answers = new HashMap<>();
         answers.put(1, "час");
@@ -82,15 +83,15 @@ public class DeclenserTest extends TestCase {
 
         for (Integer testValue: answers.keySet()) {
             for (int i = 0; i < STEPS; ++i) {
-                assertTrue(Declenser.hoursDeclension(
+                assertThat(Declenser.hoursDeclension(
                         testValue + i * DECLENSION_STEP
-                ).equals(answers.get(testValue)));
+                ), is(answers.get(testValue)));
             }
         }
     }
 
     @Test
-    public void testDeclensionRetweets() {
+    public void testDeclensionRetweets() throws Exception {
         //query -- answer
         Map<Integer, String> answers = new HashMap<>();
         answers.put(1, "ретвит");
@@ -105,9 +106,9 @@ public class DeclenserTest extends TestCase {
 
         for (Integer testValue: answers.keySet()) {
             for (int i = 0; i < STEPS; ++i) {
-                assertTrue(Declenser.retweetDeclension(
+                assertThat(Declenser.retweetDeclension(
                         testValue + i * DECLENSION_STEP
-                ).equals(answers.get(testValue)));
+                ), is(answers.get(testValue)));
             }
         }
     }

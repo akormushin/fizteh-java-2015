@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 
+import static java.lang.Math.toRadians;
+
 /**
  * Created by thefacetakt on 06.10.15.
  */
@@ -10,11 +12,6 @@ class SphereDistanceResolver {
 
     //https://en.wikipedia.org/wiki/Great-circle_distance#Formulas
     static final double EARTH_RADIUS = 6371;
-    static final double RADIANS_IN_DEGREE = Math.PI / 180;
-
-    static double toRadians(double angle) {
-        return angle * RADIANS_IN_DEGREE;
-    }
 
     static double sphereDistance(double phi1, double lambda1,
                                  double phi2, double lambda2) {
