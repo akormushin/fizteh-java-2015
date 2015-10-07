@@ -13,7 +13,7 @@ import java.util.concurrent.CompletionException;
 public class TweetsRetriever {
     public static final boolean STREAM_MODE_OFF = false;
     private static final double RADIUS = 10;
-    public static final int TRY_TO_RECONNECT = 5;
+    public static final int STOP_TRY_TO_RECONNECT = 5;
     public static final long RECONNECTION_SLEEP_TIME = 1000L;
 
     public static void getTweets(ParseArguments description) {
@@ -44,7 +44,7 @@ public class TweetsRetriever {
                         successed = true;
                     } catch (TwitterException e) {
                         ++tries;
-                        if (tries == TRY_TO_RECONNECT) {
+                        if (tries == STOP_TRY_TO_RECONNECT) {
                             throw new CompletionException("Failed to retrieve tweets, "
                                     + "most probably because of connection error", e);
                         }

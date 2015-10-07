@@ -19,7 +19,6 @@ public class TextFormatter {
 
     static String getRetweetText(Status status, boolean streamMode) {
         /*remove prefix "<person> retweeted <person>"*/
-        String[] splitText = status.getText().split(":", 2);
 
         StringBuilder text = new StringBuilder("");
         if (!streamMode) {
@@ -29,7 +28,7 @@ public class TextFormatter {
         text.append(ANSI_BLUE + "@").append(status.getUser().getScreenName()).append(ANSI_RESET);
         text.append(" ретвитнул " + ANSI_BLUE + "@")
                 .append(status.getRetweetedStatus().getUser().getScreenName()).append(ANSI_RESET);
-        text.append(": ").append(splitText[1]);
+        text.append(": ").append(status.getRetweetedStatus().getText());
         return text.toString();
     }
 
@@ -77,7 +76,7 @@ class Declenser {
     public static String getDeclension(long numeral, ToDeclense word) {
         numeral %= FIRST_MODULO;
         if (numeral >= EXCEPTION_START && numeral <= EXCEPTION_END) {
-            return SECOND_TYPE[word.ordinal()];
+            return THIRD_TYPE[word.ordinal()];
         }
         numeral %= SECOND_MODULO;
         if (numeral == FIRST_CASE) {

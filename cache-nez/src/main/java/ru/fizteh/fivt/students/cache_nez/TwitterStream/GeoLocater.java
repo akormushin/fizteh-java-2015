@@ -32,14 +32,26 @@ class NoKeyFoundException extends Exception {
 
 class HttpConnect {
 
-    public static String getAnswer(String request) throws IOException {
+    public static String getAnswer(String request) throws IOException, InterruptedException {
         URL site = new URL(request);
         URLConnection connection = site.openConnection();
         StringBuilder answer = new StringBuilder();
-        try (InputStreamReader streamReader =  new InputStreamReader(connection.getInputStream());
-            BufferedReader bufferedReader = new BufferedReader(streamReader)) {
-            while (bufferedReader.ready()) {
-                answer.append(bufferedReader.readLine());
+
+        boolean succeeded = false;
+        int tried = 0;
+        while (!succeeded) {
+            ++tried;
+            try (InputStreamReader streamReader = new InputStreamReader(connection.getInputStream());
+                 BufferedReader bufferedReader = new BufferedReader(streamReader)) {
+                while (bufferedReader.ready()) {
+                    answer.append(bufferedReader.readLine());
+                }
+                succeeded = true;
+            } catch (Exception e) {
+                if (tried == TweetsRetriever.STOP_TRY_TO_RECONNECT) {
+                    throw e;
+                }
+                Thread.sleep(TweetsRetriever.RECONNECTION_SLEEP_TIME);
             }
         }
         return answer.toString();
@@ -132,13 +144,13 @@ public class GeoLocater {
     }
 
     public static GeoPosition getLocation(String location) throws GeoException {
-        String key = null;
-        String answer = null;
+        String key;
+        String answer;
         try {
             key = getKey();
             String request = YANDEX_URL + location + "&key=" + key + "&format=json";
             answer = HttpConnect.getAnswer(request);
-        } catch (NoKeyFoundException | IOException e) {
+        } catch (NoKeyFoundException | IOException | InterruptedException e) {
             throw new GeoException("Location failed");
         }
 
@@ -150,7 +162,7 @@ public class GeoLocater {
         String answer = null;
         try {
             answer = HttpConnect.getAnswer(request);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new GeoException("Location by IP failed");
         }
         String[] coordinates = answer.split(",");
@@ -164,7 +176,7 @@ public class GeoLocater {
             key = getKey();
             String request = YANDEX_URL + location + "&key=" + key + "&format=json";
             answer = HttpConnect.getAnswer(request);
-        } catch (NoKeyFoundException | IOException e) {
+        } catch (NoKeyFoundException | IOException | InterruptedException e) {
             throw new GeoException("Location failed");
         }
 
@@ -173,10 +185,10 @@ public class GeoLocater {
 
     public static double[][] getBoundingBoxByIP() throws GeoException {
         String request = "http://ipinfo.io/city";
-        String location = null;
+        String location;
         try {
             location = HttpConnect.getAnswer(request);
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             throw new GeoException("Location by IP failed");
         }
         return getBoundingBox(location);
