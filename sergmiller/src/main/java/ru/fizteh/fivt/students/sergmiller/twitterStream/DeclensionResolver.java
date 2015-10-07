@@ -13,7 +13,7 @@ public class DeclensionResolver {
     public static final int TWO = 2;
     public static final int FIVE = 5;
     private static String[] retweetForms = {"ретвит", "ретвитов", "ретвита"};
-    private static String[] minuteForms = {"минута", "минут", "минуты"};
+    private static String[] minuteForms = {"минуту", "минут", "минуты"};
     private static String[] hourForms = {"час", "часов", "часа"};
     private static String[] dayForms = {"день", "дней", "дня"};
 

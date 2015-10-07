@@ -9,6 +9,7 @@ import com.beust.jcommander.JCommander;
 
 import java.util.*;
 import java.io.IOException;
+import java.util.List;
 
 import javafx.util.Pair;
 
@@ -177,23 +178,31 @@ final class TwitterStream {
 
                 query.setCount(jCommanderParsed.getLimit());
 
-                QueryResult request = twitter.search(query);
+                QueryResult request;
+                int quantityOfPrintedTweets = 0;
+                Boolean flagLimit = false;
+                List<Status> allTweets = new ArrayList<>();
 
-                List<Status> tweets = request.getTweets();
+                do {
+                    request = twitter.search(query);
 
-                Boolean existTweets = false;
+                    List<Status> tweets = request.getTweets();
 
-                Collections.reverse(tweets);
-
-                for (Status status : tweets) {
-                    if (!jCommanderParsed.isHideRetweets()
-                            || !status.isRetweet()) {
-                        TweetPrinter.printTweet(status, jCommanderParsed);
-                        existTweets = true;
+                    for (Status status : tweets) {
+                        if (!jCommanderParsed.isHideRetweets()
+                                || !status.isRetweet()) {
+                            allTweets.add(status);
+                            ++quantityOfPrintedTweets;
+                            if (quantityOfPrintedTweets == jCommanderParsed.getLimit()) {
+                                flagLimit = true;
+                                break;
+                            }
+                        }
                     }
-                }
+                    query = request.nextQuery();
+                } while (query != null && !flagLimit);
 
-                if (!existTweets) {
+                if (allTweets.isEmpty()) {
                     System.err.println("\nПо запросу "
                                     + String.join(", "
                                     , jCommanderParsed.getQuery())
@@ -208,7 +217,15 @@ final class TwitterStream {
                                     + "Попробуйте использовать "
                                     + "более популярные ключевые слова."
                     );
+                } else {
+                    Collections.reverse(allTweets);
+
+                    for (Status status : allTweets) {
+                        TweetPrinter.printTweet(status, jCommanderParsed);
+                    }
+
                 }
+
                 currentQuantityOfTries = MAX_QUANTITY_OF_TRIES;
             } catch (TwitterException twExp) {
                 ++currentQuantityOfTries;
