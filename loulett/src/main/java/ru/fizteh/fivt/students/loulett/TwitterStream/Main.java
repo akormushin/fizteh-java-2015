@@ -71,7 +71,10 @@ public class Main {
     }
 
     private static String russianEnding(int count, int flag) {
-        String[][] ending = {{"ретвитов", "ретвит", "ретвита"}, {"минут", "минуту", "минуты"}, {"часов", "час", "часа"}, {"дней", "день", "дня"}};
+        String[][] ending = {{"ретвитов", "ретвит", "ретвита"},
+                {"минут", "минуту", "минуты"},
+                {"часов", "час", "часа"},
+                {"дней", "день", "дня"}};
 
         if (count % TEN >= FIVE || count % HUNDRED == ELEVEN
                 || count % HUNDRED == TWELVE || count % TEN == 0) {
