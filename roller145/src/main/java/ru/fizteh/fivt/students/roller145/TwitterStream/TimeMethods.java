@@ -3,6 +3,8 @@ package ru.fizteh.fivt.students.roller145.TwitterStream;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+import static ru.fizteh.fivt.students.roller145.TwitterStream.DislenctionForms.DislForm;
+
 /**
  * Created by riv on 27.09.15.
  */
@@ -12,21 +14,25 @@ public class TimeMethods {
 
     public static void printTime(LocalDateTime when) {
         LocalDateTime currentTime = LocalDateTime.now();
-            if (ChronoUnit.MINUTES.between(when, currentTime) < 2) {
-                System.out.print("Suddenly ");
+        long minute = ChronoUnit.MINUTES.between(when, currentTime);
+        long hour = ChronoUnit.HOURS.between(when, currentTime);
+        long day = ChronoUnit.DAYS.between(when, currentTime);
+
+            if (minute< 2) {
+                System.out.print("Только что ");
             }
-            if (ChronoUnit.HOURS.between(when, currentTime)  < 1) {
-                System.out.print( ChronoUnit.MINUTES.between(when, currentTime) + " minutes ago ");
+            else if (hour  < 1) {
+                System.out.print( minute+ DislForm(minute, DislenctionForms.ETime.MINUTE) +" назад ");
             }
-            if (ChronoUnit.DAYS.between(when, currentTime)  < 1 ) {
-                System.out.print(ChronoUnit.HOURS.between(when, currentTime)  + " hours ago ");
+            else if (day  < 1 ) {
+                System.out.print(hour  + DislForm(hour, DislenctionForms.ETime.HOUR)+ " назад ");
             }
             else {
-                if (ChronoUnit.DAYS.between(when, currentTime) < 2) {
-                    System.out.print("Yesterday ");
+                if (day < 2) {
+                    System.out.print("Вчера ");
                 }
                 else {
-                    System.out.print(ChronoUnit.DAYS.between(when, currentTime)  + " days ago ");
+                    System.out.print(day  + DislForm(day, DislenctionForms.ETime.DAY)+ " назад ");
                 }
             }
     }

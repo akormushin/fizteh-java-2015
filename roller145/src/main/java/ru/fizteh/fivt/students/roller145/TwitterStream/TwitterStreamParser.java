@@ -68,7 +68,7 @@ public class TwitterStreamParser {
     }
 
     public boolean isPlace() {
-        return !(where.isEmpty());
+        return !(where == null);
     }
 
     public String getWhere() {

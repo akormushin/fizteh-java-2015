@@ -14,7 +14,7 @@ import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.get
 import static ru.fizteh.fivt.students.roller145.TwitterStream.GetGeolocation.reCode;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.TimeMethods.MILISEC_IN_SEC;
 import static ru.fizteh.fivt.students.roller145.TwitterStream.TimeMethods.printTime;
-
+import static ru.fizteh.fivt.students.roller145.TwitterStream.DislenctionForms.*;
 public class TwitterStream {
 
     public static void main(String[] args) throws Exception {
@@ -31,7 +31,7 @@ public class TwitterStream {
             reCode();
         }
         if (twParse.isStreamOn() && twParse.isLimit()) {
-            System.out.println("Command conflict");
+            System.err.println("Конфлит команд ");
             return;
         }
         if (twParse.isStreamOn()) {
@@ -55,7 +55,7 @@ public class TwitterStream {
         Twitter twitter = TwitterFactory.getSingleton();
         Scanner sc = new Scanner(System.in);
         String tweet;
-        System.out.println("Your tweet: ");
+        System.out.println("Ваш твит: ");
         tweet = sc.nextLine();
         twitter.updateStatus(tweet);
     }
@@ -67,19 +67,19 @@ public class TwitterStream {
         printTime(tweet.getCreatedAt().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         printName(tweet.getUser().getScreenName());
         if (tweet.isRetweet()){
-            System.out.print("retweeted ");
+            System.out.print(" ретвитнул ");
             String[] splited = tweet.getText().split(" ");
             System.out.print(
                     "@" + ANSI_PURPLE + splited[1].split("@|:")[1]
-                            + ANSI_RESET + ": ");
+                            + ANSI_RESET + " : ");
             for (int i = 2; i < splited.length; ++i){
-                System.out.print(splited[i]);
+                System.out.print(splited[i] + " ");
             }
             System.out.println();
         }
         else {
-            System.out.println(tweet.getText() + " (" + tweet.getRetweetCount()
-                            + " retweet(s)"+ ")");
+            System.out.println(tweet.getText() + " (" + tweet.getRetweetCount()+
+                    RETWEET_FORMS[getCorrectForm(tweet.getRetweetCount()).getType()] + ")");
         }
 
     }
@@ -87,7 +87,7 @@ public class TwitterStream {
     private static void limitedMode(boolean filterRetweet, int numberOfTweets, String queryWords, String where, boolean isLocation) throws IOException {
         twitter4j.Twitter twitter = new TwitterFactory().getInstance();
         if (where == null && queryWords == null){
-            System.out.println("Empty query");
+            System.err.println("Пустой запрос");
             return;
         }
         try {
@@ -111,22 +111,22 @@ public class TwitterStream {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                    if (tweet.isRetweet() && !filterRetweet){
+                    if ((tweet.isRetweet() && !filterRetweet) || !tweet.isRetweet() ){
                         printTweet(tweet);
                         isAnyTweets = true;
                     }
                 }
             } while ((query = result.nextQuery()) != null);
             if (!isAnyTweets) {
-                System.out.println("\nI can't find any tweets for the query "
-                                + queryWords + " for " +where
+                System.out.println("\nЯ не могу найти какие-либо твиты для запроса "
+                                + queryWords + " для  " + where
                                 + " \n\n"
-                                + " Please, try to check spelling  or use more common worlds\n");
+                                + " Пожалуйста, попробуйте проверить орфографию или использовать более общие слова\n");
             }
             return;
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to search tweets: " + te.getMessage());
+            System.out.println("Не удалось найти твиты: " + te.getMessage());
             return;
         } catch (IOException e) {
             e.printStackTrace();
@@ -135,7 +135,7 @@ public class TwitterStream {
 
     private static void streamMode(boolean filterRetweet, String queryWords, String where, boolean isLocation) {
         if (where == null && queryWords == null){
-            System.out.println("Empty query");
+            System.err.println("Пустой запрос ");
             return;
         }
         twitter4j.Twitter twitter = new TwitterFactory().getInstance();
@@ -158,7 +158,7 @@ public class TwitterStream {
                 result = twitter.search(query);
                 List<Status> tweets = result.getTweets();
                 for (Status tweet : tweets) {
-                    if (tweet.isRetweet() && !filterRetweet) {
+                    if ((tweet.isRetweet() && !filterRetweet) || !tweet.isRetweet()) {
                         printTweet(tweet);
                         sleep(1 * MILISEC_IN_SEC);
                         isAnyTweets = true;
@@ -166,14 +166,15 @@ public class TwitterStream {
                 }
             } while ((query = result.nextQuery()) != null);
             if (!isAnyTweets) {
-                System.out.println("\nI can't find any tweets for the query "
-                        + queryWords + " for " +where
-                        + " \n\nPlease, try to check spelling  or use more common worlds\n");
+                System.err.println("\nЯ не могу найти какие-либо твиты для запроса \n" +
+                        queryWords + " для " + where +
+                        " \n\n" +
+                        "Пожалуйста, попробуйте проверить орфографию или использовать более общие слова\n");
             }
             return;
         } catch (TwitterException te) {
             te.printStackTrace();
-            System.out.println("Failed to search tweets: " + te.getMessage());
+            System.err.println("Не удалось найти твиты:  " + te.getMessage());
             return;
         } catch (IOException e) {
             e.printStackTrace();
