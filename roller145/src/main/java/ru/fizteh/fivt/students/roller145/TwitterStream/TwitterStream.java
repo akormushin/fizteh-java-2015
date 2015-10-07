@@ -78,7 +78,7 @@ public class TwitterStream {
             System.out.println();
         }
         else {
-            System.out.println(tweet.getText() + " (" + tweet.getRetweetCount()+
+            System.out.println(tweet.getText() + " (" + tweet.getRetweetCount()+ " "+
                     RETWEET_FORMS[getCorrectForm(tweet.getRetweetCount()).getType()] + ")");
         }
 
