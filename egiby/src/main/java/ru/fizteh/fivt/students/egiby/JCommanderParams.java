@@ -7,7 +7,7 @@ import com.beust.jcommander.Parameter;
  */
 public class JCommanderParams {
     @Parameter(names = {"--query", "-q"}, description = "Поиск по строке")
-    private String keyword = new String();
+    private String keyword = null;
 
     @Parameter(names = {"--stream", "-s"}, description = "Вывод твитов в потоке")
     private boolean stream = false;

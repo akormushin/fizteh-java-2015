@@ -13,7 +13,8 @@ import java.net.MalformedURLException;
  * Created by egiby on 04.10.15.
  */
 public class LocationUtils {
-    private static final double[][] MOSCOW = {{55.48992699999999, 37.3193288}, {56.009657, 37.9456611}};
+    private static final double[][] MOSCOW_COORDINATE_BOX = {{55.48992699999999, 37.3193288}, {56.009657, 37.9456611}};
+    private static final GeoLocation MOSCOW_COORDINATES = new GeoLocation(55.755826, 37.6173);
     private static final String URL = "https://maps.googleapis.com/maps/api/place/textsearch/json?query=";
 
     private static String getAPIKey() {
@@ -42,32 +43,37 @@ public class LocationUtils {
         }
     }
 
-    public static GeoLocation getLocationByName(String location) {
-        JSONObject json = getGoogleAPIQuery(location);
+    public static class Location {
+        private double[][] coordinateBox = null;
+        private GeoLocation coordinates = null;
 
-        try {
-            JSONObject results = json.getJSONArray("results").getJSONObject(0);
-            JSONObject geometry = results.getJSONObject("geometry");
-            JSONObject coordinates = geometry.getJSONObject("location");
+        Location(double[][] newCoordinateBox, GeoLocation newCoordinates) {
+            coordinateBox = newCoordinateBox;
+            coordinates = newCoordinates;
+        }
 
-            String lat = coordinates.getString("lat");
-            String lng = coordinates.getString("lng");
+        public double[][] getCoordinateBox() {
+            return coordinateBox;
+        }
 
-            return new GeoLocation(Double.parseDouble(lat), Double.parseDouble(lng));
-        } catch (JSONException e) {
-            e.printStackTrace();
-            System.err.println("Twittes will be found in Moscow");
-            return new GeoLocation((MOSCOW[0][0] + MOSCOW[1][0]) / 2, (MOSCOW[0][1] + MOSCOW[1][1]) / 2);
+        public GeoLocation getCoordinates() {
+            return coordinates;
+        }
+
+        public static final int DEFAULT_RADIUS = 30;
+        public long getRadius() {
+            return DEFAULT_RADIUS;
         }
     }
 
-    public static double[][] getLocationBoxByName(String location) {
+    public static Location getLocationByName(String location) {
         JSONObject json = getGoogleAPIQuery(location);
 
-        JSONObject results = null;
+        JSONObject results;
         try {
             results = json.getJSONArray("results").getJSONObject(0);
             JSONObject geometry = results.getJSONObject("geometry");
+
             JSONObject northeast = geometry.getJSONObject("viewport").getJSONObject("northeast");
             JSONObject southwest = geometry.getJSONObject("viewport").getJSONObject("southwest");
 
@@ -76,15 +82,15 @@ public class LocationUtils {
                     {Double.parseDouble(northeast.getString("lat")), Double.parseDouble(northeast.getString("lng"))}
             };
 
-            return coordinateBox;
+            JSONObject coordinates = geometry.getJSONObject("location");
+
+            String lat = coordinates.getString("lat");
+            String lng = coordinates.getString("lng");
+
+            return new Location(coordinateBox, new GeoLocation(Double.parseDouble(lat), Double.parseDouble(lng)));
         } catch (JSONException e) {
             e.printStackTrace();
-            return MOSCOW;
+            return new Location(MOSCOW_COORDINATE_BOX, MOSCOW_COORDINATES);
         }
-    }
-
-    public static final int DEFAULT_RADIUS = 30;
-    public static long calcRadius() {
-        return DEFAULT_RADIUS;
     }
 }

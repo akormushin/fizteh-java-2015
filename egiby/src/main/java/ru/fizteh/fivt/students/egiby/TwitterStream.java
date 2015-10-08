@@ -44,8 +44,8 @@ public class TwitterStream {
         Query query = new Query(jcp.getKeyword());
 
         if (jcp.getLocation() != null) {
-            query.setGeoCode(LocationUtils.getLocationByName(jcp.getLocation()), LocationUtils.calcRadius(),
-                    Query.KILOMETERS);
+            LocationUtils.Location location = LocationUtils.getLocationByName(jcp.getLocation());
+            query.setGeoCode(location.getCoordinates(), location.getRadius(), Query.KILOMETERS);
         }
 
         int numberOfTweets = 0;
@@ -91,6 +91,7 @@ public class TwitterStream {
                 try {
                     TimeUnit.SECONDS.sleep(1);
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     e.printStackTrace();
                 }
             }
@@ -102,7 +103,7 @@ public class TwitterStream {
         FilterQuery filter = new FilterQuery(jcp.getKeyword());
 
         if (jcp.getLocation() != null) {
-            filter.locations(LocationUtils.getLocationBoxByName(jcp.getLocation()));
+            filter.locations(LocationUtils.getLocationByName(jcp.getLocation()).getCoordinateBox());
         }
 
         twitterStream.filter(filter);
