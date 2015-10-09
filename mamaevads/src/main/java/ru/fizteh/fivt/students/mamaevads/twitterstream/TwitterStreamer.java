@@ -15,17 +15,18 @@ public class TwitterStreamer {
             try {
                 TweetSearch.noStreamSearch(arguments);
             } catch (TweetSearchException ex) {
-                System.out.print(ex.getMessage());
+                System.err.print(ex.getMessage());
                 System.exit(1);
             }
         } else {
             try {
                 TweetSearch.twitterStream(arguments);
             } catch (TweetSearchException ex) {
-                System.out.print(ex.getMessage());
+                System.err.print(ex.getMessage());
                 System.exit(1);
             }
         }
     }
 }
+
 

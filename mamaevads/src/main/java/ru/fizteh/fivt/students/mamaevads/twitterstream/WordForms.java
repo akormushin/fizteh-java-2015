@@ -7,7 +7,7 @@ public class WordForms {
     public static final int TWO_TEN = 20;
     public static final int TEN_ONE = 11;
     public static final int TWO = 2;
-    public static final int TEN_TEN = 2;
+    public static final int TEN_TEN = 100;
     public static final int TWO_TWO = 4;
 
 

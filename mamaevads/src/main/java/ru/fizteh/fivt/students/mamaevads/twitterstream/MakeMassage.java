@@ -16,7 +16,7 @@ public class MakeMassage {
     static String getMessage(Status st) {
         String text = st.getText();
         if (st.isRetweet()) {
-            text = " ретвитнул " + text.substring(2) + " : ";
+            text = " ретвитнул " + st.getRetweetedStatus().getUser().getScreenName() + " : ";
         }
         return text;
     }
@@ -26,6 +26,8 @@ public class MakeMassage {
     }
 
     static String info(Status st) throws LostInformationException {
-        return getTime(st) + " " + getName(st) + getMessage(st) + " " + getRetweets(st);
+        String message = getTime(st) + " " + getName(st) + getMessage(st) + " " + getRetweets(st) + "\n";
+        message += "-----------------------------------------------------------------------------------";
+        return message;
     }
 }

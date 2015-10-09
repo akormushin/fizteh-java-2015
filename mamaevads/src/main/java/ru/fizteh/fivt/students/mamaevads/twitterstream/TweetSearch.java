@@ -7,6 +7,10 @@ public class TweetSearch {
         Twitter twitter = new TwitterFactory().getInstance();
         Query query = new Query(arguments.getQuery());
         int lim = arguments.getLimit();
+        if (arguments.getPlace() != "") {
+            double[] location = GeoFeatures.getLocation(arguments.getPlace(), twitter);
+            query.geoCode(new GeoLocation(location[0], location[1]), location[2], "km");
+        }
         QueryResult queryresult;
         boolean any = false;
         try {
@@ -36,8 +40,7 @@ public class TweetSearch {
                 }
             }
         } catch (TwitterException e) {
-            System.out.println(e.getMessage());
-            System.exit(-1);
+            System.err.println(e.getMessage());
         }
     }
 
@@ -50,15 +53,20 @@ public class TweetSearch {
                     try {
                         System.out.print(MakeMassage.info(status) + "\n");
                     } catch (LostInformationException ex) {
-                        System.out.print("Message part was lost.");
+                        System.err.print("Message part was lost.");
                     }
                 }
             }
         };
         String[] query = {arguments.getQuery()};
+        double[][]location = GeoFeatures.getFilter(arguments.getPlace());
         FilterQuery filter = new FilterQuery();
         filter.track(query);
+        if (arguments.getPlace() != "") {
+            filter.locations(location);
+        }
         twitterStream.addListener(listener);
         twitterStream.filter(filter);
     }
+
 }

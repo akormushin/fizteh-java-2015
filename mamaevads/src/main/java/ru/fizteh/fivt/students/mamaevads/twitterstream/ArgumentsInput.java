@@ -13,8 +13,7 @@ public class ArgumentsInput {
                 System.exit(0);
             }
         } catch (Exception ex) {
-            System.out.print("Invalid arguments exception");
-            System.exit(1);
+            System.err.print("Invalid arguments exception");
         }
         return arguments;
     }
