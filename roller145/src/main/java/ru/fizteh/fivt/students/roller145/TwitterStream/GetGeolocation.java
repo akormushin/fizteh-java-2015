@@ -152,7 +152,7 @@ public class GetGeolocation {
                     @Override
                     public String apply(final Map.Entry<String, String> input) {
                         try {
-                            final StringBuffer buffer = new StringBuffer();
+                            final StringBuilder buffer = new StringBuilder();
                             buffer.append(input.getKey());// получаем значение вида key=value
                             buffer.append('=');
                             buffer.append(URLEncoder.encode(input.getValue(), "utf-8"));// кодируем строку в соответствии со стандартом HTML 4.01
