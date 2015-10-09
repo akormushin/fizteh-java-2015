@@ -1,5 +1,6 @@
 package ru.fizteh.fivt.students.riazanovskiy.TwitterStream;
 
+import com.bytebybyte.google.geocoding.service.IGeocodingService;
 import com.bytebybyte.google.geocoding.service.request.GeocodeRequest;
 import com.bytebybyte.google.geocoding.service.request.GeocodeRequestBuilder;
 import com.bytebybyte.google.geocoding.service.response.LatLng;
@@ -10,18 +11,21 @@ import twitter4j.JSONObject;
 import twitter4j.JSONTokener;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 class GeocodeWrapper {
     // That would be ~60km
-    private static final double NEARBY_THRESHOLD = 0.5;
+    static final double NEARBY_THRESHOLD = 0.5;
 
     static Location getCoordinatesByIp() throws IOException, JSONException {
         URL url = new URL("http://ipinfo.io/json/");
-        JSONTokener tokenizer = new JSONTokener(url.openStream());
-        JSONObject root = new JSONObject(tokenizer);
-        String[] coordinates = ((String) root.get("loc")).split(",");
-        return new Location(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+        try (InputStream stream = url.openStream()) {
+            JSONTokener tokenizer = new JSONTokener(stream);
+            JSONObject root = new JSONObject(tokenizer);
+            String[] coordinates = ((String) root.get("loc")).split(",");
+            return new Location(Double.valueOf(coordinates[0]), Double.valueOf(coordinates[1]));
+        }
     }
 
     public static boolean isNearby(LatLng point1, LatLng point2) {
@@ -32,11 +36,11 @@ class GeocodeWrapper {
         if ("nearby".equals(place)) {
             try {
                 return getCoordinatesByIp();
-            } catch (Exception e) {
+            } catch (IOException | JSONException e) {
                 throw new IllegalArgumentException("Can't find location for ip " + place, e);
             }
         } else {
-            StandardGeocodingService geocoding = new StandardGeocodingService();
+            IGeocodingService geocoding = new StandardGeocodingService();
             GeocodeRequest request = new GeocodeRequestBuilder().output("json").address(place).build();
             Result[] response = geocoding.geocode(request).getResults();
             if (response.length == 0) {

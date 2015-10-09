@@ -12,7 +12,7 @@ class ArgumentParser {
     @Parameter(names = {"--stream", "-s"}, description = "Activates stream mode. Tweets are printed continuously")
     private boolean stream;
 
-    @Parameter(names = {"--hideRetweets"}, description = "Hides retweets if set")
+    @Parameter(names = "--hideRetweets", description = "Hides retweets if set")
     private boolean hideRetweets;
 
     @Parameter(names = {"--limit", "-l"}, description = "Maximum number of tweets to show."
