@@ -1,0 +1,6 @@
+--query|-q <query or keywords for stream>
+--place|-p <location|'nearby'>
+--stream|-s
+--hideRetweets
+--limit|-l <tweets>
+--help|-h
