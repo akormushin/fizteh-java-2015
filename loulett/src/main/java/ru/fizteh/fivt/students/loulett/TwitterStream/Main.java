@@ -41,11 +41,11 @@ class JCommanderPar {
         return String.join(" ", queries);
     }
 
-    public boolean getStream() {
+    public boolean isStream() {
         return stream;
     }
 
-    public boolean getHideRetweets() {
+    public boolean isHideRetweets() {
         return retweet;
     }
 
@@ -53,7 +53,7 @@ class JCommanderPar {
         return limit;
     }
 
-    public boolean getHelp() {
+    public boolean isHelp() {
         return help;
     }
 }
@@ -63,7 +63,7 @@ public class Main {
     static final int FIVE = 5;
     static final int THREE = 3;
     static final int ELEVEN = 11;
-    static final int TWELVE = 12;
+    static final int TWENTY = 20;
     static final int HUNDRED = 100;
 
     private static void printMinuses() {
@@ -76,8 +76,8 @@ public class Main {
                 {"часов", "час", "часа"},
                 {"дней", "день", "дня"}};
 
-        if (count % TEN >= FIVE || count % HUNDRED == ELEVEN
-                || count % HUNDRED == TWELVE || count % TEN == 0) {
+        if (count % TEN >= FIVE || count % HUNDRED >= ELEVEN
+                || count % HUNDRED <= TWENTY || count % TEN == 0) {
             return count + " " + ending[flag][0];
         } else if (count % TEN == 1) {
             return count + " " + ending[flag][1];
@@ -114,7 +114,7 @@ public class Main {
         JCommanderPar jCommanderParameters = new JCommanderPar();
         try {
             JCommander jCommander = new JCommander(jCommanderParameters, args);
-            if (jCommanderParameters.getHelp()) {
+            if (jCommanderParameters.isHelp()) {
                 throw new ParameterException("");
             }
         } catch (ParameterException pe) {
@@ -124,7 +124,7 @@ public class Main {
             return;
         }
 
-        if (!jCommanderParameters.getStream()) {
+        if (!jCommanderParameters.isStream()) {
 
             try {
                 Twitter twitter = TwitterFactory.getSingleton();
@@ -146,14 +146,13 @@ public class Main {
                                 + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
                                 + "] @" + status.getUser().getScreenName() + ": "
                                 + status.getText() + retweetsCount(status.getRetweetCount()));
-                    } else if (!jCommanderParameters.getHideRetweets()) {
+                    } else if (!jCommanderParameters.isHideRetweets()) {
                         printMinuses();
                         System.out.println("["
                                 + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
                                 + "] @" + status.getUser().getScreenName() + " ретвитнул @"
                                 + status.getRetweetedStatus().getUser().getScreenName() + ": "
-                                + status.getRetweetedStatus().getText()
-                                + retweetsCount(status.getRetweetCount()));
+                                + status.getRetweetedStatus().getText());
                     }
                 }
             } catch (TwitterException te) {
@@ -170,12 +169,11 @@ public class Main {
                         printMinuses();
                         System.out.println("@" + status.getUser().getScreenName() + ": "
                                 + status.getText() + retweetsCount(status.getRetweetCount()));
-                    } else if (!jCommanderParameters.getHideRetweets()) {
+                    } else if (!jCommanderParameters.isHideRetweets()) {
                         printMinuses();
                         System.out.println("@" + status.getUser().getScreenName() + " ретвитнул @"
                                 + status.getRetweetedStatus().getUser().getScreenName() + ": "
-                                + status.getRetweetedStatus().getText()
-                                + retweetsCount(status.getRetweetCount()));
+                                + status.getRetweetedStatus().getText());
                     }
                 }
             });
