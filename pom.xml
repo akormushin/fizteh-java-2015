@@ -28,6 +28,7 @@
         <module>riazanovskiy</module>
         <module>andrewgark</module>
         <!--Add you module here-->
+        <module>fminkin</module>
     </modules>
 
     <dependencies>
