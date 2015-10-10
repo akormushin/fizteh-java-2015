@@ -3,7 +3,6 @@
 *.jar
 *.war
 *.ear
-*.class
 hs_err_pid*
 .idea
 *.iml
@@ -18,4 +17,5 @@ workbench.xmi
 *.swp
 .settings
 .checkstyle
+GoogleMapsAPI.properties
 twitter4j.properties
