@@ -27,8 +27,9 @@
         <module>thefacetakt</module>
         <module>riazanovskiy</module>
         <module>andrewgark</module>
-        <!--Add you module here-->
         <module>fminkin</module>
+        <module>sergmiller</module>
+        <!--Add you module here-->
     </modules>
 
     <dependencies>
