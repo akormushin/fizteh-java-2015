@@ -29,8 +29,7 @@ class Printer {
     void printTweets(List<String> tweets) {
         if (tweets.isEmpty()) {
             out.println("Не найдено ни одного твита");
-        }
-        else {
+        } else {
             tweets.stream().forEach(this::print);
         }
     }

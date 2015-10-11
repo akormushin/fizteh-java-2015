@@ -16,9 +16,6 @@ import twitter4j.*;
 
 import java.net.MalformedURLException;
 import java.util.*;
-import java.util.function.Consumer;
-
-import static java.util.stream.Collectors.toList;
 
 public class TwitterStream {
     static final int MAX_NUMBER_OF_TRIES = 2;

@@ -41,8 +41,8 @@ class TweetsGetter {
 
         query.setCount(jCommanderSettings.getLimit());
 
-        for (int numberOfTry = 0; numberOfTry <
-                TwitterStream.MAX_NUMBER_OF_TRIES;
+        for (int numberOfTry = 0; numberOfTry
+                < TwitterStream.MAX_NUMBER_OF_TRIES;
              ++numberOfTry) {
             try {
 
@@ -58,8 +58,8 @@ class TweetsGetter {
                 }
             }
         }
-        throw new TwitterStreamException("Unexpected end of " +
-                "TweetsOnce function");
+        throw new TwitterStreamException("Unexpected end of "
+                + "TweetsOnce function");
     }
 
     void getTwitterStream(JCommanderSetting jCommanderSetting,
