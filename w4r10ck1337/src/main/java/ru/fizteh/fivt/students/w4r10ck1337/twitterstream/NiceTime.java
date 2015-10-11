@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.w4r10ck1337.twitterstream;
 
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 
 public class NiceTime {
@@ -9,10 +10,13 @@ public class NiceTime {
     private static final int FUCKING_4 = 4;
     private static final int FUCKING_11 = 11;
     private static final int FUCKING_10 = 10;
-    private static final int SECOND = 1000;
-    private static final int MINUTE = SECOND * 60;
-    private static final int HOUR = MINUTE * 60;
-    private static final int DAY = HOUR * 24;
+    private static final long SECOND = TimeUnit.SECONDS.toMillis(1);
+    private static final long MINUTE = SECOND * 60;
+    private static final long HOUR = MINUTE * 60;
+    private static final long DAY = HOUR * 24;
+    private static final String[] minutesStrings = {"минут", "минуту", "минуты"};
+    private static final String[] hoursStrings = {"часов", "час", "часа"};
+    private static final String[] daysStrings = {"дней", "день", "дня"};
 
     private static String timeToString(long time, String[] variants) {
         if (time % FUCKING_100 >= FUCKING_11
@@ -35,17 +39,17 @@ public class NiceTime {
         } else if (currTime - date.getTime() < HOUR) {
             return timeToString(
                     (currTime - date.getTime()) / MINUTE,
-                    new String[]{"минут", "минуту", "минуты"});
+                    minutesStrings);
         } else if (currTime - date.getTime() < DAY) {
             return timeToString(
                     (currTime - date.getTime()) / HOUR,
-                    new String[]{"часов", "час", "часа"});
-        } else if (currTime - date.getTime() < DAY * 2) {
+                    hoursStrings);
+        } else if (currTime / DAY - date.getTime() / DAY < 2) {
             return "Вчера";
         } else {
             return timeToString(
-                    (currTime - date.getTime()) / DAY,
-                    new String[]{"дней", "день", "дня"});
+                    currTime / DAY - date.getTime() / DAY,
+                    daysStrings);
         }
     }
 }

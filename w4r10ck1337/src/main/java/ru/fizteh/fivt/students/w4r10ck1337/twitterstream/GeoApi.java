@@ -6,12 +6,10 @@ import twitter4j.Place;
 import twitter4j.Twitter;
 
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-/**
- * Created by user on 05.10.2015.
- */
 public class GeoApi {
     private static final double DEFAULT_RADIUS = 15;
     private static final double MILES = 34.5;
@@ -19,24 +17,36 @@ public class GeoApi {
     private static final int INF = 1000000000;
 
     public static double[] getLocationByIP() {
-        String location;
+        String location = "";
         try {
             URL url = new URL("http://ipinfo.io/geo");
-            InputStream is = url.openStream();
-            byte[] b = new byte[BUF_SIZE + 1];
-            char[] c = new char[is.read(b) + 2];
-            for (int i = 0; b[i] > 0 && i < BUF_SIZE; i++) {
-                c[i] = (char) b[i];
+            try (InputStream is = url.openStream()) {
+                byte[] b = new byte[BUF_SIZE + 1];
+                char[] c = new char[is.read(b) + 2];
+                for (int i = 0; b[i] > 0 && i < BUF_SIZE; i++) {
+                    c[i] = (char) b[i];
+                }
+                location = String.valueOf(c).
+                        split("\"loc\": \"")[1].split("\"")[0];
+                try {
+                    is.close();
+                }
+                catch (Exception e) {
+                    System.err.println("Соединение с ipinfo не закрылось");
+                }
+            } catch (Exception e) {
+                System.err.println(
+                        "Не получается определить местоположение,"
+                                + " попробуйте использовать --place");
+                return null;
             }
-            location = String.valueOf(c).
-                    split("\"loc\": \"")[1].split("\"")[0];
-            is.close();
-        } catch (Exception e) {
-            System.err.println(
-                    "Не получается определить местоположение,"
-                            + " попробуйте использовать --place");
-            return null;
         }
+        catch (MalformedURLException e) {
+            System.err.println(
+                    "http уже не считается протоколом, а вы используете мою программу О_о"
+            );
+        }
+
 
         return new double[]{
                 Double.parseDouble(location.split(",")[0]),
