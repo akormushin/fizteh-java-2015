@@ -35,7 +35,8 @@
         <module>zakharovas</module>
         <module>zemen</module>
         <!--Add you module here-->
-    </modules>
+    <module>preidman</module>
+  </modules>
 
     <dependencies>
         <dependency>
