@@ -2,18 +2,11 @@ package ru.fizteh.fivt.students.oshch.twitterstream;
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
+
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.model.Bounds;
-import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.LatLng;
-import com.beust.jcommander.Parameter;
-
-
 
 public class TwitterStream {
     public static final String ANSI_RESET = "\u001B[0m";
@@ -31,102 +24,6 @@ public class TwitterStream {
     public static final String[] HOURS = {"час", "часа", "часов"};
     public static final String[] DAYS = {"день", "дня", "дней"};
 
-
-
-
-
-    public static class Parameters {
-        public static final int HUNDRED = 100;
-
-        @Parameter(names = {"-q", "--query"},
-                description = "поисковой запрос")
-        private String query = "nearby";
-        @Parameter(names = {"-p", "--place"},
-                description = "место, рядом с которым искать")
-        private String place = "";
-        @Parameter(names = {"-s", "--stream"},
-                description = "стрим твитов")
-        private boolean stream = false;
-        @Parameter(names = {"--hideRetweets"},
-                description = "прятать ретвиты")
-        private boolean hideRt = false;
-        @Parameter(names = {"-h", "--help"},
-                description = "показать помощь")
-        private boolean help = false;
-        @Parameter(names = {"-l", "--limit"},
-                description = "максимальное количество твиттов (не в стриме)")
-        private Integer limit = HUNDRED;
-
-        public final String getQuery() {
-            return query;
-        }
-
-        public boolean isStream() {
-            return stream;
-        }
-
-        public boolean isHelp() {
-            return help;
-        }
-
-        public final String getPlace() {
-            return place;
-        }
-
-        public final Integer getLimit() {
-            return limit;
-        }
-
-        public final boolean isHideRt() {
-            return hideRt;
-        }
-    }
-
-    public static class PlaceApi {
-        private static final double R = 6371;
-        private GeocodingResult[] result;
-        private double radius;
-        PlaceApi(String place) {
-            GeoApiContext context = new GeoApiContext()
-                    .setApiKey("AIzaSyCAhkvmjepUzQUh9pA7g0K4QoQY2ncBno8");
-            try {
-                result = GeocodingApi.geocode(context, place).await();
-                radius = calculateRadius();
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                System.exit(-1);
-            }
-        }
-
-        private double calculateRadius() {
-            double phi1 = Math.toRadians(result[0].geometry.bounds.northeast.lat);
-            double phi2 = Math.toRadians(result[0].geometry.bounds.southwest.lat);
-            double dPhi = phi1 - phi2;
-            double lambda1;
-            lambda1 = Math.toRadians(result[0].geometry.bounds.northeast.lng);
-            double lambda2;
-            lambda2 = Math.toRadians(result[0].geometry.bounds.southwest.lng);
-            double dLambda = lambda1 - lambda2;
-
-            double a = Math.sin(dPhi / 2) * Math.sin(dPhi / 2)
-                    + Math.cos(phi1) * Math.cos(phi2)
-                    * Math.sin(dLambda / 2) * Math.sin(dLambda / 2);
-            double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            double distance = R * c;
-            return distance / 2;
-        }
-
-        public final LatLng getLocation() {
-            return result[0].geometry.location;
-        }
-        public final double getRadius() {
-            return radius;
-        }
-        public final Bounds getBounds() {
-            return result[0].geometry.bounds;
-        }
-    }
-
     public static String myTime(long time, String[] timeType) {
         if (time % MOD10 == 1 && time % MOD100 != ELEVEN) {
             return timeType[0];
@@ -140,7 +37,6 @@ public class TwitterStream {
         }
     }
 
-
     public static boolean today(long time, long currentTime) {
         long pastDays = currentTime / MILSEC_IN_DAY;
         long todayTime = currentTime - pastDays * MILSEC_IN_DAY;
@@ -148,9 +44,9 @@ public class TwitterStream {
     }
 
     public static boolean yesterday(long time, long currentTime) {
-        long pastDays = currentTime / MILSEC_IN_DAY;
-        long todayTime = currentTime - (pastDays - 1) * MILSEC_IN_DAY;
-        return todayTime >= currentTime - time;
+        long currDays = currentTime / MILSEC_IN_DAY;
+        long tweetDays = time / MILSEC_IN_DAY;
+        return (currDays - tweetDays) == 1;
     }
 
     public static void printTime(Status status) {
@@ -159,7 +55,7 @@ public class TwitterStream {
         long time = status.getCreatedAt().getTime();
         long minBetween = (currentTime - time) / MILSEC_IN_MIN;
         long hoursBetween = (currentTime - time) / MILSEC_IN_HOUR;
-        long daysBetween = (currentTime - time) / MILSEC_IN_DAY;
+        long daysBetween = currentTime / MILSEC_IN_DAY - time / MILSEC_IN_DAY;
         System.out.print("[");
         if (minBetween <= 2) {
             System.out.print("только что");
@@ -184,7 +80,7 @@ public class TwitterStream {
         System.out.print("]");
     }
 
-    public static Query setQuery(Parameters param) throws Exception {
+    public static Query setQuery(Parameters param) throws IOException {
 
         Query query = new Query(param.getQuery());
 
@@ -229,7 +125,7 @@ public class TwitterStream {
         }
     }
 
-    public static FilterQuery setFilter(Parameters param) throws Exception{
+    public static FilterQuery setFilter(Parameters param) throws Exception {
 
         String[] trackArray = new String[1];
         trackArray[0] = param.getQuery();
@@ -248,8 +144,7 @@ public class TwitterStream {
         }
         return filter;
     }
-    public static void stream(Parameters param,
-                              StatusListener listener) throws Exception{
+    public static void stream(Parameters param, StatusListener listener) throws Exception {
         twitter4j.TwitterStream twitterStream;
         twitterStream = new TwitterStreamFactory().getInstance();
         twitterStream.addListener(listener);
@@ -257,9 +152,9 @@ public class TwitterStream {
         twitterStream.filter(filter);
     }
 
-    public static void printStatus(Status status, boolean hideRetwitts) {
+    public static void printStatus(Status status, boolean hideRetweets) {
         if (status.isRetweet()) {
-            if (!hideRetwitts) {
+            if (!hideRetweets) {
                 System.out.println(ANSI_GR
                         + "@" + status.getUser().getScreenName()
                         + ANSI_RESET + ": ретвитнул " + ANSI_GR
@@ -267,6 +162,8 @@ public class TwitterStream {
                         + status.getRetweetedStatus().getUser().getScreenName()
                         + ANSI_RESET + ": "
                         + status.getRetweetedStatus().getText());
+                System.out.println("----------------------------------------" +
+                        "----------------------------------------");
             }
         } else {
             System.out.print(ANSI_GR
@@ -275,32 +172,32 @@ public class TwitterStream {
             if (status.getRetweetCount() != 0) {
                 System.out.print("(" + status.getRetweetCount() + " ретвитов)");
             }
-            System.out.println();
+            System.out.println("\n----------------------------------------" +
+                    "----------------------------------------");
         }
 
     }
 
-    public static Parameters getParameters(String[] args) throws Exception{
+    public static Parameters getParameters(String[] args) throws Exception {
         Parameters param = new Parameters();
         JCommander cmd = new JCommander(param, args);
         if (param.isHelp()) {
             cmd.usage();
-            System.exit(0);
         }
         return param;
     }
 
 
-    public static void main(String[] args) throws Exception{
+    public static void main(String[] args) throws Exception {
         Parameters param = getParameters(args);
-
-        /*System.out.println(TimeUnit.DAYS.toMillis(1));
-        System.out.println(MILSEC_IN_DAY);*/
-
+        if (param.isHelp()) {
+            System.exit(0);
+        }
         if (param.isStream()) {
-            StatusListener listener = new StatusListener() {
+            StatusAdapter listener = new StatusAdapter() {
                 @Override
                 public void onException(Exception e) {
+                    System.err.println("Stream error");
                 }
 
                 @Override
@@ -314,35 +211,19 @@ public class TwitterStream {
                             System.err.println("Sleep error");
                         }
                 }
-
-                @Override
-                public void onDeletionNotice(StatusDeletionNotice
-                                                     statusDeletionNotice) {
-                }
-
-                @Override
-                public void onTrackLimitationNotice(int i) {
-                }
-
-                @Override
-                public void onScrubGeo(long l, long l1) {
-                }
-
-                @Override
-                public void onStallWarning(StallWarning stallWarning) {
-                }
             };
-                try {
-                    stream(param, listener);
-                }
-                catch (TwitterException e) {
-                    System.err.println("twitter error");
-                }
-                catch (Exception e) {
-                    System.err.println("connection error");
-                }
-
-
+            try {
+                stream(param, listener);
+            }
+            catch (TwitterException e) {
+                System.err.println("twitter error");
+            }
+            catch (IOException e) {
+                System.err.println("cant find api key");
+            }
+            catch (Exception e) {
+                System.err.println("connection error");
+            }
         } else {
             try {
                 search(param);
