@@ -16,8 +16,8 @@ class Formatter {
         if (!tweet.isRetweet()) {
             String retweetCountPart = "";
             if (tweet.getRetweetCount() != 0) {
-                retweetCountPart = "(" + tweet.getRetweetCount() + " " +
-                        Declenser.retweetDeclension(tweet.getRetweetCount())
+                retweetCountPart = "(" + tweet.getRetweetCount() + " "
+                        + Declenser.retweetDeclension(tweet.getRetweetCount())
                         + ")";
             }
 

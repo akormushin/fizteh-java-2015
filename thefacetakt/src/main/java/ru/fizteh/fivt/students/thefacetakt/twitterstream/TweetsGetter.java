@@ -29,7 +29,6 @@ class TweetsGetter {
                                       Twitter twitter)
             throws TwitterStreamException {
         String queryString = jCommanderSettings.getQuery();
-
         if (queryString.equals("")) {
             throw new TwitterStreamException("Empty query");
         }
