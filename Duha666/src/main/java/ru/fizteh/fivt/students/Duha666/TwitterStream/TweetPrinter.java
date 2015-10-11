@@ -1,14 +1,11 @@
 package ru.fizteh.fivt.students.Duha666.TwitterStream;
 
-import com.sun.xml.internal.fastinfoset.util.StringArray;
 import twitter4j.*;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.logging.Filter;
 
 public class TweetPrinter {
-    public static final int SEARCH_DISTANCE = 4;
+    public static final int SEARCH_DISTANCE = 5;
+    public static final int MILLISECONDS_IN_SECOND = 1000;
     private static void printTweet(Status tweet) {
         System.out.print("[" + TimeFormatter.formatTime(tweet.getCreatedAt()) + "]");
         System.out.print("@" + tweet.getUser().getScreenName() + ": ");
@@ -23,11 +20,11 @@ public class TweetPrinter {
                 System.out.print("(" + retweetsCount + " ретвитов)");
             }
         }
-        System.out.print(TwitterStream.tweetSeparator);
+        System.out.print(TwitterStream.TWEET_SEPARATOR);
     }
     public static void printTweets(JCommanderSettings jcs, GeoLocation location) throws TwitterException {
         Twitter twitter = new TwitterFactory().getInstance();
-        Query query = new Query(jcs.getQuery()).geoCode(location, 5, "km");
+        Query query = new Query(jcs.getQuery()).geoCode(location, SEARCH_DISTANCE, "km");
         query.setCount(jcs.getLimitNumber());
         QueryResult queryResult = twitter.search(query);
         List<Status> tweets = queryResult.getTweets();
@@ -45,7 +42,7 @@ public class TweetPrinter {
                 }
                 printTweet(tweet);
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(MILLISECONDS_IN_SECOND);
                 } catch (Exception e) {
                     System.out.print("Some error occured");
                 }

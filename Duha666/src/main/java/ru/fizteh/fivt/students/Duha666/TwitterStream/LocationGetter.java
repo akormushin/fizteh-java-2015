@@ -16,8 +16,8 @@ public class LocationGetter {
         InputStream inputStream = GeoLocation.class.getResourceAsStream("/geo.properties");
         properties.load(inputStream);
         String googleMapsKey = properties.getProperty("google");
-        String urlString = "https://maps.googleapis.com/maps/api/geocode/json?key=" + googleMapsKey +
-                "&address=" + URLEncoder.encode(placeString, "UTF-8");
+        String urlString = "https://maps.googleapis.com/maps/api/geocode/json?key="
+                + googleMapsKey + "&address=" + URLEncoder.encode(placeString, "UTF-8");
         URL url = new URL(urlString);
         org.json.JSONObject jsonObject = JsonReader.readJsonFromUrl(url.toString());
         jsonObject = jsonObject.

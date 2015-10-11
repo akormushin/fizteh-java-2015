@@ -32,5 +32,5 @@ public class JsonReader {
             is.close();
         }
     }
-
 }
+

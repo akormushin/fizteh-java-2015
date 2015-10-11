@@ -5,7 +5,7 @@ import twitter4j.GeoLocation;
 import twitter4j.TwitterException;
 
 public class TwitterStream {
-    public static final String tweetSeparator =
+    public static final String TWEET_SEPARATOR =
             "\n----------------------------------------------------------------------------------------\n";
     public static void main(String[] args) throws TwitterException {
         JCommanderSettings jcs = new JCommanderSettings();
@@ -21,7 +21,7 @@ public class TwitterStream {
             return;
         }
         System.out.print("Твиты по запросу " + jcs.getQuery() + " для " + jcs.getPlace() + ":");
-        System.out.print(tweetSeparator);
+        System.out.print(TWEET_SEPARATOR);
         try {
             GeoLocation location = LocationGetter.getLocationByPlace(jcs.getPlace());
             if (jcs.isStream()) {
@@ -35,3 +35,4 @@ public class TwitterStream {
         }
     }
 }
+
