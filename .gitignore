@@ -3,8 +3,8 @@
 *.jar
 *.war
 *.ear
+*.class
 hs_err_pid*
-/twitter4j.properties
 .idea
 *.iml
 *.ipr
@@ -18,6 +18,4 @@ workbench.xmi
 *.swp
 .settings
 .checkstyle
-geo.properties
 twitter4j.properties
-
