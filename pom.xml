@@ -29,6 +29,7 @@
         <module>andrewgark</module>
         <module>fminkin</module>
         <module>sergmiller</module>
+        <module>zakharovas</module>
         <!--Add you module here-->
     </modules>
 
@@ -109,6 +110,5 @@
         <developerConnection>scm:git:ssh://git@github.com/fizteh-java-2015.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
-
 
 </project>
