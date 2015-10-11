@@ -1,0 +1,37 @@
+package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+
+import java.io.PrintStream;
+import java.util.List;
+
+/**
+ * Created by thefacetakt on 11.10.15.
+ */
+class Printer {
+    private PrintStream out;
+
+    Printer(PrintStream outStream) {
+        this.out = outStream;
+    }
+
+    static final int MINUSES_COUNT = 140;
+    void printSeparator() {
+        for (int i = 0; i < MINUSES_COUNT; ++i) {
+            out.print("-");
+        }
+        out.println();
+    }
+
+    void print(String tweet) {
+        out.println(tweet);
+        printSeparator();
+    }
+
+    void printTweets(List<String> tweets) {
+        if (tweets.isEmpty()) {
+            out.println("Не найдено ни одного твита");
+        }
+        else {
+            tweets.stream().forEach(this::print);
+        }
+    }
+}

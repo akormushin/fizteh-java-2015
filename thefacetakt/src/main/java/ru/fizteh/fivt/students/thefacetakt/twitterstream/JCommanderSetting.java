@@ -37,6 +37,10 @@ class JCommanderSetting {
             description = "show help", help = true)
     private boolean help;
 
+    public String getQuery() {
+        return String.join(" ", queries);
+    }
+
     public List<String> getQueries() {
         return queries;
     }

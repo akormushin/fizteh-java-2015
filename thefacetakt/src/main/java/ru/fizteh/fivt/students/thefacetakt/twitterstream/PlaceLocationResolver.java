@@ -22,7 +22,7 @@ class PlaceLocationResolver {
             = "Problem while location definition";
 
     private Map<String, Location> cache
-            = new HashMap<String, Location>();
+            = new HashMap<>();
     private String googleMapsKey;
     private String yandexMapsKey;
 
@@ -43,8 +43,7 @@ class PlaceLocationResolver {
         }
     }
 
-
-    private Location resolvePlaceLocationGoogle(String nameOfLocation)
+    Location resolvePlaceLocationGoogle(String nameOfLocation)
             throws InvalidLocationException, QueryLimitException,
             LocationDefinitionErrorException, MalformedURLException {
         int numberOfTries = 0;
@@ -116,7 +115,7 @@ class PlaceLocationResolver {
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
 
-    private Location resolvePlaceLocationYandex(String nameOfLocation)
+    Location resolvePlaceLocationYandex(String nameOfLocation)
             throws InvalidLocationException, LocationDefinitionErrorException,
             MalformedURLException {
         int numberOfTries = 0;
@@ -231,32 +230,22 @@ class PlaceLocationResolver {
         int numberOfTries = 0;
 
         do {
-            URL whatIsMyCity;
+            URL whatIsMyCityURL = new URL("http://ipinfo.io/json");
 
-            whatIsMyCity = new URL("http://ipinfo.io/json");
-
-
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                    whatIsMyCity.openStream()))) {
-
-                String currentInfo;
-                StringBuilder responseStrBuilder = new StringBuilder();
-                while ((currentInfo = in.readLine()) != null) {
-                    responseStrBuilder.append(currentInfo);
-                }
-
+            try {
+                String currentInfo
+                        = HttpReader.httpGet(whatIsMyCityURL.toString());
                 JSONObject locationInfo =
-                        new JSONObject(responseStrBuilder.toString());
+                        new JSONObject(currentInfo);
 
                 String[] coordinates = locationInfo
                         .getString("loc").split(",");
 
-                Location result = new Location(
+                return new Location(
                         Double.parseDouble(coordinates[0]),
                         Double.parseDouble(coordinates[1]),
                         locationInfo.getString("city"));
-                return result;
-            } catch (IOException | JSONException e) {
+            } catch (IllegalStateException | JSONException e) {
                 ++numberOfTries;
             }
         }
