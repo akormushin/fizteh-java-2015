@@ -30,8 +30,7 @@ public class GeoApi {
                         split("\"loc\": \"")[1].split("\"")[0];
                 try {
                     is.close();
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.err.println("Соединение с ipinfo не закрылось");
                 }
             } catch (Exception e) {
@@ -40,8 +39,7 @@ public class GeoApi {
                                 + " попробуйте использовать --place");
                 return null;
             }
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             System.err.println(
                     "http уже не считается протоколом, а вы используете мою программу О_о"
             );
