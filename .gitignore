@@ -3,8 +3,8 @@
 *.jar
 *.war
 *.ear
-*.class
 hs_err_pid*
+/twitter4j.properties
 .idea
 *.iml
 *.ipr
