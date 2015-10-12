@@ -23,7 +23,7 @@ public class PlaceLocationResolverTest_current {
     private static String ipInfoResponceBad;
 
     @BeforeClass
-    public static void loadSamles() throws Exception {
+    public static void loadSamples() throws Exception {
         try (InputStream inputStream
                      = TwitterStream.class
                 .getResourceAsStream("/ipInfoSample.json")) {
