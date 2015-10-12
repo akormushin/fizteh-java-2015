@@ -177,7 +177,6 @@ class PlaceLocationResolver {
             } catch (JSONException | IllegalStateException e) {
                 ++numberOfTries;
                 if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
-                    String additionalText = "";
                     throw new LocationDefinitionErrorException(
                             "Yandex: " + LOCATION_DEFINITION_ERROR + " : "
                                     + e.getMessage());
