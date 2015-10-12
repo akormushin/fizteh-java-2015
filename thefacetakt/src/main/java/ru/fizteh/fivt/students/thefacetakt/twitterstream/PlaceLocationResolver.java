@@ -129,9 +129,9 @@ class PlaceLocationResolver {
                 URI uri = new URI("https",
                         "geocode-maps.yandex.ru",
                         "/1.x/",
-                        "geocode=" + nameOfLocation
-                                + "&key=" + yandexMapsKey
-                                + "&format=json",
+                        "format=json"
+                        + "&geocode=" + nameOfLocation
+                                + "&key=" + yandexMapsKey,
                         null);
                 yandexMapsURL = uri.toURL();
             } catch (URISyntaxException e) {
