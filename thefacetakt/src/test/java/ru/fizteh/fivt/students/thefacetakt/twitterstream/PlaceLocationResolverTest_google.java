@@ -120,5 +120,6 @@ public class PlaceLocationResolverTest_google {
         });
         new PlaceLocationResolver(httpReader)
                 .resolvePlaceLocationGoogle("Москва");
+
     }
 }
