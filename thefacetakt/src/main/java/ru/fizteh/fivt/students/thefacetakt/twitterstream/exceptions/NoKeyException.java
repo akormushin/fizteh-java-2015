@@ -9,8 +9,4 @@ public class NoKeyException extends Exception {
         super("Something went terribly wrong: no maps "
                 + "key found");
     }
-
-    public NoKeyException(String message) {
-        super(message);
-    }
 }

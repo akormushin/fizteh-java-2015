@@ -25,8 +25,9 @@ class PlaceLocationResolver {
             = new HashMap<>();
     private String googleMapsKey;
     private String yandexMapsKey;
+    private HttpReader httpReader;
 
-    PlaceLocationResolver() throws NoKeyException {
+    PlaceLocationResolver(HttpReader newHttpReader) throws NoKeyException {
 
         Properties mapsKeys = new Properties();
         try (InputStream inputStream
@@ -41,6 +42,7 @@ class PlaceLocationResolver {
         if (googleMapsKey == null || yandexMapsKey == null) {
             throw new NoKeyException();
         }
+        httpReader = newHttpReader;
     }
 
     Location resolvePlaceLocationGoogle(String nameOfLocation)
@@ -66,7 +68,7 @@ class PlaceLocationResolver {
 
             try {
                 String currentInfo
-                        = HttpReader.httpGet(googleMapsURL.toString());
+                        = httpReader.httpGet(googleMapsURL.toString());
 
                 JSONObject locationInfo =
                         new JSONObject(currentInfo);
@@ -141,7 +143,7 @@ class PlaceLocationResolver {
 
             try {
                 String currentInfo
-                        = HttpReader.httpGet(yandexMapsURL.toString());
+                        = httpReader.httpGet(yandexMapsURL.toString());
                 JSONObject locationInfo
                         = new JSONObject(currentInfo);
 
@@ -233,7 +235,7 @@ class PlaceLocationResolver {
 
             try {
                 String currentInfo
-                        = HttpReader.httpGet(whatIsMyCityURL.toString());
+                        = httpReader.httpGet(whatIsMyCityURL.toString());
                 JSONObject locationInfo =
                         new JSONObject(currentInfo);
 
@@ -246,6 +248,10 @@ class PlaceLocationResolver {
                         locationInfo.getString("city"));
             } catch (IllegalStateException | JSONException e) {
                 ++numberOfTries;
+                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                    throw new LocationDefinitionErrorException(
+                            LOCATION_DEFINITION_ERROR);
+                }
             }
         }
         while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);

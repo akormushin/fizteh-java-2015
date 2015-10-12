@@ -18,7 +18,7 @@ class HttpReader {
 
     static final int ERROR_CODE_START = 400;
 
-    public static String httpGet(String url) throws IllegalStateException {
+    public String httpGet(String url) throws IllegalStateException {
         HttpURLConnection con = null;
         InputStream is = null;
         try {

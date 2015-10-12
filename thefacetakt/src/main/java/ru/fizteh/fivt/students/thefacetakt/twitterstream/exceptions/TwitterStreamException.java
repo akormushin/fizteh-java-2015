@@ -4,9 +4,6 @@ package ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions;
  * Created by thefacetakt on 06.10.15.
  */
 public class TwitterStreamException extends Exception {
-    public TwitterStreamException() {
-    }
-
     public TwitterStreamException(String message) {
         super(message);
     }

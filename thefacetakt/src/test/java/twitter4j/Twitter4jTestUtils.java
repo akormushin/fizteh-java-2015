@@ -15,7 +15,8 @@ import java.util.List;
 public class Twitter4jTestUtils {
 
     public static List<Status> tweetsFromJson(String resource) {
-        try (InputStream inputStream = Twitter4jTestUtils.class.getResourceAsStream(resource)) {
+        try (InputStream inputStream
+                     = Twitter4jTestUtils.class.getResourceAsStream(resource)) {
             JSONObject json = new JSONObject(IOUtils.toString(inputStream));
 
             JSONArray array = json.getJSONArray("statuses");

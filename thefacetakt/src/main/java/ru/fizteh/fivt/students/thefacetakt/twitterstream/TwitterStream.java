@@ -24,7 +24,7 @@ public class TwitterStream {
 
     static {
         try {
-            geoResolver = new PlaceLocationResolver();
+            geoResolver = new PlaceLocationResolver(new HttpReader());
         } catch (NoKeyException e) {
             System.err.println(e.getMessage());
             System.exit(1);
