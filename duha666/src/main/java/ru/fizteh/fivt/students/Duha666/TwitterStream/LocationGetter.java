@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Duha666.TwitterStream;
+package ru.fizteh.fivt.students.duha666.TwitterStream;
 
 import twitter4j.*;
 

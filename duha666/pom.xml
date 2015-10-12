@@ -7,9 +7,9 @@
     <artifactId>parent</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <artifactId>Duha666</artifactId>
+  <artifactId>duha666</artifactId>
   <version>1.0-SNAPSHOT</version>
-  <name>Duha666</name>
+  <name>duha666</name>
   <url>http://maven.apache.org</url>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

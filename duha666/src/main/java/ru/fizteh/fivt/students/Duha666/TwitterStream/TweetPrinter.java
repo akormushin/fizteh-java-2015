@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Duha666.TwitterStream;
+package ru.fizteh.fivt.students.duha666.TwitterStream;
 
 import twitter4j.*;
 import java.util.List;
@@ -30,7 +30,7 @@ public class TweetPrinter {
         List<Status> tweets = queryResult.getTweets();
         tweets.stream().
                 filter(tweet -> !jcs.isHideRetweets() || !tweet.isRetweet()).
-                forEach(ru.fizteh.fivt.students.Duha666.TwitterStream.TweetPrinter::printTweet);
+                forEach(ru.fizteh.fivt.students.duha666.TwitterStream.TweetPrinter::printTweet);
     }
     public static void streamTweets(JCommanderSettings jcs, GeoLocation location) throws TwitterException {
         twitter4j.TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
@@ -44,7 +44,7 @@ public class TweetPrinter {
                 try {
                     Thread.sleep(MILLISECONDS_IN_SECOND);
                 } catch (Exception e) {
-                    System.out.print("Some error occured");
+                    System.err.print("Some error occured");
                 }
             }
         });

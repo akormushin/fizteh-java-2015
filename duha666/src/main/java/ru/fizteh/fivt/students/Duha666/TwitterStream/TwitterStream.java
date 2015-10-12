@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Duha666.TwitterStream;
+package ru.fizteh.fivt.students.duha666.TwitterStream;
 
 import com.beust.jcommander.JCommander;
 import twitter4j.GeoLocation;
@@ -30,7 +30,7 @@ public class TwitterStream {
                 TweetPrinter.printTweets(jcs, location);
             }
         } catch (Exception e) {
-            System.out.print("Some error occured: " + e.toString());
+            System.err.print("Some error occured: " + e.toString());
             e.printStackTrace();
         }
     }

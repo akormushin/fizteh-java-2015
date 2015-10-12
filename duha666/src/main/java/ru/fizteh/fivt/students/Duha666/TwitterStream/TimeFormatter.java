@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Duha666.TwitterStream;
+package ru.fizteh.fivt.students.duha666.TwitterStream;
 
 import java.time.temporal.ChronoUnit;
 import java.util.Date;

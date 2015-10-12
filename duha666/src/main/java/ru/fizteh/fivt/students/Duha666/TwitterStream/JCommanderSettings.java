@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.Duha666.TwitterStream;
+package ru.fizteh.fivt.students.duha666.TwitterStream;
 
 import com.beust.jcommander.*;
 
@@ -10,7 +10,7 @@ public class JCommanderSettings {
     private String query = "MIPT";
 
     @Parameter(names = {"-p", "--place"}, description = "Place type")
-    private String place = "Москва";
+    private String place = "nearby";
 
     @Parameter(names = {"-s", "--stream"}, description = "Stream mode")
     private boolean isStream = false;
