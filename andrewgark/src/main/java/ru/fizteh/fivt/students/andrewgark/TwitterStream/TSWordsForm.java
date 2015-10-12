@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
-import twitter4j.Status;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

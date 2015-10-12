@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.andrewgark.ModuleTests.library;
 
-import twitter4j.Status;
-
 import java.time.LocalDateTime;
 
 public interface TwitterStreamService {

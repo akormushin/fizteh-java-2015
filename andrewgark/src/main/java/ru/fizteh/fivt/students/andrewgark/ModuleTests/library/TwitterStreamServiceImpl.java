@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.andrewgark.ModuleTests.library;
 
 import ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm;
-import twitter4j.Status;
 
 import java.time.LocalDateTime;
 
