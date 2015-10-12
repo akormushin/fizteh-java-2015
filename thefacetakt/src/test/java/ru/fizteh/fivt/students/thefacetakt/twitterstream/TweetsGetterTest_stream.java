@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.thefacetakt.twitterstream;
 
 import com.beust.jcommander.JCommander;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -14,6 +15,7 @@ import twitter4j.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
@@ -29,7 +31,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TweetsGetterTest_stream {
     private Location MoscowLocation = new Location(55.7500, 37.6167, "Moscow");
-    private int notMoscowTweets = 0;
+    private int notMoscowTweets = 7;
 
     @Mock
     twitter4j.TwitterStream twitterStream;
@@ -71,16 +73,12 @@ public class TweetsGetterTest_stream {
                         case "Russia, Moscow":
                             return MoscowLocation;
                         case "Пермь":
-                            ++notMoscowTweets;
                             return new Location(58.0000, 56.3167, "Пермь");
                         case "Омск":
-                            ++notMoscowTweets;
                             return new Location(54.9833, 73.3667, "Омск");
                         case "Красноярск":
-                            ++notMoscowTweets;
                             return new Location(56.0167, 93.0667, "Красноярск");
                         default:
-                            ++notMoscowTweets;
                             throw new InvalidLocationException();
                     }
                 });
@@ -96,13 +94,39 @@ public class TweetsGetterTest_stream {
         tweetsGetter.getTwitterStream(setUpJCommanderSettings("-q", "а", "-p",
                 "Moscow", "-s"), MoscowLocation, tweets::add, twitterStream);
         assertThat(tweets.size(), is(100 - notMoscowTweets));
-        assertThat(tweets, hasItems("@MashaRaif: Я уверена, он(а) делает что-то"
-                        + " для вас, потому что это выгодно ему(ей)",
-                "@nyoquira82: ретвитнул @plushev: А вот "
-                        + "такой полувнутрячок, для коллег и"
-                        + "постоянных слушателей. "
-                        + "Улыбчивый блондин рядом со мной - "
-                        + "это… https://t.co/f74eHz82i5"));
+        assertThat(tweets, hasItems(
+                "@luba_keks: ретвитнул @mr_twittcorn: Я НЕ НАВИЖУ ЭТОТ МИР",
+                "@Owl_Juliann_: А мы сегодня с Викой добрались наконец-то до"
+                        + " чайных дел мастерской! На удивительной "
+                        + "фарворовой… https://t.co/nenvrVtV0o",
+                "@MashaRaif: Я уверена, он(а) делает"
+                        + " что-то для вас, потому что это выгодно ему(ей)"));
+        assertThat(tweets, not(hasItems("@paorarti88: ретвитнул @malahovajenia: "
+                + "Почему категорически не хочется вставать ,когда "
+                + "надо. А когда некуда спешить,глаза сами открываются"
+                + " в… https://t.co/XbezLDXwpE")));
+    }
+
+    @Test
+    public void testGetTwitterNoRTStream() throws Exception {
+        ArrayList<String> tweets = new ArrayList<>();
+        TweetsGetter tweetsGetter = new TweetsGetter(geoResolver);
+        tweetsGetter.getTwitterStream(setUpJCommanderSettings("-q", "а", "-p",
+                "Moscow", "-s" , "--hideRetweets"),
+                MoscowLocation, tweets::add, twitterStream);
+        assertThat(tweets.size(), is(91));
+        assertThat(tweets, hasItems(
+                "@Owl_Juliann_: А мы сегодня с Викой добрались наконец-то до"
+                        + " чайных дел мастерской! На удивительной "
+                        + "фарворовой… https://t.co/nenvrVtV0o",
+                "@MashaRaif: Я уверена, он(а) делает"
+                        + " что-то для вас, потому что это выгодно ему(ей)"));
+        assertThat(tweets, not(hasItems(
+                "@luba_keks: ретвитнул @mr_twittcorn: Я НЕ НАВИЖУ ЭТОТ МИР",
+                "@paorarti88: ретвитнул @malahovajenia: "
+                + "Почему категорически не хочется вставать ,когда "
+                + "надо. А когда некуда спешить,глаза сами открываются"
+                + " в… https://t.co/XbezLDXwpE")));
     }
 
 
