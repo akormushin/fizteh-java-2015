@@ -4,7 +4,6 @@ import ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm;
 
 import java.time.LocalDateTime;
 
-
 public class TwitterStreamServiceImpl implements TwitterStreamService {
     @Override
     public String getTimeBetweenForm(LocalDateTime tweetLDT, LocalDateTime nowLDT) {

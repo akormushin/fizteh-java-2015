@@ -38,7 +38,6 @@ public class URLs {
             } catch (IOException e) {
                 throw new HTTPQueryException("We have problem with http-query to" + url);
             }
-
         } catch (IOException e) {
             throw new ConnectionException("There's a problem with connection to " + url);
         }
