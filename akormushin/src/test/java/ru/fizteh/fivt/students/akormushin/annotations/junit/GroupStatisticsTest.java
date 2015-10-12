@@ -8,13 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-<<<<<<< Updated upstream:akormushin/src/test/java/ru/fizteh/fivt/students/akormushin/annotations/junit/GroupStatisticsTest.java
 import ru.fizteh.fivt.students.akormushin.annotations.xml.Group;
 import ru.fizteh.fivt.students.akormushin.annotations.xml.Student;
-=======
-import ru.fizteh.fivt.students.ladyae.akormushin.annotations.junit.Database;
-import ru.fizteh.fivt.students.ladyae.akormushin.annotations.junit.GroupStatistics;
->>>>>>> Stashed changes:akormushin/src/test/java/ru/fizteh/fivt/students/ladyae/akormushin/annotations/junit/GroupStatisticsTest.java
 
 import java.util.ArrayList;
 import java.util.Arrays;
