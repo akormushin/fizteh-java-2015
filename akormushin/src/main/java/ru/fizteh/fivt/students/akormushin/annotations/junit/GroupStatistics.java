@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.ladyae.akormushin.annotations.junit;
+package ru.fizteh.fivt.students.akormushin.annotations.junit;
 
-import ru.fizteh.fivt.students.ladyae.akormushin.annotations.xml.Group;
+import ru.fizteh.fivt.students.akormushin.annotations.xml.Group;
 
 import java.util.HashMap;
 import java.util.Map;

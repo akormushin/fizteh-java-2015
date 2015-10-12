@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ladyae.akormushin.annotations.xml;
+package ru.fizteh.fivt.students.akormushin.annotations.xml;
 
 import javax.xml.bind.annotation.*;
 

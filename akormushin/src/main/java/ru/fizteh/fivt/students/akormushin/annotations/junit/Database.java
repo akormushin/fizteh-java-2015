@@ -1,6 +1,6 @@
-package ru.fizteh.fivt.students.ladyae.akormushin.annotations.junit;
+package ru.fizteh.fivt.students.akormushin.annotations.junit;
 
-import ru.fizteh.fivt.students.ladyae.akormushin.annotations.xml.PrimaryKey;
+import ru.fizteh.fivt.students.akormushin.annotations.xml.PrimaryKey;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ladyae.akormushin.helloworld;
+package ru.fizteh.fivt.students.akormushin.helloworld;
 
 /**
  * Hello world!

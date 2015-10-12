@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ladyae.akormushin.annotations.xml;
+package ru.fizteh.fivt.students.akormushin.annotations.xml;
 
 /**
  * Created by kormushin on 22.09.15.

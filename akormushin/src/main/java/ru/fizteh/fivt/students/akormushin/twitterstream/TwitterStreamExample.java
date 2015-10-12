@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.ladyae.akormushin.twitterstream;
+package ru.fizteh.fivt.students.akormushin.twitterstream;
 
 import twitter4j.*;
 
