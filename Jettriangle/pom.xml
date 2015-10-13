@@ -43,10 +43,5 @@
         <version>2.4</version>
         <scope>test</scope>
     </dependency>
-    <dependency>
-        <groupId>com.yandex.tech.geocoder</groupId>
-        <artifactId>geocoder</artifactId>
-        <version>0.1</version>
-    </dependency>
    </dependencies>
 </project>

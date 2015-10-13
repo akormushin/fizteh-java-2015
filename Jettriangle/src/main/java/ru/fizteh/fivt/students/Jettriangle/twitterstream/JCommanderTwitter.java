@@ -1,10 +1,15 @@
 package ru.fizteh.fivt.students.Jettriangle.twitterstream;
 
+/**
+ * Created by rtriangle on 09.10.15.
+ */
+
 import com.beust.jcommander.Parameter;
 
-import java.util.List;
-
 public class JCommanderTwitter {
+
+    static final int MAGICNUMBER = 18;
+
     @Parameter(names = { "--query", "-q"}, description = "Level of verbosity")
     private String query;
 
@@ -41,7 +46,7 @@ public class JCommanderTwitter {
     }
 
     public Integer getTweetsLimit() {
-        Integer tweetsLimit = 18;
+        Integer tweetsLimit = MAGICNUMBER;
         return tweetsLimit;
     }
 }

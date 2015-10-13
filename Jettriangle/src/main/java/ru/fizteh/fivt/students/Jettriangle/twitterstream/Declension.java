@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.Jettriangle.twitterstream;
 /**
  * Created by rtriangle on 05.10.15.
  */
+
 public class Declension {
 
     private static final String[] RETWEETS = {"ретвит", "ретвита", "ретвитов"};
