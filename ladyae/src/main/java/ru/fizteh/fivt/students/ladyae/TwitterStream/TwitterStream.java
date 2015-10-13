@@ -36,8 +36,10 @@ public class TwitterStream {
     public static final int ELEVEN = 11;
     public static final int TWELVE = 12;
     public static final int NEGATIVE_TWO = -2;
-    public static final String[][] FORMS = {{" минут ", " минуту " , " минуты "} , {" часов ", " час " , " часа "} ,
-            {" дней ", " день " , " дня "}};
+    public static final String[][] FORMS = {{" минут назад", " минуту назад" , " минуты назад"} ,
+            {" часов назад", " час назад" , " часа назад"} ,
+            {" дней назад", " день назад" , " дня назад"} ,
+            {" ретвитов", " ретвит", " ретвита"}};
 
 
     public static class JCommanderParameters {
@@ -98,12 +100,12 @@ public class TwitterStream {
                 result = "Вчера";
             } else {
                 if (time % TEN >= FIVE || time == ELEVEN || time == TWELVE || time % TEN == 0) {
-                    return time + FORMS[index][0] + "назад";
+                    return time + FORMS[index][0];
                 } else {
                     if (time % TEN == ONE) {
-                        return time + FORMS[index][ONE] + "назад";
+                        return time + FORMS[index][ONE];
                     } else {
-                        return time + FORMS[index][TWO] + "назад";
+                        return time + FORMS[index][TWO];
                     }
                 }
             }
@@ -141,7 +143,7 @@ public class TwitterStream {
         }
         if (!status.isRetweet() && status.getRetweetCount() > 0) {
             string.append(status.getText() + " "
-                    + status.getRetweetCount() + " ретвитов");
+                    + status.getRetweetCount() + goodTime(status.getRetweetCount(), THREE));
         } else {
             string.append(status.getText());
         }
