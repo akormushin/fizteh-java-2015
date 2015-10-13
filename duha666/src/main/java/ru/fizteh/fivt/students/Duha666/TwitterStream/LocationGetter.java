@@ -13,8 +13,9 @@ public class LocationGetter {
     public static GeoLocation getLocationByPlace(String placeString) throws IOException,
             URISyntaxException, org.json.JSONException {
         Properties properties = new Properties();
-        InputStream inputStream = GeoLocation.class.getResourceAsStream("/geo.properties");
-        properties.load(inputStream);
+        try (InputStream inputStream = GeoLocation.class.getResourceAsStream("/geo.properties")) {
+            properties.load(inputStream);
+        }
         String googleMapsKey = properties.getProperty("google");
         String urlString = "https://maps.googleapis.com/maps/api/geocode/json?key="
                 + googleMapsKey + "&address=" + URLEncoder.encode(placeString, "UTF-8");
