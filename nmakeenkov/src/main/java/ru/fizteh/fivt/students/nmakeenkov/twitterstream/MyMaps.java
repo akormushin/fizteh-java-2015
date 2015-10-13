@@ -39,7 +39,7 @@ public class MyMaps {
         return paramsUrl;
     }
 
-    public static double[] getCoordsByPlace(String place) {
+    public static double[] getCoordsByPlace(String place) throws JSONException {
         double[] ans = {0, 0, 0};
         final String baseUrl = "http://maps.googleapis.com/"
                 + "maps/api/geocode/json";
@@ -49,44 +49,39 @@ public class MyMaps {
         params.put("address", place); // адрес, который нужно геокодировать
         final String url = baseUrl + '?' + encodeParams(params); //
         // генерируем путь с параметрами
-        try {
-            final JSONObject response = JsonReader.read(url);
-            JSONObject location = response.
-                    getJSONArray("results").getJSONObject(0);
-            location = location.getJSONObject("geometry");
-
-            JSONObject center = location.getJSONObject("location");
-            ans[0] = center.getDouble("lat"); // широта
-            ans[1] = center.getDouble("lng"); // долгота
-
-            location = location.getJSONObject("viewport");
-            JSONObject northEast = location.getJSONObject("northeast");
-            JSONObject southWest = location.getJSONObject("southwest");
-
-            ans[2] = Utils.getDistance(northEast.getDouble("lat"),
-                    northEast.getDouble("lng"), southWest.getDouble("lat"),
-                    southWest.getDouble("lng")) / 2.0;
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-            System.exit(1);
-        } catch (JSONException ex) {
-            System.err.println(ex.getMessage());
-            System.exit(1);
+        boolean read = false;
+        JSONObject location = new JSONObject();
+        while (!read) {
+            try {
+                final JSONObject response = JsonReader.read(url);
+                read = true;
+                location = response.
+                        getJSONArray("results").getJSONObject(0);
+            } catch (IOException ex) { }
         }
+        location = location.getJSONObject("geometry");
+
+        JSONObject center = location.getJSONObject("location");
+        ans[0] = center.getDouble("lat"); // широта
+        ans[1] = center.getDouble("lng"); // долгота
+
+        location = location.getJSONObject("viewport");
+        JSONObject northEast = location.getJSONObject("northeast");
+        JSONObject southWest = location.getJSONObject("southwest");
+
+        ans[2] = Utils.getDistance(northEast.getDouble("lat"),
+                northEast.getDouble("lng"), southWest.getDouble("lat"),
+                southWest.getDouble("lng")) / 2.0;
         return ans;
     }
 
-    public static double[] getMyCoords() {
-        try {
-            final JSONObject response = JsonReader.
-                    read("http://ipinfo.io/json");
-            return getCoordsByPlace(response.getString("city"));
-        } catch (IOException ex) {
-            System.err.println(ex.getMessage());
-        } catch (JSONException ex) {
-            System.err.println(ex.getMessage());
+    public static double[] getMyCoords() throws JSONException {
+        while (true) {
+            try {
+                JSONObject response = JsonReader.
+                        read("http://ipinfo.io/json");
+                return getCoordsByPlace(response.getString("city"));
+            } catch (IOException ex) { }
         }
-        System.exit(1);
-        return new double[]{};
     }
 }

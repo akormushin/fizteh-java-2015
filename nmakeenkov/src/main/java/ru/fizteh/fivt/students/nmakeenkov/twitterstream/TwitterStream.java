@@ -3,13 +3,14 @@ package ru.fizteh.fivt.students.nmakeenkov.twitterstream;
 import twitter4j.*;
 import com.beust.jcommander.*;
 import java.util.*;
+import org.json.JSONException;
 
 public class TwitterStream {
     private static final String NEARBY = "nearby";
     private static final int LITTLE_SLEEP = 200;
     private static final int BIG_SLEEP = 1000;
 
-    private static Query createQuery(CommandLineParameters params) {
+    private static Query createQuery(CommandLineParameters params) throws JSONException {
         Query query = new Query(params.getQuery());
         if (params.getPlace().length() > 0) {
             double[] place;
@@ -23,77 +24,72 @@ public class TwitterStream {
         return query;
     }
 
-    private static void printTweet(Status status) {
+    private static void printTweet(Status status, boolean hideRT) {
         if (status.isRetweet()) {
             System.out.println("@" + status.getUser().getName() + " ретвитнул @"
                     + status.getRetweetedStatus().getUser().getName() + " : "
                     + status.getRetweetedStatus().getText());
         } else {
-            System.out.println("@" + status.getUser().getName() + ": "
-                    + status.getText() + " (" + status.getRetweetCount()
-                    + " ретвитов)");
+            System.out.print("@" + status.getUser().getName() + ": "
+                    + status.getText());
+            if (!hideRT) {
+                System.out.print(" (" + status.getRetweetCount()
+                        + " ретвитов)");
+            }
+            System.out.println();
         }
     }
 
-    private static void printStream(CommandLineParameters params) {
-        Twitter twitter = (new TwitterFactory()).getInstance();
+    private static void printStream(CommandLineParameters params) throws TwitterException,
+            JSONException {
+        Twitter twitter = new TwitterFactory().getInstance();
         Query query = createQuery(params);
         while (true) {
-            List<Status> status = null;
+            List<Status> status = new ArrayList<>();
             while (status.size() == 0) {
-                try {
-                    status = twitter.search(query).getTweets();
-                } catch (TwitterException ex) {
-                    System.err.print(ex.getErrorMessage());
-                    System.exit(1);
-                }
+                status = twitter.search(query).getTweets();
                 try {
                     Thread.sleep(LITTLE_SLEEP);
                 } catch (Exception e) {
-                    System.err.println("Странная ошибка");
+                    System.err.println("Странная ошибка, но работать продолжим");
                 }
             }
-            printTweet(status.get(0));
+            printTweet(status.get(0), params.isStream());
             query.setSinceId(status.get(0).getId());
             try {
                 Thread.sleep(BIG_SLEEP);
             } catch (Exception e) {
-                System.err.println("Странная ошибка");
+                System.err.println("Странная ошибка, но работать продолжим");
             }
         }
     }
 
-    private static void printQuery(CommandLineParameters params) {
-        Twitter twitter = (new TwitterFactory()).getInstance();
+    private static void printQuery(CommandLineParameters params) throws TwitterException, JSONException {
+        Twitter twitter = new TwitterFactory().getInstance();
         Query query = createQuery(params);
         int tweetsLeft = params.getLimit();
         boolean any = false;
-        try {
-            while (tweetsLeft != 0 && query != null) {
-                QueryResult result = twitter.search(query);
-                for (Status status : result.getTweets()) {
-                    if (!status.isRetweet() || !params.isHideRetweets()) {
-                        any = true;
-                        Utils.printTime(status.getCreatedAt().getTime());
-                        printTweet(status);
-                        if (tweetsLeft != -1) {
-                            tweetsLeft--;
-                        }
-                        if (tweetsLeft == 0) {
-                            break;
-                        }
+        while (tweetsLeft != 0 && query != null) {
+            QueryResult result = twitter.search(query);
+            for (Status status : result.getTweets()) {
+                if (!status.isRetweet() || !params.isHideRetweets()) {
+                    any = true;
+                    Utils.printTime(status.getCreatedAt().getTime());
+                    printTweet(status, params.isStream());
+                    if (tweetsLeft != -1) {
+                        tweetsLeft--;
+                    }
+                    if (tweetsLeft == 0) {
+                        break;
                     }
                 }
-                query = result.nextQuery();
             }
-        } catch (TwitterException ex) {
-            System.err.print(ex.getErrorMessage());
-            System.exit(1);
+            query = result.nextQuery();
         }
 
         if (!any) {
             System.out.println("Не найдено ни одного твита по вашему запросу");
-            System.exit(1);
+            return;
         }
 
     }
@@ -104,20 +100,28 @@ public class TwitterStream {
 
         try {
             comm = new JCommander(params, args);
+            if (params.isHelp()) {
+                comm.usage();
+                System.exit(0);
+            }
         } catch (Exception ex) {
-            System.err.println(ex.getMessage());
+            System.err.println("Error with parameters: " + ex.getMessage());
             System.exit(1);
         }
 
-        if (params.isHelp()) {
-            // TODO
-            System.exit(0);
-        }
-
-        if (params.isStream()) {
-            printStream(params);
-        } else {
-            printQuery(params);
+        try {
+            if (params.isStream()) {
+                printStream(params);
+            } else {
+                printQuery(params);
+            }
+        } catch (TwitterException ex) {
+            System.err.println("Error with twitter: " + ex.getMessage());
+            System.exit(1);
+        } catch (JSONException ex) {
+            System.err.println("Error with JSON: " + ex.getMessage());
+        } catch (Exception ex) {
+            System.err.println("???: " + ex.getClass());
         }
     }
 

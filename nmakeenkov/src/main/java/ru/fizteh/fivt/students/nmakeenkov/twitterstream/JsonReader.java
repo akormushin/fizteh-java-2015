@@ -32,7 +32,9 @@ public class JsonReader {
             final JSONObject json = new JSONObject(jsonText);
             return json;
         } finally {
-            is.close();
+            try {
+                is.close();
+            } catch (Throwable ex) { } // not to lose the upper exception
         }
     }
 
