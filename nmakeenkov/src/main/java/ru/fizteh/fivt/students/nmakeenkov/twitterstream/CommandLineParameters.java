@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.nmakeenkov.twitterstream;
 
 import com.beust.jcommander.*;
-
+// test
 public class CommandLineParameters {
     @Parameter(names = {"-q", "--query"}, required = true)
     private String query = "";
