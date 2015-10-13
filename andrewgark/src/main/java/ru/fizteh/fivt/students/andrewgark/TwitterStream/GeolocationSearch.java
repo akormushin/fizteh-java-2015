@@ -21,8 +21,8 @@ public class GeolocationSearch {
     public static Double[] getCoordinatesByIp() throws SearchLocationException, URLs.HTTPQueryException,
             URLs.ConnectionException, MalformedURLException {
         String html = URLs.getUrl("https://ipcim.com/en/?p=where");
-        Pattern myPattern = Pattern.compile(".*LatLng\\(([0-9.]*), ([0-9.]*)\\);.*");
-            Matcher m = myPattern.matcher(html);
+        Pattern myPattern = Pattern.compile(".*LatLng\\(([0-9.\\-]*), ([0-9.\\-]*)\\);.*");
+        Matcher m = myPattern.matcher(html);
         if (!m.find()) {
             throw new SearchLocationException("We can't find you by IP.");
         }

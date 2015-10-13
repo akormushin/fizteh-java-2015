@@ -1,17 +1,26 @@
-package ru.fizteh.fivt.students.andrewgark.ModuleTests;
+package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
-import junit.framework.Assert;
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.cglib.core.Local;
 import ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm;
+import twitter4j.Status;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class TSWordsFormTest {
     @Test
     public void testGetTimeForm() throws Exception {
-        Assert.assertEquals("[Только что]", TSWordsForm.getTimeForm(new Date()));
+        LocalDateTime localDateTime = LocalDateTime.of(2015, 10, 11, 1, 0, 0);
+        Status status = mock(Status.class);
+        when(status.getCreatedAt()).thenReturn(new Date(115, 9, 10, 23, 59, 59));
+        Assert.assertEquals("[Вчера]", TSWordsForm.getTimeForm(status, localDateTime));
     }
 
     @Test

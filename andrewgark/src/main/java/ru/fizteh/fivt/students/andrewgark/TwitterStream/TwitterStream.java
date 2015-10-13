@@ -4,6 +4,7 @@ import com.beust.jcommander.JCommander;
 import twitter4j.*;
 
 import java.net.MalformedURLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -137,7 +138,8 @@ public class TwitterStream {
                 ie.printStackTrace();
             }
         } else {
-            time = getTimeForm(tweet.getCreatedAt()) + " ";
+            LocalDateTime nowLocalDateTime = LocalDateTime.now();
+            time = getTimeForm(tweet, nowLocalDateTime) + " ";
         }
         System.out.println(SEPARATOR);
         String uName = tweet.getUser().getScreenName();

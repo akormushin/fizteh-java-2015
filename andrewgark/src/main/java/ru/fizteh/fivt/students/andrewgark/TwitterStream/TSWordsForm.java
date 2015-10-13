@@ -1,5 +1,7 @@
 package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
+import twitter4j.Status;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -19,10 +21,9 @@ public class TSWordsForm {
     private static final String[] HOUR_FORMS = {"час", "часа", "часов"};
     private static final String[] DAY_FORMS = {"день", "дня", "дней"};
 
-    public static String getTimeForm(java.util.Date tweetTime) {
-        ZonedDateTime dateTime = tweetTime.toInstant().atZone(ZoneId.systemDefault());
+    public static String getTimeForm(Status tweet, LocalDateTime nowLocalDateTime) {
+        ZonedDateTime dateTime = tweet.getCreatedAt().toInstant().atZone(ZoneId.systemDefault());
         LocalDateTime tweetLocalDateTime = dateTime.toLocalDateTime();
-        LocalDateTime nowLocalDateTime = LocalDateTime.now();
         return "[" + getTimeBetweenForm(tweetLocalDateTime, nowLocalDateTime) + "]";
     }
 

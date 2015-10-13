@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.andrewgark.ModuleTests.library;
 
 import ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm;
+import twitter4j.Status;
 
 import java.time.LocalDateTime;
 
@@ -16,8 +17,8 @@ public class TwitterStreamServiceImpl implements TwitterStreamService {
     }
 
     @Override
-    public String getTimeForm(java.util.Date tweetTime) {
-        return TSWordsForm.getTimeForm(tweetTime);
+    public String getTimeForm(Status tweet, LocalDateTime localDateTime) {
+        return TSWordsForm.getTimeForm(tweet, localDateTime);
     }
 
     @Override
