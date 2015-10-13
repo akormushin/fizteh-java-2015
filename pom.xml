@@ -20,9 +20,24 @@
     </properties>
 
     <modules>
+        <module>egiby</module>
         <module>akormushin</module>
+        <module>xmanatee</module>
+        <module>mamaevads</module>
+        <module>cache-nez</module>
+        <module>ocksumoron</module>
+        <module>zerts</module>
+        <module>thefacetakt</module>
+        <module>riazanovskiy</module>
+        <module>andrewgark</module>
+        <module>fminkin</module>
+        <module>sergmiller</module>
+        <module>zakharovas</module>
+        <module>zemen</module>
+		<module>w4r10ck1337</module>
+		<module>preidman</module>
+		<module>Jettriangle</module>
         <!--Add you module here-->
-    <module>Jettriangle</module>
   </modules>
 
     <dependencies>
