@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.fizteh.fivt.students</groupId>
@@ -20,7 +20,6 @@
     </properties>
 
     <modules>
-        <module>egiby</module>
         <module>akormushin</module>
         <module>xmanatee</module>
         <module>mamaevads</module>
@@ -34,8 +33,8 @@
         <module>sergmiller</module>
         <module>zakharovas</module>
         <module>zemen</module>
-        <module>nmakeenkov</module>
 		<module>w4r10ck1337</module>
+        <module>nmakeenkov</module>
         <!--Add you module here-->
     <module>preidman</module>
   </modules>
@@ -57,7 +56,7 @@
 
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-all</artifactId>
+            <artifactId>hamcrest-core</artifactId>
             <version>1.3</version>
             <scope>test</scope>
         </dependency>
