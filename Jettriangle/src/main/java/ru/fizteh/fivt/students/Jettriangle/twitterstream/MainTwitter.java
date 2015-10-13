@@ -69,10 +69,6 @@ public class MainTwitter {
                     {location.getLongitudeNECorner(), location.getLatitudeNECorner()}};
             filterQuery.track(keyword);
             filterQuery.locations(locationBox);
-            /*
-            System.out.println(locationBox[1][1]);
-            System.out.println(jct.getPlace());
-            */
             TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
             twitterStream.addListener(new StatusAdapter() {
                 @Override
