@@ -1,112 +1,40 @@
 package ru.fizteh.fivt.students.loulett.TwitterStream;
 
 import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.ParameterException;
 import twitter4j.*;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
-class JCommanderPar {
-
-    static final String NEARBY = "nearby";
-
-    @Parameter(names = {"--query", "-q"},
-            description = "Queries for searching tweets (this argument is requied)",
-            variableArity = true)
-    private List<String> queries = new ArrayList<>();
-
-    @Parameter(names = {"--place", "-p"}, description = "Place for searching tweets")
-    private String place = NEARBY;
-
-    @Parameter(names = {"--stream", "-s"}, description = "Enable stream")
-    private boolean stream = false;
-
-    @Parameter(names = {"--hideRetweets"}, description = "Hide retweets")
-    private boolean retweet = false;
-
-    @Parameter(names = {"--limit", "-l"}, description = "Limit of tweets. Not usable in stream mode")
-    private Integer limit = Integer.MAX_VALUE;
-
-    @Parameter(names = {"--help", "-h"}, description = "Show help", help = true)
-    private boolean help;
-
-    public String getQueries() {
-        return String.join(" ", queries);
-    }
-
-    public boolean isStream() {
-        return stream;
-    }
-
-    public boolean isHideRetweets() {
-        return retweet;
-    }
-
-    public Integer getLimit() {
-        return limit;
-    }
-
-    public boolean isHelp() {
-        return help;
-    }
-}
-
 public class Main {
-    static final int TEN = 10;
-    static final int FIVE = 5;
-    static final int THREE = 3;
-    static final int TWENTY = 20;
     static final int HUNDRED = 100;
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLUE = "\u001B[34m";
 
     private static void printMinuses() {
         System.out.println(new String(new char[HUNDRED]).replace('\0', '-'));
     }
 
-    private static String russianEnding(int count, int flag) {
-        String[][] ending = {{"ретвитов", "ретвит", "ретвита"},
-                {"минут", "минуту", "минуты"},
-                {"часов", "час", "часа"},
-                {"дней", "день", "дня"}};
-
-        if (count % TEN >= FIVE || count % HUNDRED > TEN
-                || count % HUNDRED <= TWENTY || count % TEN == 0) {
-            return count + " " + ending[flag][0];
-        } else if (count % TEN == 1) {
-            return count + " " + ending[flag][1];
-        } else {
-            return count + " " + ending[flag][2];
-        }
-    }
-
     private static String retweetsCount(int retweets) {
 
-        return "(" + russianEnding(retweets, 0) + ")";
+        return "(" + RussianEnding.russianEnding(retweets, 0) + ")";
     }
-    private static String timeFromPublish(long timeCreateTwit, long currentTime) {
-        LocalDateTime currTime = new Date(currentTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime tweetTime = new
-                Date(timeCreateTwit).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        if (ChronoUnit.MINUTES.between(tweetTime, currTime) < 2) {
-            return "Только что";
-        } else if (ChronoUnit.HOURS.between(tweetTime, currTime) == 0) {
-            long minutes = ChronoUnit.MINUTES.between(tweetTime, currTime);
-            return russianEnding((int) minutes, 1) + " назад";
-        } else if (ChronoUnit.DAYS.between(tweetTime, currTime) == 0) {
-            long hours = ChronoUnit.HOURS.between(tweetTime, currTime);
-            return russianEnding((int) hours, 2) + " назад";
-        } else if (ChronoUnit.DAYS.between(tweetTime, currTime) == 1) {
-            return "вчера";
-        } else {
-            long days = ChronoUnit.DAYS.between(tweetTime, currTime);
-            return russianEnding((int) days, THREE) + " назад";
+
+    private static String printOneTweet(Status status, boolean isStream) {
+        String tweet = new String();
+        if (!isStream) {
+            tweet += "["
+                    + TimeFormatter.timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis()) + "]";
         }
+        tweet += ANSI_BLUE + " @" + status.getUser().getScreenName() + ANSI_RESET;
+        if (status.isRetweet()) {
+            tweet += " ретвитнул @" + status.getRetweetedStatus().getUser().getScreenName();
+            tweet += " : " + status.getRetweetedStatus().getText();
+        } else {
+            tweet += " : " + status.getText() + retweetsCount(status.getRetweetCount());
+        }
+        return tweet;
     }
 
     public static void main(String[] args) throws TwitterException {
@@ -139,40 +67,28 @@ public class Main {
                 }
 
                 for (Status status : tweets) {
-                    if (!status.isRetweet()) {
+                    if (!(status.isRetweet() && jCommanderParameters.isHideRetweets())) {
                         printMinuses();
-                        System.out.println("["
-                                + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
-                                + "] @" + status.getUser().getScreenName() + ": "
-                                + status.getText() + retweetsCount(status.getRetweetCount()));
-                    } else if (!jCommanderParameters.isHideRetweets()) {
-                        printMinuses();
-                        System.out.println("["
-                                + timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis())
-                                + "] @" + status.getUser().getScreenName() + " ретвитнул @"
-                                + status.getRetweetedStatus().getUser().getScreenName() + ": "
-                                + status.getRetweetedStatus().getText());
+                        System.out.println(printOneTweet(status, false));
                     }
                 }
             } catch (TwitterException te) {
-                System.err.println("Something get wrong" + te.getMessage());
+                System.err.println("Something get wrong " + te.getMessage());
                 System.exit(-1);
             }
 
         } else {
+            if (jCommanderParameters.getQueries().isEmpty()) {
+                System.err.println("Пустой запрос");
+                System.exit(-1);
+            }
             TwitterStream twitterStream = new TwitterStreamFactory().getInstance();
             twitterStream.addListener(new StatusAdapter() {
                 @Override
                 public void onStatus(Status status) {
-                    if (!status.isRetweet()) {
+                    if (!(status.isRetweet() && jCommanderParameters.isHideRetweets())) {
                         printMinuses();
-                        System.out.println("@" + status.getUser().getScreenName() + ": "
-                                + status.getText() + retweetsCount(status.getRetweetCount()));
-                    } else if (!jCommanderParameters.isHideRetweets()) {
-                        printMinuses();
-                        System.out.println("@" + status.getUser().getScreenName() + " ретвитнул @"
-                                + status.getRetweetedStatus().getUser().getScreenName() + ": "
-                                + status.getRetweetedStatus().getText());
+                        System.out.println(printOneTweet(status, true));
                     }
                 }
             });
