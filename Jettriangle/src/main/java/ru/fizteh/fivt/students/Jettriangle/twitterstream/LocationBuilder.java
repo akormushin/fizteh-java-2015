@@ -45,7 +45,7 @@ public class LocationBuilder {
         return document;
     }
 
-    public String getNearLocation() throws MalformedURLException {
+    private String getNearLocation() throws MalformedURLException {
         Document document = null;
         try {
             document = documentResolver(new URL("http://api.hostip.info/"));

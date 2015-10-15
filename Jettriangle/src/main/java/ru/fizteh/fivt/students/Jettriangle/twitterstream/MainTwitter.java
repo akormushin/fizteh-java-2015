@@ -11,9 +11,8 @@ public class MainTwitter {
 
     private static final long MILLISEC_IN_SEC = 1000;
 
-    public static void main(String[] args) throws TwitterException {
+    public static void main(String[] argv) throws TwitterException {
         JCommanderTwitter jct = new JCommanderTwitter();
-        String[] argv = {"-q", "Berlin", "-s", "--place", "Berlin", "--hideRetweets"};
         try {
             JCommander jcparser = new JCommander(jct, argv);
             if (jct.isHelp()) {

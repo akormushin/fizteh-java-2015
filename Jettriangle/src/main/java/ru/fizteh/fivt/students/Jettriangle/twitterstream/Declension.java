@@ -6,7 +6,7 @@ package ru.fizteh.fivt.students.Jettriangle.twitterstream;
 
 public class Declension {
 
-    private static final String[] RETWEETS = {"ретвит", "ретвита", "ретвитов"};
+    private static final String[] RETWEETS = {"ретвитов", "ретвит", "ретвита"};
 
     private static final String[] MINUTES = {"минут", "минуту", "минуты"};
 
