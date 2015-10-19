@@ -14,11 +14,15 @@ import static ru.fizteh.fivt.students.akormushin.collectionquery.Sources.list;
 import static ru.fizteh.fivt.students.akormushin.collectionquery.impl.FromStmt.from;
 
 /**
- * Created by kormushin on 06.10.15.
+ * @author akormushin
  */
 public class CollectionQuery {
 
-
+    /**
+     * Make this code work!
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         Iterable<Statistics> statistics =
                 from(list(

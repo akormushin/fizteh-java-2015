@@ -7,7 +7,9 @@ import java.util.Set;
 import java.util.stream.Stream;
 
 /**
- * Created by kormushin on 06.10.15.
+ * Helper methods to create collections.
+ *
+ * @author akormushin
  */
 public class Sources {
 
