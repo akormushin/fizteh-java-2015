@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.akormushin.annotations.junit;
 
-import ru.fizteh.fivt.students.akormushin.annotations.xml.Group;
 import ru.fizteh.fivt.students.akormushin.annotations.xml.Student;
+import ru.fizteh.fivt.students.akormushin.annotations.xml.Group;
 
 /**
  * Created by kormushin on 22.09.15.

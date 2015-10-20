@@ -15,14 +15,6 @@ public class FromStmt<T> {
         throw new UnsupportedOperationException();
     }
 
-    public FromStmt(Iterable<T> iterable) {
-        throw new UnsupportedOperationException();
-    }
-
-    public FromStmt(Stream<T> stream) {
-        throw new UnsupportedOperationException();
-    }
-
     @SafeVarargs
     public final <R> SelectStmt<T, R> select(Class<R> clazz, Function<T, ?>... s) {
         throw new UnsupportedOperationException();
