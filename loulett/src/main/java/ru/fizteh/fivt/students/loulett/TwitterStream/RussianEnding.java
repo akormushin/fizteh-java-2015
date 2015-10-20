@@ -8,7 +8,7 @@ public class RussianEnding {
     static final int FIVE = 5;
     static final int TWENTY = 20;
     static final int HUNDRED = 100;
-    private static final Map <String, String[]> ENDINGS = new HashMap <>();
+    private static final Map<String, String[]> ENDINGS = new HashMap<>();
     static {
         ENDINGS.put("ретвит", new String[]{"ретвитов", "ретвит", "ретвита"});
         ENDINGS.put("минута", new String[]{"минут", "минуту", "минуты"});
