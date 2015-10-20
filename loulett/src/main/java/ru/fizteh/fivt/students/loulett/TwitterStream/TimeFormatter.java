@@ -6,7 +6,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 public class TimeFormatter {
-    static final int THREE = 3;
 
     public static String timeFromPublish(long timeCreateTwit, long currentTime) {
         LocalDateTime currTime = new Date(currentTime).toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -16,15 +15,15 @@ public class TimeFormatter {
             return "Только что";
         } else if (ChronoUnit.HOURS.between(tweetTime, currTime) == 0) {
             long minutes = ChronoUnit.MINUTES.between(tweetTime, currTime);
-            return RussianEnding.russianEnding((int) minutes, 1) + " назад";
+            return RussianEnding.russianEnding((int) minutes, "минута") + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, currTime) == 0) {
             long hours = ChronoUnit.HOURS.between(tweetTime, currTime);
-            return RussianEnding.russianEnding((int) hours, 2) + " назад";
+            return RussianEnding.russianEnding((int) hours, "час") + " назад";
         } else if (ChronoUnit.DAYS.between(tweetTime, currTime) == 1) {
             return "вчера";
         } else {
             long days = ChronoUnit.DAYS.between(tweetTime, currTime);
-            return RussianEnding.russianEnding((int) days, THREE) + " назад";
+            return RussianEnding.russianEnding((int) days, "день") + " назад";
         }
     }
 }

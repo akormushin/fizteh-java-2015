@@ -18,7 +18,7 @@ public class Main {
 
     private static String retweetsCount(int retweets) {
 
-        return "(" + RussianEnding.russianEnding(retweets, 0) + ")";
+        return "(" + RussianEnding.russianEnding(retweets, "ретвит") + ")";
     }
 
     private static String printOneTweet(Status status, boolean isStream) {
@@ -32,7 +32,10 @@ public class Main {
             tweet += " ретвитнул @" + status.getRetweetedStatus().getUser().getScreenName();
             tweet += " : " + status.getRetweetedStatus().getText();
         } else {
-            tweet += " : " + status.getText() + retweetsCount(status.getRetweetCount());
+            tweet += " : " + status.getText();
+            if (status.getRetweetCount() != 0) {
+                tweet += retweetsCount(status.getRetweetCount());
+            }
         }
         return tweet;
     }
