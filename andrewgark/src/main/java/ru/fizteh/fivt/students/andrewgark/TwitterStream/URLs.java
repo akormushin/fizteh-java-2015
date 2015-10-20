@@ -29,12 +29,12 @@ public class URLs {
             connection.addRequestProperty("Keep-Alive", "1000");
             connection.addRequestProperty("User-Agent", "Web-Agent");
             try (BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                String text = "";
+                StringBuilder text = new StringBuilder();
                 do {
-                    text += in.readLine() + "\n";
+                    text.append(in.readLine()).append("\n");
                 } while (in.ready());
                 connection.disconnect();
-                return text;
+                return String.valueOf(text);
             } catch (IOException e) {
                 throw new HTTPQueryException("We have problem with http-query to" + url);
             }

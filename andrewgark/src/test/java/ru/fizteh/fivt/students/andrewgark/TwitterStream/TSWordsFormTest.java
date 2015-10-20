@@ -2,9 +2,6 @@ package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.cglib.core.Local;
-import ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm;
 import twitter4j.Status;
 
 import java.time.LocalDateTime;
