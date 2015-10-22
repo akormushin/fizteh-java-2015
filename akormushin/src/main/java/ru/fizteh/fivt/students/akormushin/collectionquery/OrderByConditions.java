@@ -12,6 +12,7 @@ public class OrderByConditions {
 
     /**
      * Ascending comparator.
+     *
      * @param expression
      * @param <T>
      * @param <R>

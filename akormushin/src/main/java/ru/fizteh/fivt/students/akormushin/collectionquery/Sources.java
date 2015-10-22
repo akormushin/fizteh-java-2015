@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.akormushin.collectionquery;
 
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -16,7 +15,6 @@ import java.util.stream.Stream;
 public class Sources {
 
     /**
-     *
      * @param items
      * @param <T>
      * @return
@@ -27,7 +25,6 @@ public class Sources {
     }
 
     /**
-     *
      * @param items
      * @param <T>
      * @return
@@ -38,7 +35,6 @@ public class Sources {
     }
 
     /**
-     *
      * @param inputStream
      * @param <T>
      * @return
@@ -48,7 +44,6 @@ public class Sources {
     }
 
     /**
-     *
      * @param file
      * @param <T>
      * @return
