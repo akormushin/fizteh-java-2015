@@ -22,22 +22,22 @@ public class Main {
     }
 
     private static String printOneTweet(Status status, boolean isStream) {
-        String tweet = new String();
+        StringBuilder  tweet = new StringBuilder();
         if (!isStream) {
-            tweet += "["
-                    + TimeFormatter.timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis()) + "]";
+            tweet.append("["
+                    + TimeFormatter.timeFromPublish(status.getCreatedAt().getTime(), System.currentTimeMillis()) + "]");
         }
-        tweet += ANSI_BLUE + " @" + status.getUser().getScreenName() + ANSI_RESET;
+        tweet.append(ANSI_BLUE + " @" + status.getUser().getScreenName() + ANSI_RESET);
         if (status.isRetweet()) {
-            tweet += " ретвитнул @" + status.getRetweetedStatus().getUser().getScreenName();
-            tweet += " : " + status.getRetweetedStatus().getText();
+            tweet.append(" ретвитнул @" + status.getRetweetedStatus().getUser().getScreenName());
+            tweet.append(" : " + status.getRetweetedStatus().getText());
         } else {
-            tweet += " : " + status.getText();
+            tweet.append(" : " + status.getText());
             if (status.getRetweetCount() != 0) {
-                tweet += retweetsCount(status.getRetweetCount());
+                tweet.append(retweetsCount(status.getRetweetCount()));
             }
         }
-        return tweet;
+        return tweet.toString();
     }
 
     public static void main(String[] args) throws TwitterException {
