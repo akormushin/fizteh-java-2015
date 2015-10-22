@@ -30,7 +30,7 @@ public class CollectionQuery {
                         student("ivanov", LocalDate.parse("1986-08-06"), "494")))
                         .select(Statistics.class, Student::getGroup, count(Student::getGroup), avg(Student::age))
                         .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
-                        .groupBy(Student::getName)
+                        .groupBy(Student::getGroup)
                         .having(s -> s.getCount() > 0)
                         .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
                         .limit(100)
