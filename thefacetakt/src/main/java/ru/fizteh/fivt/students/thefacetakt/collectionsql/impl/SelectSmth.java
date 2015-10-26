@@ -22,6 +22,7 @@ public class SelectSmth<T, R> {
 
     private boolean distinct;
 
+    private int limitRange = Integer.MAX_VALUE;
 
     @SafeVarargs
     SelectSmth(List<T> newElements,
@@ -33,6 +34,11 @@ public class SelectSmth<T, R> {
         resultClass = newResultClass;
         constructorFunctions = newConstructorFunctions;
         distinct = newDistinct;
+    }
+
+    public SelectSmth<T, R> limit(int newLimit) {
+        this.limitRange = newLimit;
+        return this;
     }
 
     public SelectSmth<T, R> where(Predicate<T> predicate) {
@@ -118,6 +124,10 @@ public class SelectSmth<T, R> {
                     if (havingPredicate == null
                             || havingPredicate.test(addItem)) {
                         result.add(addItem);
+                        --limitRange;
+                    }
+                    if (limitRange == 0) {
+                        return result;
                     }
                 }
             }
