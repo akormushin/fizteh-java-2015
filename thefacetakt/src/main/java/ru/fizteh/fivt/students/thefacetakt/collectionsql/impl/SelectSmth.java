@@ -45,31 +45,6 @@ public class SelectSmth<T, R> {
         return this;
     }
 
-//    static class ImplicitKey<T> {
-//        private Object keyValue;
-//        private T keyBody;
-//
-//        public Object getKeyValue() {
-//            return keyValue;
-//        }
-//
-//        public T getKeyBody() {
-//            return keyBody;
-//        }
-//
-//        boolean equals(Objects obj) {
-//            return keyValue.equals(obj);
-//        }
-//
-//        public int hashCode() {
-//            return keyValue.hashCode();
-//        }
-//
-//        ImplicitKey(Object newKeyValue, T newKeyBody) {
-//            this.keyValue = newKeyValue;
-//        }
-//    }
-
     public List<R> execute() throws NoSuchMethodException,
             IllegalAccessException,
             InvocationTargetException, InstantiationException {
@@ -113,7 +88,11 @@ public class SelectSmth<T, R> {
         if (groupByFunction != null) {
             for (Object key: grouping.keySet()) {
                 List<T> values = grouping.get(key);
-                for (int j = 0; j < (distinct ? 1 : values.size()); ++j) {
+                int distinction = 1;
+                if (!distinct) {
+                    distinction = values.size();
+                }
+                for (int j = 0; j < distinction; ++j) {
                     Object[] arguments = new Object[constructorFunctions.length];
                     for (int i = 0; i < arguments.length; ++i) {
                         if (constructorFunctions[i] instanceof Aggregator) {
