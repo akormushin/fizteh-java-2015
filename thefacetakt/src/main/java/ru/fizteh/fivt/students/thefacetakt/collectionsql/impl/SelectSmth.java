@@ -20,6 +20,8 @@ public class SelectSmth<T, R> {
     private Predicate<T> wherePredicate;
     private Predicate<R> havingPredicate;
 
+    private HugeComparator<R> hugeComparator;
+
     private boolean distinct;
 
     private int limitRange = Integer.MAX_VALUE;
@@ -34,6 +36,11 @@ public class SelectSmth<T, R> {
         resultClass = newResultClass;
         constructorFunctions = newConstructorFunctions;
         distinct = newDistinct;
+    }
+
+    public SelectSmth<T, R> orderBy(Comparator<R>... comparators) {
+        hugeComparator = new HugeComparator<>(comparators);
+        return this;
     }
 
     public SelectSmth<T, R> limit(int newLimit) {
@@ -98,39 +105,45 @@ public class SelectSmth<T, R> {
             }
         }
 
-        if (groupByFunction != null) {
-            for (Object key: grouping.keySet()) {
-                List<T> values = grouping.get(key);
-                int distinction = 1;
-                if (!distinct) {
-                    distinction = values.size();
+        boolean breakFlag = false;
+        for (Object key: grouping.keySet()) {
+            if (breakFlag) {
+                break;
+            }
+            List<T> values = grouping.get(key);
+            int distinction = 1;
+            if (!distinct) {
+                distinction = values.size();
+            }
+            for (int j = 0; j < distinction; ++j) {
+                Object[] arguments = new Object[constructorFunctions.length];
+                for (int i = 0; i < arguments.length; ++i) {
+                    if (constructorFunctions[i] instanceof Aggregator) {
+                        arguments[i] =
+                                ((Aggregator)
+                                        constructorFunctions[i])
+                                        .apply(grouping.get(key));
+                    } else {
+                        arguments[i] = constructorFunctions[i]
+                                .apply(values.get(j));
+                    }
                 }
-                for (int j = 0; j < distinction; ++j) {
-                    Object[] arguments = new Object[constructorFunctions.length];
-                    for (int i = 0; i < arguments.length; ++i) {
-                        if (constructorFunctions[i] instanceof Aggregator) {
-                            arguments[i] =
-                                    ((Aggregator)
-                                            constructorFunctions[i])
-                                            .apply(grouping.get(key));
-                        } else {
-                            arguments[i] = constructorFunctions[i]
-                                    .apply(values.get(j));
-                        }
-                    }
-                    R addItem = (R) resultClass
-                            .getConstructor(returnClasses)
-                            .newInstance(arguments);
-                    if (havingPredicate == null
-                            || havingPredicate.test(addItem)) {
-                        result.add(addItem);
-                        --limitRange;
-                    }
-                    if (limitRange == 0) {
-                        return result;
-                    }
+                R addItem = (R) resultClass
+                        .getConstructor(returnClasses)
+                        .newInstance(arguments);
+                if (havingPredicate == null
+                        || havingPredicate.test(addItem)) {
+                    result.add(addItem);
+                    --limitRange;
+                }
+                if (limitRange == 0) {
+                    breakFlag = true;
+                    break;
                 }
             }
+        }
+        if (hugeComparator != null) {
+            result.sort(hugeComparator);
         }
         return result;
     }
