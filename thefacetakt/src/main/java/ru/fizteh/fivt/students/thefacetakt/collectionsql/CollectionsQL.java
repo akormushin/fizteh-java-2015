@@ -22,9 +22,11 @@ public class CollectionsQL {
      */
     public static void main(String[] args) {
         try {
-            System.out.println(from(list("12", "", "31", "12"))
+            System.out.println(from(list("12", "", "31", "12", "34"))
                     .selectDistinct(Integer.class, e -> "1" + e)
                     .where(e -> e.length() != 0)
+                    .groupBy(e -> "1" + e) //similar to Distinct
+                    .having(i -> i % 2 == 0)
                     .execute());
         } catch (NoSuchMethodException | IllegalAccessException
                 | InstantiationException | InvocationTargetException e) {

@@ -18,6 +18,8 @@ public class SelectSmth<T, R> {
     private Function<T, ?> groupByFunction;
 
     private Predicate<T> wherePredicate;
+    private Predicate<R> havingPredicate;
+
     private boolean distinct;
 
 
@@ -35,6 +37,11 @@ public class SelectSmth<T, R> {
 
     public SelectSmth<T, R> where(Predicate<T> predicate) {
         wherePredicate = predicate;
+        return this;
+    }
+
+    public SelectSmth<T, R> having(Predicate<R> predicate) {
+        havingPredicate = predicate;
         return this;
     }
 
@@ -105,9 +112,13 @@ public class SelectSmth<T, R> {
                                     .apply(values.get(j));
                         }
                     }
-                    result.add((R) resultClass
+                    R addItem = (R) resultClass
                             .getConstructor(returnClasses)
-                            .newInstance(arguments));
+                            .newInstance(arguments);
+                    if (havingPredicate == null
+                            || havingPredicate.test(addItem)) {
+                        result.add(addItem);
+                    }
                 }
             }
         }
