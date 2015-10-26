@@ -1,9 +1,14 @@
-package ru.fizteh.fivt.students.thefacetakt.collectionsql;
+package ru.fizteh.fivt.students.thefacetakt.collectionsql.impl.aggregates;
+
+import ru.fizteh.fivt.students.thefacetakt.collectionsql.Aggregator;
 
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+/**
+ * Created by thefacetakt on 27.10.15.
+ */
 class Average<T> implements Aggregator<T, Double> {
     private Function<T, ? extends Number> function;
 
@@ -33,15 +38,5 @@ class Average<T> implements Aggregator<T, Double> {
     @Override
     public Double apply(T t) {
         return null;
-    }
-}
-
-public class Aggregates {
-    public static <T> Aggregator<T, Double> avg(
-            Function<T, ? extends Number> function) {
-        return new Average<>(function);
-    }
-
-    static void count() {
     }
 }
