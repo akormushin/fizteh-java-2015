@@ -1,11 +1,9 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql.impl;
 
-import java.lang.reflect.Constructor;
+import ru.fizteh.fivt.students.thefacetakt.collectionsql.Aggregator;
+
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -17,17 +15,22 @@ public class SelectSmth<T, R> {
     private List<T> elements;
     private Class resultClass;
     private Function<T, ?> [] constructorFunctions;
+    private Function<T, ?> groupByFunction;
+
     private Predicate<T> wherePredicate;
-    private Class[] returnClasses;
+    private boolean distinct;
+
 
     @SafeVarargs
     SelectSmth(List<T> newElements,
                Class<R> newResultClass,
-               Function<T, ?>... newConstructorFunctions) {
+               boolean newDistinct,
+               Function<T, ?>... newConstructorFunctions
+               ) {
         elements = newElements;
         resultClass = newResultClass;
         constructorFunctions = newConstructorFunctions;
-        returnClasses = null;
+        distinct = newDistinct;
     }
 
     public SelectSmth<T, R> where(Predicate<T> predicate) {
@@ -35,31 +38,98 @@ public class SelectSmth<T, R> {
         return this;
     }
 
+    public SelectSmth<T, R> groupBy(Function<T, ?>
+                                            newGroupByFunction) {
+        this.groupByFunction = newGroupByFunction;
+        this.distinct = true;
+        return this;
+    }
+
+//    static class ImplicitKey<T> {
+//        private Object keyValue;
+//        private T keyBody;
+//
+//        public Object getKeyValue() {
+//            return keyValue;
+//        }
+//
+//        public T getKeyBody() {
+//            return keyBody;
+//        }
+//
+//        boolean equals(Objects obj) {
+//            return keyValue.equals(obj);
+//        }
+//
+//        public int hashCode() {
+//            return keyValue.hashCode();
+//        }
+//
+//        ImplicitKey(Object newKeyValue, T newKeyBody) {
+//            this.keyValue = newKeyValue;
+//        }
+//    }
+
     public List<R> execute() throws NoSuchMethodException,
             IllegalAccessException,
             InvocationTargetException, InstantiationException {
 
         List<R> result = new ArrayList<>();
+        Class[] returnClasses = null;
+
+        Map<Object, ArrayList<T>> grouping = new HashMap<>();
+
+        if (groupByFunction == null) {
+            groupByFunction = Function.identity();
+        }
+
         for (T element: elements) {
             if (wherePredicate == null || wherePredicate.test(element)) {
-                Object[] arguments = new Object[constructorFunctions.length];
 
                 if (returnClasses == null) {
                     returnClasses = new Class[constructorFunctions.length];
                     for (int i = 0; i < constructorFunctions.length; ++i) {
-                        returnClasses[i] = constructorFunctions[i]
-                                .apply(element).getClass();
+                        if (constructorFunctions[i] instanceof Aggregator) {
+                            returnClasses[i] =
+                                    ((Aggregator)
+                                            constructorFunctions[i])
+                                            .getReturnClass();
+                        } else {
+                            returnClasses[i] = constructorFunctions[i]
+                                    .apply(element).getClass();
+                        }
                     }
                 }
 
 
-
-                for (int i = 0; i < constructorFunctions.length; ++i) {
-                    arguments[i] = constructorFunctions[i].apply(element);
+                Object key = groupByFunction.apply(element);
+                if (!grouping.containsKey(key)) {
+                    grouping.put(key, new ArrayList<>());
                 }
+                grouping.get(key).add(element);
+            }
+        }
 
-                result.add((R) resultClass.getConstructor(returnClasses)
-                        .newInstance(arguments));
+        if (groupByFunction != null) {
+            for (Object key: grouping.keySet()) {
+                List<T> values = grouping.get(key);
+                for (int j = 0; j < (distinct ? 1 : values.size()); ++j) {
+                    Object[] arguments = new Object[constructorFunctions.length];
+                    for (int i = 0; i < arguments.length; ++i) {
+                        if (constructorFunctions[i] instanceof Aggregator) {
+                            arguments[i] =
+                                    ((Aggregator)
+                                            constructorFunctions[i])
+                                            .apply(grouping.get(key));
+                        } else {
+                            arguments[i] = constructorFunctions[i]
+                                    .apply(values.get(j));
+                        }
+                    }
+                    result.add((R) resultClass
+                            .getConstructor(returnClasses)
+                            .newInstance(arguments));
+                }
             }
         }
         return result;

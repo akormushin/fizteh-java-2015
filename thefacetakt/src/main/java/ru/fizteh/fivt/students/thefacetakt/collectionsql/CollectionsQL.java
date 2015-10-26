@@ -5,8 +5,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
-import static ru.fizteh.fivt.students.thefacetakt.collectionsql.Sources.list;
-import static ru.fizteh.fivt.students.thefacetakt.collectionsql.impl.FromStmt.from;
+import static ru.fizteh.fivt.students
+        .thefacetakt.collectionsql.Sources.list;
+import static ru.fizteh.fivt.students
+        .thefacetakt.collectionsql.impl.FromStmt.from;
 
 /**
  * @author akormushin
@@ -20,9 +22,10 @@ public class CollectionsQL {
      */
     public static void main(String[] args) {
         try {
-            System.out.println(from(list("12", "", "31"))
-                    .select(Integer.class, e -> "1" + e)
-                    .where(e -> e.length() != 0).execute());
+            System.out.println(from(list("12", "", "31", "12"))
+                    .selectDistinct(Integer.class, e -> "1" + e)
+                    .where(e -> e.length() != 0)
+                    .execute());
         } catch (NoSuchMethodException | IllegalAccessException
                 | InstantiationException | InvocationTargetException e) {
             e.printStackTrace();
