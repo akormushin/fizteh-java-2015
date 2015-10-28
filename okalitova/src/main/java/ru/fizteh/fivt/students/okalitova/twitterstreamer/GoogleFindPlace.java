@@ -6,9 +6,10 @@ import com.google.maps.model.Bounds;
 import com.google.maps.model.GeocodingResult;
 import com.google.maps.model.LatLng;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Properties;
 
 /**
  * Created by okalitova on 24.09.15.
@@ -19,15 +20,15 @@ public class GoogleFindPlace {
     private double radius;
 
     private static String getKey() throws IOException {
-        BufferedReader reader;
-        reader = new BufferedReader(new FileReader("../../googleFindPlace.properties"));
-        StringBuilder sbuild = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sbuild.append(line);
+        Properties prop = new Properties();
+        try (FileInputStream in = new FileInputStream("/home/nimloth/coding/3sem/"
+                + "fizteh-java-2015/okalitova/googleFindPlace.properties")) {
+            prop.load(in);
+            in.close();
+        } catch (FileNotFoundException e) {
+            throw e;
         }
-        String key = sbuild.toString();
-        return key;
+        return prop.getProperty("key");
     }
 
     GoogleFindPlace(String place) throws Exception {

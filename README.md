@@ -5,11 +5,11 @@
 
 ## Семинары
 * [Темы семинаров и список литературы для самостоятельной подготовки](seminars.md)
-* [Общие правила по ведению задач на github](github-workflow.md) 
+* [Порядок сдачи заданий](github-workflow.md) 
 * [Зачёт](exam.md)
 * [Журнал успеваемости](https://docs.google.com/spreadsheets/d/1LhwKlMmQbG2aIBT0FmUS8HMmd5pcpWr0bnlDw7Ypkt4/edit?usp=sharing)
 
-## Лекции
+## Лекции (2014 год)
 1. [Java, JVM, примитивные типы](https://yadi.sk/d/_ZgbGf9NbXraZ)
 2. [Object, String, исключения](https://yadi.sk/d/MCu6krbtbXrgZ)
 3. [IO Stream, инициализация объектов, enum](https://yadi.sk/d/MinWJhG0bteEr)

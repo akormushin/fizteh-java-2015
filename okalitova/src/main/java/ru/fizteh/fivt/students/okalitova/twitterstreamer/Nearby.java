@@ -10,6 +10,7 @@ import org.json.simple.parser.ParseException;
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
+import java.util.Properties;
 
 /**
  * Created by nimloth on 04.10.15.
@@ -20,15 +21,15 @@ public class Nearby {
     public static final int EIGHT = 8;
 
     private static String getKey() throws IOException {
-        BufferedReader reader;
-        reader = new BufferedReader(new FileReader("../../nearby.properties"));
-        StringBuilder sbuild = new StringBuilder();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            sbuild.append(line);
+        Properties prop = new Properties();
+        try (FileInputStream in = new FileInputStream("/home/nimloth/coding/3sem/"
+                + "fizteh-java-2015/okalitova/nearby.properties")) {
+            prop.load(in);
+            in.close();
+        } catch (FileNotFoundException e) {
+            throw e;
         }
-        String key = sbuild.toString();
-        return key;
+        return prop.getProperty("key");
     }
 
     private static InputStream getInputStream() throws IOException {

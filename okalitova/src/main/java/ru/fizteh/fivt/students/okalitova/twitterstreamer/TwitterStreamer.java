@@ -276,20 +276,20 @@ public class TwitterStreamer {
             try {
                 stream(param, listener);
             } catch (TwitterException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
                 stream(param, listener);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
                 System.exit(-1);
             }
         } else {
             try {
                 search(param);
             } catch (TwitterException e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
                 search(param);
             } catch (Exception e) {
-                System.out.println(e.getMessage());
+                System.err.println(e.getMessage());
                 System.exit(-1);
             }
         }
