@@ -22,14 +22,11 @@
     <modules>
         <module>egiby</module>
         <module>akormushin</module>
-<<<<<<< HEAD
         <!--Add you module here-->
     	<module>okalitova</module>
-=======
         <module>xmanatee</module>
         <module>mamaevads</module>
         <module>cache-nez</module>
->>>>>>> 1e362027ac01aa48020b72a4d349871b6d3c7774
         <module>ocksumoron</module>
         <module>zerts</module>
         <module>thefacetakt</module>
