@@ -1,46 +1,24 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql;
 
-import java.lang.reflect.InvocationTargetException;
+//import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
+//import java.util.Comparator;
+//import java.util.function.Function;
+//
+//import static ru.fizteh.fivt.students
+//        .thefacetakt.collectionsql.Sources.list;
+//import static ru.fizteh.fivt.students
+//        .thefacetakt.collectionsql.impl.FromStmt.from;
+//import static ru.fizteh.fivt.students.thefacetakt.collectionsql
+//        .impl.aggregates.Aggregates.min;
 
-import static ru.fizteh.fivt.students
-        .thefacetakt.collectionsql.Sources.list;
-import static ru.fizteh.fivt.students
-        .thefacetakt.collectionsql.impl.FromStmt.from;
-
-/**
- * @author akormushin
- */
 public class CollectionsQL {
 
-    /**
-     * Make this code work!
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        try {
-            System.out.println(from(list("34", "", "31", "12", "34", "36"))
-                    .selectDistinct(Integer.class, e -> "1" + e)
-                    .where(e -> e.length() != 0)
-                    .groupBy(e -> "1" + e) //similar to Distinct
-                    .having(i -> i % 2 == 0)
-                    .limit(2)
-                    .orderBy(new Comparator<Integer>() {
-                        @Override
-                        public int compare(Integer o1, Integer o2) {
-                            return o1.compareTo(o2);
-                        }
-                    })
-                    .execute());
-        } catch (NoSuchMethodException | IllegalAccessException
-                | InstantiationException | InvocationTargetException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
+
+    static void main(String[] args) {
+        return;
     }
 
 

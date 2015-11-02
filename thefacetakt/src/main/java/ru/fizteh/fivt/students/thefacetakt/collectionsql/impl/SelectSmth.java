@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql.impl;
 
 import ru.fizteh.fivt.students.thefacetakt.collectionsql.Aggregator;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
@@ -70,7 +69,7 @@ public class SelectSmth<T, R> {
             InvocationTargetException, InstantiationException {
 
         List<R> result = new ArrayList<>();
-        Class[] returnClasses = null;
+        Class[] returnClasses = new Class[constructorFunctions.length];
 
         Map<Object, ArrayList<T>> grouping = new HashMap<>();
 
@@ -78,32 +77,17 @@ public class SelectSmth<T, R> {
             groupByFunction = Function.identity();
         }
 
-        for (T element: elements) {
-            if (wherePredicate == null || wherePredicate.test(element)) {
+        elements.stream()
+                .filter(element -> wherePredicate == null
+                        || wherePredicate.test(element))
+                .forEach(element -> {
 
-                if (returnClasses == null) {
-                    returnClasses = new Class[constructorFunctions.length];
-                    for (int i = 0; i < constructorFunctions.length; ++i) {
-                        if (constructorFunctions[i] instanceof Aggregator) {
-                            returnClasses[i] =
-                                    ((Aggregator)
-                                            constructorFunctions[i])
-                                            .getReturnClass();
-                        } else {
-                            returnClasses[i] = constructorFunctions[i]
-                                    .apply(element).getClass();
-                        }
+                    Object key = groupByFunction.apply(element);
+                    if (!grouping.containsKey(key)) {
+                        grouping.put(key, new ArrayList<>());
                     }
-                }
-
-
-                Object key = groupByFunction.apply(element);
-                if (!grouping.containsKey(key)) {
-                    grouping.put(key, new ArrayList<>());
-                }
-                grouping.get(key).add(element);
-            }
-        }
+                    grouping.get(key).add(element);
+                });
 
         boolean breakFlag = false;
         for (Object key: grouping.keySet()) {
@@ -127,7 +111,12 @@ public class SelectSmth<T, R> {
                         arguments[i] = constructorFunctions[i]
                                 .apply(values.get(j));
                     }
+                    if (arguments[i] != null) {
+                        returnClasses[i] = arguments[i].getClass();
+                    }
                 }
+
+                @SuppressWarnings("unchecked")
                 R addItem = (R) resultClass
                         .getConstructor(returnClasses)
                         .newInstance(arguments);

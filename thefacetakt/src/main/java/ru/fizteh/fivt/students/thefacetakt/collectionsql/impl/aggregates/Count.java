@@ -16,11 +16,6 @@ class Count<T> implements Aggregator<T, Integer> {
     }
 
     @Override
-    public Class getReturnClass() {
-        return Integer.class;
-    }
-
-    @Override
     public Integer apply(List<? extends T> elements) {
         return (int) elements.stream().map(function)
                 .filter(e -> e != null).count();

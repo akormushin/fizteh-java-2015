@@ -8,7 +8,5 @@ import java.util.function.Function;
  */
 
 public interface Aggregator<T, R> extends Function<T, R> {
-    Class getReturnClass();
-
     R apply(List<? extends T> elements);
 }

@@ -10,15 +10,10 @@ import java.util.stream.Collectors;
  * Created by thefacetakt on 27.10.15.
  */
 class Average<T> implements Aggregator<T, Double> {
-    private Function<T, ? extends Number> function;
+    private Function<T, ? extends Double> function;
 
-    Average(Function<T, ? extends Number> newFunction) {
+    Average(Function<T, ? extends Double> newFunction) {
         function = newFunction;
-    }
-
-    @Override
-    public Class getReturnClass() {
-        return Double.class;
     }
 
     @Override
