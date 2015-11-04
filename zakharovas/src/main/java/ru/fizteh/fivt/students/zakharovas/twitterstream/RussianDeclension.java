@@ -17,9 +17,8 @@ public class RussianDeclension {
         } else if (number % Numbers.TEN >= Numbers.TWO
                 && number % Numbers.TEN <= Numbers.FOUR) {
             return endings[2];
-        } else if (number % Numbers.TEN >= Numbers.FIVE) {
+        } else {
             return endings[0];
         }
-        return null;
     }
 }

@@ -63,7 +63,7 @@ public class TweetFormater {
     }
 
 
-    public String dateFormater() {
+    private String dateFormater() {
         LocalDateTime tweetTime = tweet.getCreatedAt().toInstant().atZone(clock.getZone()).toLocalDateTime();
         LocalDateTime currentTime = LocalDateTime.now(clock);
         System.out.println(tweetTime);
