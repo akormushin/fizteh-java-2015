@@ -15,7 +15,7 @@ public class TwitterStreamMain {
     private static GeoLocator geoLocator;
 
     public static void main(String[] args) {
-        String[] separatedArgs = StringFormater.separateArguments(args);
+        String[] separatedArgs = ArgumentSeparator.separateArguments(args);
         CommandLineArgs commandLineArgs = new CommandLineArgs();
         JCommander jCommander = null;
         try {
@@ -76,7 +76,7 @@ public class TwitterStreamMain {
         twitterStream.filter(query);
         while (true) {
             while (!tweetQueue.isEmpty()) {
-                System.out.println(StringFormater.tweetForOutputWithoutDate(tweetQueue.poll()));
+                System.out.println(new TweetFormater(tweetQueue.poll()).tweetForOutputWithoutDate());
             }
             try {
                 Thread.sleep(Numbers.SECOND);
@@ -127,7 +127,7 @@ public class TwitterStreamMain {
             return;
         }
         for (Status tweet : tweetsForOutput) {
-            System.out.println(StringFormater.tweetForOutput(tweet));
+            System.out.println(new TweetFormater(tweet).tweetForOutput());
         }
 
     }
