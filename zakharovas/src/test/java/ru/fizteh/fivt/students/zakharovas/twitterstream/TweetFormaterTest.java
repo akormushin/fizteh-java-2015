@@ -87,12 +87,6 @@ public class TweetFormaterTest {
     @Test
     public void testDateFormating() {
         Status tweet = mock(Status.class);
-        /*User mockUser = mock(User.class);
-        when(mockUser.getName()).thenReturn("");
-        when(tweet.isRetweet()).thenReturn(false);
-        when(tweet.getRetweetCount()).thenReturn(0);
-        when(tweet.getUser()).thenReturn(mockUser);
-        when(tweet.getText()).thenReturn("");*/
         for (DateTest test: dateTests) {
             when(tweet.getCreatedAt()).thenReturn(Date.from(test.tweetTime));
             Clock clock = Clock.fixed(test.testingCurrentTime, testingZone);
