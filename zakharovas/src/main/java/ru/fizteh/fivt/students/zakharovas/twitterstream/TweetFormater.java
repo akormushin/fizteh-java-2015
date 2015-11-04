@@ -28,7 +28,7 @@ public class TweetFormater {
     }
 
     public String tweetForOutput() {
-        return dateFormater() + tweetForOutputWithoutDate();
+        return dateFormater() + " " + tweetForOutputWithoutDate();
 
     }
 
@@ -62,11 +62,10 @@ public class TweetFormater {
         return formatedTweet.toString();
     }
 
-
-    private String dateFormater() {
+    //Just for overriding
+    protected String dateFormater() {
         LocalDateTime tweetTime = tweet.getCreatedAt().toInstant().atZone(clock.getZone()).toLocalDateTime();
         LocalDateTime currentTime = LocalDateTime.now(clock);
-        System.out.println(tweetTime);
         long minuteDifference = ChronoUnit.MINUTES.between(tweetTime, currentTime);
         long hourDifference = ChronoUnit.HOURS.between(tweetTime, currentTime);
         long daysDifference = tweetTime.toLocalDate().until(currentTime.toLocalDate(), ChronoUnit.DAYS);
@@ -76,13 +75,16 @@ public class TweetFormater {
         if (daysDifference == 0) {
             //today
             if (hourDifference == 0) {
-                return minuteDifference + " " + RussianDeclension.declensionWithNumber((int) minuteDifference, ENDING_MUNUTES) + " назад";
+                return minuteDifference + " "
+                        + RussianDeclension.declensionWithNumber((int) minuteDifference, ENDING_MUNUTES) + " назад";
             }
-            return hourDifference + " " + RussianDeclension.declensionWithNumber((int) hourDifference, ENDING_HOURS) + " назад";
+            return hourDifference + " "
+                    + RussianDeclension.declensionWithNumber((int) hourDifference, ENDING_HOURS) + " назад";
         } else if (daysDifference == 1) {
             return "вчера";
         }
-        return daysDifference + " " + RussianDeclension.declensionWithNumber((int) daysDifference, ENDING_DAYS) + " назад";
+        return daysDifference + " "
+                + RussianDeclension.declensionWithNumber((int) daysDifference, ENDING_DAYS) + " назад";
     }
 
 

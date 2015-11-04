@@ -17,10 +17,9 @@ import static org.junit.Assert.assertThat;
  * Created by alexander on 04.11.15.
  */
 public class RussianDeclensionTest {
+
     private static String[] Endings;
-
     private static List<DeclensionTest> tests;
-
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -36,21 +35,24 @@ public class RussianDeclensionTest {
             for (int i = 0; i < jsonTests.length(); ++i) {
                 JSONObject test = jsonTests.getJSONObject(i);
                 tests.add(new DeclensionTest(test.getInt("number"), test.getString("answer")));
-
             }
-
         }
-
     }
 
     @Test
-    public void testDeclension(){
-        for (DeclensionTest test: tests){
+    public void testDeclension() {
+        for (DeclensionTest test : tests) {
             assertThat(RussianDeclension.declensionWithNumber(test.number, Endings), is(test.answer));
         }
-
-
     }
+}
 
+class DeclensionTest {
+    int number;
+    String answer;
 
+    public DeclensionTest(int number, String answer) {
+        this.answer = answer;
+        this.number = number;
+    }
 }
