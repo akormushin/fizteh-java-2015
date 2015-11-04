@@ -10,6 +10,8 @@ import java.util.function.Function;
 public class Aggregates {
 
     /**
+     * Maximum value for expression for elements of given collecdtion.
+     *
      * @param expression
      * @param <C>
      * @param <T>
@@ -20,6 +22,8 @@ public class Aggregates {
     }
 
     /**
+     * Minimum value for expression for elements of given collecdtion.
+     *
      * @param expression
      * @param <C>
      * @param <T>
@@ -30,6 +34,8 @@ public class Aggregates {
     }
 
     /**
+     * Number of items in source collection that turns this expression into not null.
+     *
      * @param expression
      * @param <C>
      * @param <T>
@@ -40,6 +46,8 @@ public class Aggregates {
     }
 
     /**
+     * Average value for expression for elements of given collection.
+     *
      * @param expression
      * @param <C>
      * @param <T>
