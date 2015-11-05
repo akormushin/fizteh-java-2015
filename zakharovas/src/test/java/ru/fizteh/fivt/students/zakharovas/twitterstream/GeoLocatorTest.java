@@ -5,4 +5,6 @@ package ru.fizteh.fivt.students.zakharovas.twitterstream;
  */
 public class GeoLocatorTest {
 
+
+
 }

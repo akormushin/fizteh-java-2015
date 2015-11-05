@@ -12,9 +12,9 @@ import java.util.List;
  * Created by alexander on 05.11.15.
  */
 public class TwitterSearchMode {
-    Twitter twitter;
-    CommandLineArgs commandLineArgs;
-    GeoLocator geoLocator;
+    private Twitter twitter;
+    private CommandLineArgs commandLineArgs;
+    private GeoLocator geoLocator;
 
     public TwitterSearchMode(Twitter twitter, CommandLineArgs commandLineArgs, GeoLocator geoLocator) {
         this.twitter = twitter;
