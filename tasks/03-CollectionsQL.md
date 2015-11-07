@@ -6,7 +6,8 @@
 ```
 select_statement := 
 from(<collection>)
-.select[Distinct](<result_class>, <functions as constructor args>...)
+{.select[Distinct](<result_class>, <functions as constructor args>...) 
+ | .select[Distinct](<function>) }
 [.where(<predicate>)]
 [.groupBy(<function>, ...)]
 [.having(<predicate>)]
@@ -40,7 +41,9 @@ statistics: [Statistics{group=all,count=3,27},Statistics{group=494,count=2,avg=2
 
 Семантика операций как в SQL:
   * select(<class>, <expr>, ...) - для каждой строчки результирующего списка создаёт объект класса, передавая в конструктов результаты вычисления выражений в качестве аргументов
-  * selectDistinct(<class>, <expr>, ...) - см. select. Оставляет только уникальные строки. Для результирующего класса должен быть реализован адекватный equals() и hashCode(). 
+  * select(<expr>) - выводит список результатов выражения
+  * selectDistinct(<class>, <expr>, ...) - см. select. Оставляет только уникальные строки. Для результирующего класса должен быть реализован адекватный equals() и hashCode().
+  * selectDistinct(<expr>) - выводит список уникальных результатов выражения
   * from(<list>) - указывает, из какого источника брать данные
   * groupBy(<expr>, ...) - группирует результат по заданным выражениям. Как и в SQL, при наличии group by, в select могут быть только выражения, по которым группировали или агрегатные функции.
   * having(<predicate>, ...) - фильтрует результат группировки, то есть предикат применяется к объекту из select

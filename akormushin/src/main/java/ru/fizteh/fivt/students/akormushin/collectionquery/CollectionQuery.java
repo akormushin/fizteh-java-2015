@@ -1,8 +1,11 @@
 package ru.fizteh.fivt.students.akormushin.collectionquery;
 
+import ru.fizteh.fivt.students.akormushin.collectionquery.impl.Tuple;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 import static ru.fizteh.fivt.students.akormushin.collectionquery.Aggregates.avg;
 import static ru.fizteh.fivt.students.akormushin.collectionquery.Aggregates.count;
@@ -39,6 +42,14 @@ public class CollectionQuery {
                         .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
                         .execute();
         System.out.println(statistics);
+
+        Iterable<Tuple<String, String>> mentorsByStudent =
+                from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
+                .join(list(new Group("494", "mr.sidorov")))
+                .on((s, g) -> Objects.equals(s.getGroup(), g.getGroup()))
+                .select(sg -> sg.getFirst().getName(), sg -> sg.getSecond().getMentor())
+                .execute();
+        System.out.println(mentorsByStudent);
     }
 
 
@@ -73,6 +84,24 @@ public class CollectionQuery {
 
         public static Student student(String name, LocalDate dateOfBith, String group) {
             return new Student(name, dateOfBith, group);
+        }
+    }
+
+    public static class Group {
+        private final String group;
+        private final String mentor;
+
+        public Group(String group, String mentor) {
+            this.group = group;
+            this.mentor = mentor;
+        }
+
+        public String getGroup() {
+            return group;
+        }
+
+        public String getMentor() {
+            return mentor;
         }
     }
 
