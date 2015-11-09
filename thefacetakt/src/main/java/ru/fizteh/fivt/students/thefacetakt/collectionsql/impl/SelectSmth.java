@@ -117,13 +117,21 @@ public class SelectSmth<T, R> {
                 }
             }
         }
+        boolean breakFlag = false;
 
         for (Object key : superGrouping.keySet()) {
+            if (breakFlag) {
+                break;
+            }
             ArrayList<Object> currentArrayList
                     = superGrouping.get(key);
 
+
             for (int j = 0; j < currentArrayList.size()
                     / constructorFunctions.length; ++j) {
+                if (breakFlag) {
+                    break;
+                }
                 Object[] arguments = new Object[constructorFunctions.length];
                 for (int i = 0; i < arguments.length; ++i) {
                     if (constructorFunctions[i] instanceof Aggregator) {
@@ -149,10 +157,14 @@ public class SelectSmth<T, R> {
                         || havingPredicate.test(addItem)) {
                     result.add(addItem);
                     if (result.size() == limitRange) {
-                        return result;
+                        breakFlag = true;
+                        break;
                     }
                 }
             }
+        }
+        if (hugeComparator != null) {
+            result.sort(hugeComparator);
         }
         return result;
     }

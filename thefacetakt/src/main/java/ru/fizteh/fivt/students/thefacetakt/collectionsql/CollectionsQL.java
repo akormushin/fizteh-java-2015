@@ -7,6 +7,8 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 //
+//import static ru.fizteh.fivt.students.thefacetakt.collectionsql.OrderByConditions.asc;
+//import static ru.fizteh.fivt.students.thefacetakt.collectionsql.OrderByConditions.desc;
 //import static ru.fizteh.fivt.students
 //        .thefacetakt.collectionsql.Sources.list;
 //import static ru.fizteh.fivt.students
@@ -22,6 +24,10 @@ public class CollectionsQL {
             this.x = xx;
         }
 
+        public Integer getX() {
+            return x;
+        }
+
         public String toString() {
             return x.toString();
         }
@@ -32,7 +38,8 @@ public class CollectionsQL {
 //        System.out.println(from(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10))
 //                .select(Temp.class, max((Integer x) -> x))
 //
-//                .groupBy(x -> x % 3).execute());
+//                .groupBy(x -> x % 3).limit(2).orderBy(desc(x -> x.getX()))
+//                .execute());
         //Comments for checkstyle
     }
 
