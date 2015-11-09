@@ -19,11 +19,11 @@ import static org.junit.Assert.assertThat;
 public class RussianDeclensionTest {
 
     private static String[] Endings;
-    private static List<DeclensionTest> tests;
+    private static List<DeclensionTestData> tests;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        try (InputStream inputStream = RussianDeclensionTest.class.getResourceAsStream("/declensionTestData.json")) {
+        try (InputStream inputStream = RussianDeclensionTest.class.getResourceAsStream("/DeclensionTestData.json")) {
             JSONObject jsonTest = new JSONObject(IOUtils.toString(inputStream));
             JSONArray jsonEndings = jsonTest.getJSONArray("endings");
             Endings = new String[3];
@@ -34,24 +34,24 @@ public class RussianDeclensionTest {
             tests = new ArrayList<>();
             for (int i = 0; i < jsonTests.length(); ++i) {
                 JSONObject test = jsonTests.getJSONObject(i);
-                tests.add(new DeclensionTest(test.getInt("number"), test.getString("answer")));
+                tests.add(new DeclensionTestData(test.getInt("number"), test.getString("answer")));
             }
         }
     }
 
     @Test
     public void testDeclension() {
-        for (DeclensionTest test : tests) {
+        for (DeclensionTestData test : tests) {
             assertThat(RussianDeclension.declensionWithNumber(test.number, Endings), is(test.answer));
         }
     }
 }
 
-class DeclensionTest {
+class DeclensionTestData {
     int number;
     String answer;
 
-    public DeclensionTest(int number, String answer) {
+    public DeclensionTestData(int number, String answer) {
         this.answer = answer;
         this.number = number;
     }

@@ -35,6 +35,11 @@ public class GeoLocator {
         setCoordinates();
     }
 
+    public GeoLocator(GeocodingResult[] results) throws GeoSearchException {
+        parseGoogleMapsAnswer(results);
+    }
+
+
     public double[][] getLocationForStream() {
         return borders;
     }
@@ -73,6 +78,10 @@ public class GeoLocator {
         } catch (Exception e) {
             throw new GeoSearchException(e.getMessage());
         }
+        parseGoogleMapsAnswer(results);
+    }
+
+    private void parseGoogleMapsAnswer(GeocodingResult[] results) throws GeoSearchException {
         if (results.length == 0 || results[0] == null) {
             throw new GeoSearchException("Location has not been found");
         }

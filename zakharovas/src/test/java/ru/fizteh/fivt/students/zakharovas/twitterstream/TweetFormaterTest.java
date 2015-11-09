@@ -24,7 +24,7 @@ public class TweetFormaterTest {
     private static List<Status> tweets;
     private static List<String> formatedTweets;
     private static List<String> formatedTweetsWithoutDate;
-    private static List<DateTest> dateTests;
+    private static List<DateTestData> dateTests;
     private static Clock testingCurrentTime;
     private static ZoneId testingZone;
 
@@ -56,7 +56,7 @@ public class TweetFormaterTest {
             Instant testingCurrentTIme = Instant.parse(currentTest.getString("currentTime"));
             Instant tweetTime = Instant.parse(currentTest.getString("tweetTime"));
             String answer = currentTest.getString("answer");
-            dateTests.add(new DateTest(testingCurrentTIme, tweetTime, answer));
+            dateTests.add(new DateTestData(testingCurrentTIme, tweetTime, answer));
         }
     }
 
@@ -87,7 +87,7 @@ public class TweetFormaterTest {
     @Test
     public void testDateFormating() {
         Status tweet = mock(Status.class);
-        for (DateTest test: dateTests) {
+        for (DateTestData test : dateTests) {
             when(tweet.getCreatedAt()).thenReturn(Date.from(test.tweetTime));
             Clock clock = Clock.fixed(test.testingCurrentTime, testingZone);
             assertThat(new TweetFormater(tweet, clock).dateFormater(), is(test.answer));
@@ -111,12 +111,12 @@ public class TweetFormaterTest {
 
 }
 
-class DateTest {
+class DateTestData {
     Instant testingCurrentTime;
     Instant tweetTime;
     String answer;
 
-    public DateTest(Instant testingCurrentTime, Instant tweetTime, String answer) {
+    public DateTestData(Instant testingCurrentTime, Instant tweetTime, String answer) {
         this.testingCurrentTime = testingCurrentTime;
         this.tweetTime = tweetTime;
         this.answer = answer;
