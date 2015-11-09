@@ -16,7 +16,7 @@ public class SelectSmth<T, R> {
     private Iterable<T> elements;
     private Class<R> resultClass;
     private Function<T, ?>[] constructorFunctions;
-    private Function<T, ?> groupByFunction;
+    private Function<T, ?>[] groupByFunctions;
 
     private Predicate<T> wherePredicate;
     private Predicate<R> havingPredicate;
@@ -59,9 +59,12 @@ public class SelectSmth<T, R> {
         return this;
     }
 
-    public SelectSmth<T, R> groupBy(Function<T, ?>
-                                            newGroupByFunction) {
-        this.groupByFunction = newGroupByFunction;
+    public SelectSmth<T, R> groupBy(Function<T, ?>...
+                                            newGroupByFunctions) {
+        this.groupByFunctions = newGroupByFunctions;
+        if (newGroupByFunctions.length == 0) {
+            throw new IllegalStateException("Group only by non-zero params");
+        }
         this.distinct = true;
         return this;
     }
@@ -74,9 +77,18 @@ public class SelectSmth<T, R> {
 
         Map<Object, ArrayList<Object>> superGrouping = new HashMap<>();
         boolean grouppedBy = true;
-        if (groupByFunction == null) {
+        Function<T, ?> groupByFunction;
+        if (groupByFunctions == null) {
             grouppedBy = false;
             groupByFunction = Function.identity();
+        } else {
+            groupByFunction = ((T x) -> {
+                Object[] values = new Object[groupByFunctions.length];
+                for (int i = 0; i < groupByFunctions.length; ++i) {
+                    values[i] = groupByFunctions[i].apply(x);
+                }
+                return Objects.hash(values);
+            });
         }
 
         for (T element : elements) {

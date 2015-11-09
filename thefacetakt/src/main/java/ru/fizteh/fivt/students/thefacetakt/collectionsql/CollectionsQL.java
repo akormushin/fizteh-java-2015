@@ -37,9 +37,8 @@ public class CollectionsQL {
             InstantiationException, IllegalAccessException {
 //        System.out.println(from(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10))
 //                .select(Temp.class, max((Integer x) -> x))
-//
-//                .groupBy(x -> x % 3).limit(2).orderBy(desc(x -> x.getX()))
-//                .execute());
+//                .groupBy(x -> x % 3, x -> x % 2).limit(3)
+//                .orderBy(desc(x -> x.getX())).execute());
         //Comments for checkstyle
     }
 
