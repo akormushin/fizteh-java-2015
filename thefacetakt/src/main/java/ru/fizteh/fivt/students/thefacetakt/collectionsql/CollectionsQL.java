@@ -1,24 +1,39 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql;
 
 //import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-//import java.util.Comparator;
-//import java.util.function.Function;
+
 //
 //import static ru.fizteh.fivt.students
 //        .thefacetakt.collectionsql.Sources.list;
 //import static ru.fizteh.fivt.students
 //        .thefacetakt.collectionsql.impl.FromStmt.from;
 //import static ru.fizteh.fivt.students.thefacetakt.collectionsql
-//        .impl.aggregates.Aggregates.min;
+//        .impl.aggregates.Aggregates.max;
 
 public class CollectionsQL {
+    public static class Temp {
+        private Integer x;
 
+        public Temp(Integer xx) {
+            this.x = xx;
+        }
 
-    static void main(String[] args) {
-        return;
+        public String toString() {
+            return x.toString();
+        }
+    }
+    public static void main(String[] args)
+            throws InvocationTargetException, NoSuchMethodException,
+            InstantiationException, IllegalAccessException {
+//        System.out.println(from(list(1, 2, 3, 4, 5, 6, 7, 8, 9, 9, 10))
+//                .select(Temp.class, max((Integer x) -> x))
+//
+//                .groupBy(x -> x % 3).execute());
+        //Comments for checkstyle
     }
 
 

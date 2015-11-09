@@ -1,6 +1,8 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql.impl;
 
 import ru.fizteh.fivt.students.thefacetakt.collectionsql.Aggregator;
+import ru.fizteh.fivt.students.thefacetakt.collectionsql.AggregatorVisitor;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.function.Function;
@@ -11,9 +13,9 @@ import java.util.function.Predicate;
  */
 public class SelectSmth<T, R> {
 
-    private List<T> elements;
-    private Class resultClass;
-    private Function<T, ?> [] constructorFunctions;
+    private Iterable<T> elements;
+    private Class<R> resultClass;
+    private Function<T, ?>[] constructorFunctions;
     private Function<T, ?> groupByFunction;
 
     private Predicate<T> wherePredicate;
@@ -26,11 +28,11 @@ public class SelectSmth<T, R> {
     private int limitRange = Integer.MAX_VALUE;
 
     @SafeVarargs
-    SelectSmth(List<T> newElements,
+    SelectSmth(Iterable<T> newElements,
                Class<R> newResultClass,
                boolean newDistinct,
                Function<T, ?>... newConstructorFunctions
-               ) {
+    ) {
         elements = newElements;
         resultClass = newResultClass;
         constructorFunctions = newConstructorFunctions;
@@ -67,75 +69,91 @@ public class SelectSmth<T, R> {
     public List<R> execute() throws NoSuchMethodException,
             IllegalAccessException,
             InvocationTargetException, InstantiationException {
-
         List<R> result = new ArrayList<>();
         Class[] returnClasses = new Class[constructorFunctions.length];
 
-        Map<Object, ArrayList<T>> grouping = new HashMap<>();
-
+        Map<Object, ArrayList<Object>> superGrouping = new HashMap<>();
+        boolean grouppedBy = true;
         if (groupByFunction == null) {
+            grouppedBy = false;
             groupByFunction = Function.identity();
         }
 
-        elements.stream()
-                .filter(element -> wherePredicate == null
-                        || wherePredicate.test(element))
-                .forEach(element -> {
+        for (T element : elements) {
+            if (wherePredicate == null || wherePredicate.test(element)) {
+                Object key = groupByFunction.apply(element);
+                if (!superGrouping.containsKey(key)) {
+                    ArrayList<Object> currentArrayList = new ArrayList<>();
 
-                    Object key = groupByFunction.apply(element);
-                    if (!grouping.containsKey(key)) {
-                        grouping.put(key, new ArrayList<>());
+                    superGrouping.put(key, currentArrayList);
+
+                    for (Function<T, ?> constructorFunction
+                            : constructorFunctions) {
+                        if (constructorFunction instanceof Aggregator) {
+                            if (!grouppedBy) {
+                                throw new IllegalStateException("Aggregators"
+                                        + " without group by");
+                            }
+                            currentArrayList
+                                    .add(((Aggregator) constructorFunction)
+                                            .getVisitor());
+                        } else {
+                            currentArrayList.add(constructorFunction
+                                    .apply(element));
+                        }
                     }
-                    grouping.get(key).add(element);
-                });
+                }
+                ArrayList<Object> currentArrayList
+                        = superGrouping.get(key);
+                for (int i = 0; i < constructorFunctions.length; ++i) {
+                    if (constructorFunctions[i] instanceof Aggregator) {
+                        ((AggregatorVisitor) currentArrayList.get(i))
+                                .visit(element);
+                    }
+                    if (!distinct) {
+                        currentArrayList.add(constructorFunctions[i]
+                                .apply(element));
+                    }
+                }
+            }
+        }
 
-        boolean breakFlag = false;
-        for (Object key: grouping.keySet()) {
-            if (breakFlag) {
-                break;
-            }
-            List<T> values = grouping.get(key);
-            int distinction = 1;
-            if (!distinct) {
-                distinction = values.size();
-            }
-            for (int j = 0; j < distinction; ++j) {
+        for (Object key : superGrouping.keySet()) {
+            ArrayList<Object> currentArrayList
+                    = superGrouping.get(key);
+
+            for (int j = 0; j < currentArrayList.size()
+                    / constructorFunctions.length; ++j) {
                 Object[] arguments = new Object[constructorFunctions.length];
                 for (int i = 0; i < arguments.length; ++i) {
                     if (constructorFunctions[i] instanceof Aggregator) {
                         arguments[i] =
-                                ((Aggregator)
-                                        constructorFunctions[i])
-                                        .apply(grouping.get(key));
+                                ((AggregatorVisitor) currentArrayList
+                                        .get(j * arguments.length + i))
+                                        .result();
                     } else {
-                        arguments[i] = constructorFunctions[i]
-                                .apply(values.get(j));
+                        arguments[i] = currentArrayList.get(i);
                     }
                     if (arguments[i] != null) {
                         returnClasses[i] = arguments[i].getClass();
+                    } else {
+                        throw new IllegalStateException("Null result"
+                                + " of operation");
                     }
                 }
 
-                @SuppressWarnings("unchecked")
-                R addItem = (R) resultClass
+                R addItem = resultClass
                         .getConstructor(returnClasses)
                         .newInstance(arguments);
                 if (havingPredicate == null
                         || havingPredicate.test(addItem)) {
                     result.add(addItem);
-                    --limitRange;
-                }
-                if (limitRange == 0) {
-                    breakFlag = true;
-                    break;
+                    if (result.size() == limitRange) {
+                        return result;
+                    }
                 }
             }
         }
-        if (hugeComparator != null) {
-            result.sort(hugeComparator);
-        }
         return result;
     }
-
-
 }

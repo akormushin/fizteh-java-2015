@@ -1,9 +1,6 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql.impl;
 
-import java.util.List;
 import java.util.function.Function;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 
 /**
@@ -11,11 +8,10 @@ import java.util.stream.StreamSupport;
  */
 
 public final class FromStmt<T> {
-    private List<T> elements;
+    private Iterable<T> elements;
 
     private FromStmt(Iterable<T> iterable) {
-        elements = StreamSupport.stream(iterable.spliterator(), true)
-                .collect(Collectors.toList());
+        elements = iterable;
     }
 
     public static <T> FromStmt<T> from(Iterable<T> iterable) {
