@@ -1,6 +1,7 @@
 package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 import ru.fizteh.fivt.students.zakharovas.twitterstream.CommandLineArgs;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.exceptions.EmptyResultException;
 import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.Twitter;
@@ -23,7 +24,7 @@ public class TwitterSearchMode {
         this.geoLocator = geoLocator;
     }
 
-    public void search() throws TwitterException, IllegalStateException {
+    public List<String> search() throws TwitterException, IllegalStateException, EmptyResultException {
         String search = String.join(" ", commandLineArgs.getStringForQuery());
         Query query = new Query(search);
         query.setCount(Integer.MAX_VALUE);
@@ -56,12 +57,13 @@ public class TwitterSearchMode {
             }
         }
         if (tweetsForOutput.isEmpty()) {
-            System.out.println("No tweets for this search has been found");
-            return;
+            throw new EmptyResultException("No tweets for this search has been found");
         }
+        List<String> results = new ArrayList<>();
         for (Status tweet : tweetsForOutput) {
-            System.out.println(new TweetFormater(tweet).tweetForOutput());
+            results.add(new TweetFormater(tweet).tweetForOutput());
         }
+        return results;
 
     }
 }

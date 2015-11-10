@@ -7,10 +7,13 @@ import ru.fizteh.fivt.students.zakharovas.twitterstream.library.ArgumentSeparato
 import ru.fizteh.fivt.students.zakharovas.twitterstream.library.GeoLocator;
 import ru.fizteh.fivt.students.zakharovas.twitterstream.library.TwitterSearchMode;
 import ru.fizteh.fivt.students.zakharovas.twitterstream.library.TwitterStreamMode;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.exceptions.EmptyResultException;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
 import twitter4j.TwitterStreamFactory;
+
+import java.util.List;
 
 public class TwitterStreamMain {
 
@@ -54,6 +57,9 @@ public class TwitterStreamMain {
                 } catch (TwitterException | IllegalStateException e) {
                     System.err.println("Problems with search mode " + e.getMessage());
                     System.exit(1);
+                } catch (EmptyResultException e) {
+                    System.out.println(e.getMessage());
+                    System.exit(0);
                 }
             }
         }
@@ -62,12 +68,12 @@ public class TwitterStreamMain {
     private static void streamMode(CommandLineArgs commandLineArgs) {
         twitter4j.TwitterStream twitterStream =
                 TwitterStreamFactory.getSingleton();
-        new TwitterStreamMode(twitterStream, commandLineArgs, geoLocator).startStreaming();
+        new TwitterStreamMode(twitterStream, commandLineArgs, geoLocator, System.out).startStreaming();
     }
 
-    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException, IllegalStateException {
+    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException, IllegalStateException, EmptyResultException {
         Twitter twitter = TwitterFactory.getSingleton();
-        new TwitterSearchMode(twitter, commandLineArgs, geoLocator).search();
+        List<String> results = new TwitterSearchMode(twitter, commandLineArgs, geoLocator).search();
 
     }
 
