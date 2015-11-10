@@ -18,23 +18,24 @@ public class Aggregates {
             Function<T, ?> function) {
         @SuppressWarnings("unchecked")
         Class<CountVisitor<T>> clazz = (Class<CountVisitor<T>>)
-                new CountVisitor<T>(function).getClass();
+                new CountVisitor<>(function).getClass();
         return new Aggregator<>(clazz, function);
     }
 
-    public static <T> Aggregator<T, T, MaxVisitor<T>> max(
-            Function<T, ? extends Comparable> function) {
+    public static <T, R extends Comparable<R>>
+    Aggregator<T, R, MaxVisitor<T, R>> max(Function<T, R> function) {
+
         @SuppressWarnings("unchecked")
-        Class<MaxVisitor<T>> clazz = (Class<MaxVisitor<T>>)
-                new MaxVisitor<T>(function).getClass();
+        Class<MaxVisitor<T, R>> clazz = (Class<MaxVisitor<T, R>>)
+                new MaxVisitor<>(function).getClass();
         return new Aggregator<>(clazz, function);
     }
 
-    public static <T> Aggregator<T, T, MinVisitor<T>> min(
-            Function<T, ? extends Comparable> function) {
+    public static <T, R extends Comparable<R>>
+    Aggregator<T, R, MinVisitor<T, R>> min(Function<T, R> function) {
         @SuppressWarnings("unchecked")
-        Class<MinVisitor<T>> clazz = (Class<MinVisitor<T>>)
-                new MinVisitor<T>(function).getClass();
+        Class<MinVisitor<T, R>> clazz = (Class<MinVisitor<T, R>>)
+                new MinVisitor<>(function).getClass();
         return new Aggregator<>(clazz, function);
     }
 }

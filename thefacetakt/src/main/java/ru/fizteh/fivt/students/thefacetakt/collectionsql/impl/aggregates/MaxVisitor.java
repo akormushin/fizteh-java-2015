@@ -4,28 +4,28 @@ import ru.fizteh.fivt.students.thefacetakt.collectionsql.AggregatorVisitor;
 
 import java.util.function.Function;
 
-public class MaxVisitor<T>
-        implements AggregatorVisitor<T, T> {
+public class MaxVisitor<T, R extends Comparable<R>>
+        implements AggregatorVisitor<T, R> {
 
-    private Function<T, ? extends Comparable> function;
-    private T maximum;
+    private Function<T, R> function;
+    private R maximum;
 
-    public MaxVisitor(Function<T, ? extends Comparable> newFunction) {
+    public MaxVisitor(Function<T, R> newFunction) {
         maximum = null;
         function = newFunction;
     }
 
     @Override
-    public T result() {
+    public R result() {
         return maximum;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void visit(T item) {
-        if (maximum == null || function.apply(maximum)
+        if (maximum == null || maximum
                 .compareTo(function.apply(item)) == -1) {
-            maximum = item;
+            maximum = function.apply(item);
         }
     }
 }

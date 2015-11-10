@@ -15,12 +15,10 @@ import static ru.fizteh.fivt.students.thefacetakt
         .collectionsql.impl.FromStmt.from;
 import static ru.fizteh.fivt.students.thefacetakt
         .collectionsql.Sources.list;
-import static ru.fizteh.fivt.students.thefacetakt
-        .collectionsql.impl.aggregates.Aggregates.avg;
-import static ru.fizteh.fivt.students.thefacetakt
-        .collectionsql.impl.aggregates.Aggregates.count;
 import static ru.fizteh.fivt.students.thefacetakt.collectionsql.
         CollectionsQL.Student.student;
+import static ru.fizteh.fivt.students.thefacetakt.collectionsql.impl.aggregates
+        .Aggregates.*;
 
 public class CollectionsQL {
 
@@ -60,8 +58,6 @@ public class CollectionsQL {
 
     }
 
-
-
     public static class Statistics {
 
         private final String group;
@@ -80,10 +76,10 @@ public class CollectionsQL {
             return age;
         }
 
-        public Statistics(String group, Long count, Double age) {
+        public Statistics(String group, Long count, Long age) {
             this.group = group;
             this.count = count;
-            this.age = age;
+            this.age = age.doubleValue();
         }
 
         @Override
@@ -104,14 +100,14 @@ public class CollectionsQL {
         @SuppressWarnings("unchecked")
         Iterable<Statistics> statistics =
                 from(list(
-                        student("ivanov", LocalDate.parse("1986-08-06"), "494"),
+                        student("ivanov", LocalDate.parse("1970-08-06"), "494"),
                         student("sidorov", LocalDate.parse("1986-08-06"),
                                 "495"),
                         student("smith", LocalDate.parse("1986-08-06"), "495"),
                         student("petrov", LocalDate.parse("2006-08-06"),
                                 "494")))
                         .select(Statistics.class, Student::getGroup,
-                                count(Student::getGroup), avg(Student::age))
+                                count(Student::getGroup), max(Student::age))
                         .where(rlike(Student::getName, ".*ov")
                                 .and(s -> s.age() > twenty))
                         .groupBy(Student::getGroup)
@@ -124,7 +120,7 @@ public class CollectionsQL {
                                 LocalDate.parse("1985-08-06"), "494")))
                         .selectDistinct(Statistics.class,
                                 s -> "all", count(s -> 1),
-                                avg(Student::age))
+                                min(Student::age))
                         .execute();
         System.out.println(statistics);
     }

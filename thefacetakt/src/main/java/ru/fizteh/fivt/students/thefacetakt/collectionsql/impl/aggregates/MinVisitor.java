@@ -4,28 +4,28 @@ import ru.fizteh.fivt.students.thefacetakt.collectionsql.AggregatorVisitor;
 
 import java.util.function.Function;
 
-public class MinVisitor<T>
-        implements AggregatorVisitor<T, T> {
+public class MinVisitor<T, R extends Comparable<R>>
+        implements AggregatorVisitor<T, R> {
 
-    private Function<T, ? extends Comparable> function;
-    private T minimum;
+    private Function<T, R> function;
+    private R minimum;
 
-    public MinVisitor(Function<T, ? extends Comparable> newFunction) {
+    public MinVisitor(Function<T, R> newFunction) {
         minimum = null;
         function = newFunction;
     }
 
     @Override
-    public T result() {
+    public R result() {
         return minimum;
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public void visit(T item) {
-        if (minimum == null || function.apply(minimum)
+        if (minimum == null || minimum
                 .compareTo(function.apply(item)) == 1) {
-            minimum = item;
+            minimum = function.apply(item);
         }
     }
 }
