@@ -7,11 +7,11 @@ import ru.fizteh.fivt.students.thefacetakt.collectionsql.AggregatorVisitor;
  */
 
 public class AverageVisitor<T> implements AggregatorVisitor<T, Double> {
-    private Function<T, Double> function;
+    private Function<T, ? extends Number> function;
     private int count;
     private double sum;
 
-    public AverageVisitor(Function<T, Double> newFunction) {
+    public AverageVisitor(Function<T, ? extends Number> newFunction) {
         function = newFunction;
         count = 0;
         sum = 0.0;
@@ -28,6 +28,6 @@ public class AverageVisitor<T> implements AggregatorVisitor<T, Double> {
     @Override
     public void visit(T item) {
         ++count;
-        sum += function.apply(item);
+        sum += function.apply(item).doubleValue();
     }
 }

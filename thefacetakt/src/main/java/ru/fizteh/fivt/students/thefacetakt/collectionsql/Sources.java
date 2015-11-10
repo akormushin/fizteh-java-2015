@@ -9,7 +9,7 @@ import java.util.List;
  */
 
 public class Sources {
-    static <E> List<E> list(E... elements) {
+    public static <E> List<E> list(E... elements) {
         return new ArrayList<>(Arrays.asList(elements));
     }
 

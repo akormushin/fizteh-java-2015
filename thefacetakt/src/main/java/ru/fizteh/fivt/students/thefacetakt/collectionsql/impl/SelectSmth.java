@@ -24,6 +24,7 @@ public class SelectSmth<T, R> {
     private HugeComparator<R> hugeComparator;
 
     private boolean distinct;
+    private boolean hasAggregators;
 
     private int limitRange = Integer.MAX_VALUE;
 
@@ -36,6 +37,13 @@ public class SelectSmth<T, R> {
         elements = newElements;
         resultClass = newResultClass;
         constructorFunctions = newConstructorFunctions;
+        hasAggregators = false;
+        for (int i = 0; i < constructorFunctions.length; ++i) {
+            if (constructorFunctions[i] instanceof Aggregator) {
+                hasAggregators = true;
+                break;
+            }
+        }
         distinct = newDistinct;
     }
 
@@ -76,11 +84,13 @@ public class SelectSmth<T, R> {
         Class[] returnClasses = new Class[constructorFunctions.length];
 
         Map<Object, ArrayList<Object>> superGrouping = new HashMap<>();
-        boolean grouppedBy = true;
         Function<T, ?> groupByFunction;
         if (groupByFunctions == null) {
-            grouppedBy = false;
-            groupByFunction = Function.identity();
+            if (hasAggregators) {
+                groupByFunction = (x -> true);
+            } else {
+                groupByFunction = Function.identity();
+            }
         } else {
             groupByFunction = ((T x) -> {
                 Object[] values = new Object[groupByFunctions.length];
@@ -102,10 +112,6 @@ public class SelectSmth<T, R> {
                     for (Function<T, ?> constructorFunction
                             : constructorFunctions) {
                         if (constructorFunction instanceof Aggregator) {
-                            if (!grouppedBy) {
-                                throw new IllegalStateException("Aggregators"
-                                        + " without group by");
-                            }
                             currentArrayList
                                     .add(((Aggregator) constructorFunction)
                                             .getVisitor());
@@ -180,4 +186,9 @@ public class SelectSmth<T, R> {
         }
         return result;
     }
+
+    public UnionStmt<T, R> union() {
+        return new UnionStmt<>(this);
+    }
 }
+

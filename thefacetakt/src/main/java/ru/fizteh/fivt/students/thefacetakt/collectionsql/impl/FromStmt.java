@@ -19,13 +19,13 @@ public final class FromStmt<T> {
     }
 
     public <R> SelectSmth<T, R> select(Class<R> resultClass,
-                                       Function<T, ?> constructorFunctions) {
+                                       Function<T, ?>... constructorFunctions) {
         return new SelectSmth<>(elements, resultClass, false,
                 constructorFunctions);
     }
 
     public <R> SelectSmth<T, R> selectDistinct(Class<R> resultClass,
-                                       Function<T, ?> constructorFunctions) {
+                                       Function<T, ?>... constructorFunctions) {
         return new SelectSmth<>(elements, resultClass, true,
                 constructorFunctions);
     }
