@@ -6,6 +6,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
+
+//import static ru.fizteh.fivt.students.thefacetakt.collectionsql.Conditions.like;
+
 //
 //import static ru.fizteh.fivt.students.thefacetakt.collectionsql.OrderByConditions.asc;
 //import static ru.fizteh.fivt.students.thefacetakt.collectionsql.OrderByConditions.desc;
