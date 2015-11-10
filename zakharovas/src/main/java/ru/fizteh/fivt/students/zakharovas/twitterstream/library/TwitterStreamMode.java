@@ -1,5 +1,6 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
+import ru.fizteh.fivt.students.zakharovas.twitterstream.CommandLineArgs;
 import twitter4j.*;
 
 import java.util.LinkedList;

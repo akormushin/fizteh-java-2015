@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
@@ -34,7 +34,7 @@ public class GeoLocatorTest {
         tests = new ArrayList<>();
         Type type = new TypeToken<GeoLocatorTestData>() {
         }.getType();
-        try (InputStream inputStream = TweetFormaterTest.class.getResourceAsStream("/GeoLocatorTests.json")) {
+        try (InputStream inputStream = GeoLocatorTest.class.getResourceAsStream("/GeoLocatorTests.json")) {
             String json = IOUtils.toString(inputStream);
             JsonParser parser = new JsonParser();
             JsonArray testsInJSON = (JsonArray) parser.parse(json);

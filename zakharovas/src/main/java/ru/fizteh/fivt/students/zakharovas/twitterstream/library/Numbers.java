@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 public class Numbers {
     public static final int ZERO = 0;

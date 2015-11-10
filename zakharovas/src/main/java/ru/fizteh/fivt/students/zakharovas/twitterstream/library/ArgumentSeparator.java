@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 /**
  * Created by alexander on 04.11.15.

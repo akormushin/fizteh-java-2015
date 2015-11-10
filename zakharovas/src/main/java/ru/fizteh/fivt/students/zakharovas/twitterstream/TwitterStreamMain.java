@@ -3,6 +3,10 @@ package ru.fizteh.fivt.students.zakharovas.twitterstream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.ArgumentSeparator;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.GeoLocator;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.TwitterSearchMode;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.TwitterStreamMode;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;

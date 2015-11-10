@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 import twitter4j.Status;
 
