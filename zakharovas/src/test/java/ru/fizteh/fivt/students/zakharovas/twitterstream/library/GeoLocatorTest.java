@@ -11,6 +11,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.exceptions.GeoSearchException;
 
 import java.io.InputStream;
 import java.lang.reflect.Type;

@@ -4,6 +4,7 @@ package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.exceptions.GeoSearchException;
 import twitter4j.GeoLocation;
 
 import java.io.BufferedReader;
@@ -162,13 +163,5 @@ public class GeoLocator {
             }
         }
     }
-}
-
-class GeoSearchException extends Exception {
-    GeoSearchException(String errorMessage) {
-        super(errorMessage);
-    }
-
-
 }
 
