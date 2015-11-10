@@ -71,7 +71,8 @@ public class TwitterStreamMain {
         new TwitterStreamMode(twitterStream, commandLineArgs, geoLocator, System.out).startStreaming();
     }
 
-    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException, IllegalStateException, EmptyResultException {
+    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException,
+            IllegalStateException, EmptyResultException {
         Twitter twitter = TwitterFactory.getSingleton();
         List<String> results = new TwitterSearchMode(twitter, commandLineArgs, geoLocator).search();
 
