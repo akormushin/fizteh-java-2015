@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.okalitova.twitterstreamer;
+package ru.fizteh.fivt.students.okalitova.moduletests.library;
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
@@ -14,7 +14,7 @@ import java.util.Properties;
 /**
  * Created by okalitova on 24.09.15.
  */
-public class GoogleFindPlace {
+public class PlaceParser {
     private static final double R = 6371;
     private GeocodingResult[] result;
     private double radius;
@@ -31,7 +31,7 @@ public class GoogleFindPlace {
         return prop.getProperty("key");
     }
 
-    GoogleFindPlace(String place) throws Exception {
+    public PlaceParser(String place) throws Exception {
         GeoApiContext context = new GeoApiContext()
                 .setApiKey(getKey());
         result = GeocodingApi.geocode(context, place).await();

@@ -1,5 +1,4 @@
-package ru.fizteh.fivt.students.okalitova.twitterstreamer;
-
+package ru.fizteh.fivt.students.okalitova.moduletests.library;
 
 import com.google.maps.model.Bounds;
 import com.google.maps.model.LatLng;
@@ -15,7 +14,7 @@ import java.util.Properties;
 /**
  * Created by nimloth on 04.10.15.
  */
-public class Nearby {
+public class NearbyParser {
 
     public static final double SHIFT = 0.1;
     public static final int EIGHT = 8;

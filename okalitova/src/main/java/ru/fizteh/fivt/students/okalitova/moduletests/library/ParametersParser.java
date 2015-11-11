@@ -1,11 +1,11 @@
-package ru.fizteh.fivt.students.okalitova.twitterstreamer;
+package ru.fizteh.fivt.students.okalitova.moduletests.library;
 
 import com.beust.jcommander.Parameter;
 
 /**
  * Created by okalitova on 24.09.15.
  */
-public class Parameters {
+public class ParametersParser {
 
         public static final int HUNDRED = 100;
         @Parameter(names = {"-q", "--query"},
@@ -50,6 +50,30 @@ public class Parameters {
 
         public final boolean isHelp() {
             return help;
+        }
+
+        public void setQuery(String queryDef) {
+                query = queryDef;
+        }
+
+        public void setLimit(Integer limitDef) {
+                limit = limitDef;
+        }
+
+        public void setStream(boolean streamDef) {
+                stream = streamDef;
+        }
+
+        public void setHideRetwitts(boolean hideRetwittsDef) {
+                hideRetwitts = hideRetwittsDef;
+        }
+
+        public void setHelp(boolean helpDef) {
+                help = helpDef;
+        }
+
+        public void setPlace(String placeDef) {
+                place = placeDef;
         }
 
 }
