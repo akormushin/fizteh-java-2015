@@ -28,14 +28,14 @@ Iterable<Statistics> statistics =
                         .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
                         .groupBy(Student::getName)
                         .having(s -> s.getCount() > 0)
-                        .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
+                        .orderBy(asc(Statistics::getGroup), desc(count(Statistics::getCount)))
                         .limit(100)
                         .union()
                         .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
-                        .selectDistinct(Statistics.class, "all", count(s -> 1), avg(Student::age))
+                        .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
                         .execute();
                         
-statistics: [Statistics{group=all,count=3,27},Statistics{group=494,count=2,avg=24},Statistics{group=495,count=1,avg=29}]                        
+statistics: [Statistics{group=all,count=1,30},Statistics{group=494,count=1,avg=29},Statistics{group=495,count=1,avg=29}]                        
 ```
 Нужно реализовать всю функциональность из классов Aggregates, Conditions, OrderByConditions, Sources.
 
