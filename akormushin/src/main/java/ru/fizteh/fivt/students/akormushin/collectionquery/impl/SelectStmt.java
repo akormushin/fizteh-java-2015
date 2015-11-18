@@ -36,7 +36,7 @@ public class SelectStmt<T, R> implements Query<R> {
         }
 
         @SafeVarargs
-        public final WhereStmt<T, R> orderBy(Comparator<T>... comparators) {
+        public final WhereStmt<T, R> orderBy(Comparator<R>... comparators) {
             throw new UnsupportedOperationException();
         }
 
