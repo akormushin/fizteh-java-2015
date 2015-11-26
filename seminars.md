@@ -76,4 +76,5 @@
 * Многопоточное программирование
     * [Fork/Join](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html)
     * [A Strategy for Defining Immutable Objects](https://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat.html)
+    * [Java Memory Model](https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html)
 * Задание на дом: То же
