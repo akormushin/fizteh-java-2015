@@ -70,10 +70,10 @@
 * Многопоточное программирование
     * [Lesson: Concurrency](https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html)
     * [Java Concurrency in Practice](http://www.ozon.ru/context/detail/id/3174887/)
-* Задание на дом: [CQL](/tasks/05-Threads.md)
+* Задание на дом: [Threads](/tasks/05-Threads.md)
 
 ## Семинар 9: Потоки
 * Многопоточное программирование
     * [Fork/Join](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html)
     * [A Strategy for Defining Immutable Objects](https://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat.html)
-* Задание на дом: [CQL](/tasks/06-Threads-Ex.md)
+* Задание на дом: То же
