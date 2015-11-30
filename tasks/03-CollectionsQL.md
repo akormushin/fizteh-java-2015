@@ -6,7 +6,8 @@
 ```
 select_statement := 
 from(<collection>)
-.select[Distinct](<result_class>, <functions as constructor args>...)
+{.select[Distinct](<result_class>, <functions as constructor args>...) 
+ | .select[Distinct](<function>) }
 [.where(<predicate>)]
 [.groupBy(<function>, ...)]
 [.having(<predicate>)]
@@ -27,20 +28,22 @@ Iterable<Statistics> statistics =
                         .where(rlike(Student::getName, ".*ov").and(s -> s.age() > 20))
                         .groupBy(Student::getName)
                         .having(s -> s.getCount() > 0)
-                        .orderBy(asc(Student::getGroup), desc(count(Student::getGroup)))
+                        .orderBy(asc(Statistics::getGroup), desc(count(Statistics::getCount)))
                         .limit(100)
                         .union()
                         .from(list(student("ivanov", LocalDate.parse("1985-08-06"), "494")))
-                        .selectDistinct(Statistics.class, "all", count(s -> 1), avg(Student::age))
+                        .selectDistinct(Statistics.class, s -> "all", count(s -> 1), avg(Student::age))
                         .execute();
                         
-statistics: [Statistics{group=all,count=3,27},Statistics{group=494,count=2,avg=24},Statistics{group=495,count=1,avg=29}]                        
+statistics: [Statistics{group=all,count=1,avg=30},Statistics{group=494,count=1,avg=29},Statistics{group=495,count=1,avg=29}]                        
 ```
 Нужно реализовать всю функциональность из классов Aggregates, Conditions, OrderByConditions, Sources.
 
 Семантика операций как в SQL:
   * select(<class>, <expr>, ...) - для каждой строчки результирующего списка создаёт объект класса, передавая в конструктов результаты вычисления выражений в качестве аргументов
-  * selectDistinct(<class>, <expr>, ...) - см. select. Оставляет только уникальные строки. Для результирующего класса должен быть реализован адекватный equals() и hashCode(). 
+  * select(<expr>) - выводит список результатов выражения
+  * selectDistinct(<class>, <expr>, ...) - см. select. Оставляет только уникальные строки. Для результирующего класса должен быть реализован адекватный equals() и hashCode().
+  * selectDistinct(<expr>) - выводит список уникальных результатов выражения
   * from(<list>) - указывает, из какого источника брать данные
   * groupBy(<expr>, ...) - группирует результат по заданным выражениям. Как и в SQL, при наличии group by, в select могут быть только выражения, по которым группировали или агрегатные функции.
   * having(<predicate>, ...) - фильтрует результат группировки, то есть предикат применяется к объекту из select

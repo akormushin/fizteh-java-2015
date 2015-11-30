@@ -58,7 +58,23 @@
 ## Семинар 6: Коллекции
 * Core Java (для самостоятельного изучения)
     * [Trail: Collections](https://docs.oracle.com/javase/tutorial/collections/)
-    * [Java 8 Stream Tutorial](http://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/)
-    * [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html)
 * Задание на дом: [CQL](/tasks/03-CollectionsQL.md)
 
+## Семинар 7: Коллекции
+* Core Java (для самостоятельного изучения)
+    * [Java 8 Stream Tutorial](http://winterbe.com/posts/2014/07/31/java8-stream-tutorial-examples/)
+    * [Lesson: Generics](https://docs.oracle.com/javase/tutorial/java/generics/index.html)
+* Задание на дом: [CQL](/tasks/04-CollectionsQL-Ex.md)
+
+## Семинар 8: Потоки
+* Многопоточное программирование
+    * [Lesson: Concurrency](https://docs.oracle.com/javase/tutorial/essential/concurrency/index.html)
+    * [Java Concurrency in Practice](http://www.ozon.ru/context/detail/id/3174887/)
+* Задание на дом: [Threads](/tasks/05-Threads.md)
+
+## Семинар 9: Потоки
+* Многопоточное программирование
+    * [Fork/Join](https://docs.oracle.com/javase/tutorial/essential/concurrency/forkjoin.html)
+    * [A Strategy for Defining Immutable Objects](https://docs.oracle.com/javase/tutorial/essential/concurrency/imstrat.html)
+    * [Java Memory Model](https://www.cs.umd.edu/~pugh/java/memoryModel/jsr-133-faq.html)
+* Задание на дом: То же
