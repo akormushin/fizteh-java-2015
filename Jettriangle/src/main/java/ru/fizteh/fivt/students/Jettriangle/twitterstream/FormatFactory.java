@@ -16,35 +16,36 @@ public class FormatFactory {
             "\n----------------------------------------------------------------------------------------\n";
 
     public static String getTweetFormat(Status st, JCommanderTwitter jct) {
-        String correctTweetFormat = new String();
+//        String correctTweetFormat = new String();
+        StringBuilder correctTweetFormat = new StringBuilder();
         LocalDateTime current = LocalDateTime.now();
 
         if (!jct.isStream()) {
-            correctTweetFormat = "[" + timeFormat(current, st.getCreatedAt()) + "]";
+            correctTweetFormat.append("[" + timeFormat(current, st.getCreatedAt()) + "]");
         }
 
         if (!jct.isHideRetweets()) {
             if (st.isRetweet()) {
-                correctTweetFormat = correctTweetFormat.concat("@" + st.getUser().getName()
+                correctTweetFormat = correctTweetFormat.append(" @" + st.getUser().getName()
                         + " ретвитнул @" + st.getRetweetedStatus().getUser().getName() + ": "
                         + st.getRetweetedStatus().getText());
             } else {
-                correctTweetFormat = correctTweetFormat.concat("@" + st.getUser().getName() + ": " + st.getText());
+                correctTweetFormat = correctTweetFormat.append(" @" + st.getUser().getName() + ": " + st.getText());
                 if (st.isRetweeted()) {
-                    correctTweetFormat = correctTweetFormat.concat(" (" + Long.toString(st.getRetweetCount())
+                    correctTweetFormat = correctTweetFormat.append(" (" + Long.toString(st.getRetweetCount())
                             + " " + Declension.tweetDeclension(st.getRetweetCount()) + ")");
 
                 } else {
-                    correctTweetFormat = correctTweetFormat.concat("@" + st.getUser().getName() + ": " + st.getText());
+                    correctTweetFormat = correctTweetFormat.append(" @" + st.getUser().getName() + ": " + st.getText());
                 }
             }
-            correctTweetFormat = correctTweetFormat.concat(SEPARATETWEETS);
-            return correctTweetFormat;
+            correctTweetFormat = correctTweetFormat.append(SEPARATETWEETS);
+            return correctTweetFormat.toString();
         } else {
             if (!st.isRetweet()) {
-                correctTweetFormat = correctTweetFormat.concat("@" + st.getUser().getName() + ": "
+                correctTweetFormat = correctTweetFormat.append(" @" + st.getUser().getName() + ": "
                         + st.getText() + SEPARATETWEETS);
-                return correctTweetFormat;
+                return correctTweetFormat.toString();
             }
             return "";
         }
