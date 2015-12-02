@@ -4,15 +4,33 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
- * Created by kormushin on 06.10.15.
+ * Where clause conditions.
+ *
+ * @author akormushin
  */
 public class Conditions<T> {
 
-    public static <T> Predicate<T> rlike(Function<T, String> expr, String regexp) {
+    /**
+     * Matches string result of expression against regexp pattern.
+     *
+     * @param expression expression result to match
+     * @param regexp     pattern to match to
+     * @param <T>        source object type
+     * @return
+     */
+    public static <T> Predicate<T> rlike(Function<T, String> expression, String regexp) {
         throw new UnsupportedOperationException();
     }
 
-    public static <T> Predicate<T> like(Function<T, String> expr, String pattern) {
+    /**
+     * Matches string result of expression against SQL like pattern.
+     *
+     * @param expression expression result to match
+     * @param pattern    pattern to match to
+     * @param <T>        source object type
+     * @return
+     */
+    public static <T> Predicate<T> like(Function<T, String> expression, String pattern) {
         throw new UnsupportedOperationException();
     }
 
