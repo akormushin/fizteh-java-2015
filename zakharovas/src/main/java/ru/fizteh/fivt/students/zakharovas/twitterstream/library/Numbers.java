@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 public class Numbers {
     public static final int ZERO = 0;
@@ -10,6 +10,6 @@ public class Numbers {
     public static final int ELEVEN = 11;
     public static final int NINETEEN = 19;
     public static final int SECOND = 1000;
-    public static final int NOW_CONSTANT = -2;
+    public static final int NOW_CONSTANT = 2;
     public static final int HUNDRED = 100;
 }

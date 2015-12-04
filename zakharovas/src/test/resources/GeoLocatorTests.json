@@ -1,0 +1,150 @@
+[
+  {
+    "results": [
+      {
+        "geometry": {
+          "bounds": {
+            "northeast": {
+              "lat": 56.009657,
+              "lng": 37.9456611
+            },
+            "southwest": {
+              "lat": 55.48992699999999,
+              "lng": 37.3193288
+            }
+          },
+          "location": {
+            "lat": 55.755826,
+            "lng": 37.6173
+          },
+          "viewport": {
+            "northeast": {
+              "lat": 56.009657,
+              "lng": 37.9456611
+            },
+            "southwest": {
+              "lat": 55.48992699999999,
+              "lng": 37.3193288
+            }
+          }
+        },
+        "types": [
+          null,
+          null
+        ],
+        "partialMatch": false
+      }
+    ],
+    "radius": 69.82932363862705,
+    "coordinatesForSearch": [
+      55.755826,
+      37.6173
+    ],
+    "coordinatesForStream": [
+      [
+        55.48992699999999,
+        37.3193288
+      ],
+      [
+        56.009657,
+        37.9456611
+      ]
+    ]
+  },
+  {
+    "results": [
+      {
+        "geometry": {
+          "location": {
+            "lat": 55.9146434,
+            "lng": 37.4743331
+          },
+          "viewport": {
+            "northeast": {
+              "lat": 55.91599238029149,
+              "lng": 37.4756820802915
+            },
+            "southwest": {
+              "lat": 55.91329441970849,
+              "lng": 37.4729841197085
+            }
+          }
+        },
+        "types": [
+          null,
+          null,
+          null,
+          null
+        ],
+        "partialMatch": false
+      }
+    ],
+    "radius": 100.0,
+    "coordinatesForSearch": [
+      55.9146434,
+      37.4743331
+    ],
+    "coordinatesForStream": [
+      [
+        55.90354433706826,
+        37.46323403706826
+      ],
+      [
+        55.925742462931744,
+        37.485432162931744
+      ]
+    ]
+  },
+  {
+    "results": [
+      {
+        "geometry": {
+          "bounds": {
+            "northeast": {
+              "lat": 40.91525559999999,
+              "lng": -73.70027209999999
+            },
+            "southwest": {
+              "lat": 40.4913699,
+              "lng": -74.25908989999999
+            }
+          },
+          "location": {
+            "lat": 40.7127837,
+            "lng": -74.0059413
+          },
+          "viewport": {
+            "northeast": {
+              "lat": 40.91525559999999,
+              "lng": -73.70027209999999
+            },
+            "southwest": {
+              "lat": 40.4913699,
+              "lng": -74.25908989999999
+            }
+          }
+        },
+        "types": [
+          null,
+          null
+        ],
+        "partialMatch": false
+      }
+    ],
+    "radius": 66.63767408179633,
+    "coordinatesForSearch": [
+      40.7127837,
+      -74.0059413
+    ],
+    "coordinatesForStream": [
+      [
+        40.4913699,
+        -74.25908989999999
+      ],
+      [
+        40.91525559999999,
+        -73.70027209999999
+      ]
+    ]
+  }
+]

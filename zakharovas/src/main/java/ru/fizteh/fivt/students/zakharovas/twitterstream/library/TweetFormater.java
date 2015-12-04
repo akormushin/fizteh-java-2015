@@ -1,13 +1,12 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 import twitter4j.Status;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 
-public class StringFormater {
+public class TweetFormater {
     private static final String COLOR_BLUE = "\u001B[34m";
     private static final String COLOR_RESET = "\u001B[0m";
     private static final String[] ENDING_RETWEETS = {"ретвитов", "ретвит", "ретвита"};
@@ -15,17 +14,25 @@ public class StringFormater {
     private static final String[] ENDING_MUNUTES = {"минут", "минуту", "минуты"};
     private static final String[] ENDING_HOURS = {"часов", "час", "часа"};
 
-    public static String[] separateArguments(String[] unseparatedArguments) {
-        String allArgumentsInOneString = String.join(" ", unseparatedArguments);
-        return allArgumentsInOneString.split("\\s+");
+    private Status tweet;
+    private Clock clock;
+
+    TweetFormater(Status tweet) {
+        this.tweet = tweet;
+        clock = Clock.systemDefaultZone();
     }
 
-    public static String tweetForOutput(Status tweet) {
-        return dateFormater(tweet.getCreatedAt()) + tweetForOutputWithoutDate(tweet);
+    TweetFormater(Status tweet, Clock clock) {
+        this.tweet = tweet;
+        this.clock = clock;
+    }
+
+    public String tweetForOutput() {
+        return dateFormater() + " " + tweetForOutputWithoutDate();
 
     }
 
-    public static String tweetForOutputWithoutDate(Status tweet) {
+    public String tweetForOutputWithoutDate() {
         StringBuilder formatedTweet = new StringBuilder();
         if (!tweet.isRetweet()) {
             formatedTweet.append(COLOR_BLUE)
@@ -37,7 +44,7 @@ public class StringFormater {
                 formatedTweet.append("(")
                         .append(tweet.getRetweetCount())
                         .append(" ")
-                        .append(fineWords(tweet.getRetweetCount(), ENDING_RETWEETS))
+                        .append(RussianDeclension.declensionWithNumber(tweet.getRetweetCount(), ENDING_RETWEETS))
                         .append(")");
             }
         } else {
@@ -55,29 +62,10 @@ public class StringFormater {
         return formatedTweet.toString();
     }
 
-
-    private static String fineWords(int number, String[] endings) {
-        number %= Numbers.HUNDRED;
-        if (number >= Numbers.ELEVEN
-                && number <= Numbers.NINETEEN) {
-            return endings[0];
-        }
-        if (number % Numbers.TEN == Numbers.ZERO) {
-            return endings[0];
-        } else if (number % Numbers.TEN == Numbers.ONE) {
-            return endings[1];
-        } else if (number % Numbers.TEN >= Numbers.TWO
-                && number % Numbers.TEN <= Numbers.FOUR) {
-            return endings[2];
-        } else if (number % Numbers.TEN >= Numbers.FIVE) {
-            return endings[0];
-        }
-        return null;
-    }
-
-    private static String dateFormater(Date date) {
-        LocalDateTime tweetTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        LocalDateTime currentTime = LocalDateTime.now();
+    //Just for overriding
+    protected String dateFormater() {
+        LocalDateTime tweetTime = tweet.getCreatedAt().toInstant().atZone(clock.getZone()).toLocalDateTime();
+        LocalDateTime currentTime = LocalDateTime.now(clock);
         long minuteDifference = ChronoUnit.MINUTES.between(tweetTime, currentTime);
         long hourDifference = ChronoUnit.HOURS.between(tweetTime, currentTime);
         long daysDifference = tweetTime.toLocalDate().until(currentTime.toLocalDate(), ChronoUnit.DAYS);
@@ -87,13 +75,16 @@ public class StringFormater {
         if (daysDifference == 0) {
             //today
             if (hourDifference == 0) {
-                return minuteDifference + " " + fineWords((int) minuteDifference, ENDING_MUNUTES) + " назад";
+                return minuteDifference + " "
+                        + RussianDeclension.declensionWithNumber((int) minuteDifference, ENDING_MUNUTES) + " назад";
             }
-            return hourDifference + " " + fineWords((int) hourDifference, ENDING_HOURS) + " назад";
+            return hourDifference + " "
+                    + RussianDeclension.declensionWithNumber((int) hourDifference, ENDING_HOURS) + " назад";
         } else if (daysDifference == 1) {
             return "вчера";
         }
-        return daysDifference + " " + fineWords((int) daysDifference, ENDING_DAYS) + " назад";
+        return daysDifference + " "
+                + RussianDeclension.declensionWithNumber((int) daysDifference, ENDING_DAYS) + " назад";
     }
 
 

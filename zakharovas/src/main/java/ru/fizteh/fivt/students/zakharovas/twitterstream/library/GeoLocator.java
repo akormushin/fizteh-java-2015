@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.zakharovas.twitterstream;
+package ru.fizteh.fivt.students.zakharovas.twitterstream.library;
 
 
 import com.google.maps.GeoApiContext;
 import com.google.maps.GeocodingApi;
 import com.google.maps.model.GeocodingResult;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.exceptions.GeoSearchException;
 import twitter4j.GeoLocation;
 
 import java.io.BufferedReader;
@@ -34,6 +35,11 @@ public class GeoLocator {
         enableGoogleMaps();
         setCoordinates();
     }
+
+    public GeoLocator(GeocodingResult[] results) throws GeoSearchException {
+        parseGoogleMapsAnswer(results);
+    }
+
 
     public double[][] getLocationForStream() {
         return borders;
@@ -73,6 +79,10 @@ public class GeoLocator {
         } catch (Exception e) {
             throw new GeoSearchException(e.getMessage());
         }
+        parseGoogleMapsAnswer(results);
+    }
+
+    private void parseGoogleMapsAnswer(GeocodingResult[] results) throws GeoSearchException {
         if (results.length == 0 || results[0] == null) {
             throw new GeoSearchException("Location has not been found");
         }
@@ -153,13 +163,5 @@ public class GeoLocator {
             }
         }
     }
-}
-
-class GeoSearchException extends Exception {
-    GeoSearchException(String errorMessage) {
-        super(errorMessage);
-    }
-
-
 }
 
