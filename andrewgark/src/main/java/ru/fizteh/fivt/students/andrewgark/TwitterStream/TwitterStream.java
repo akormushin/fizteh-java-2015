@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.andrewgark;
+package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
 import com.beust.jcommander.JCommander;
 import twitter4j.*;
 
 import java.net.MalformedURLException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
@@ -11,17 +12,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.stream.Collectors.joining;
-import static ru.fizteh.fivt.students.andrewgark.GeolocationSearch.getCoordinatesByIp;
-import static ru.fizteh.fivt.students.andrewgark.GeolocationSearch.getCoordinatesByQuery;
-import static ru.fizteh.fivt.students.andrewgark.TSWordsForm.getTimeForm;
-import static ru.fizteh.fivt.students.andrewgark.TSWordsForm.retweetsForm;
+import static ru.fizteh.fivt.students.andrewgark.TwitterStream.GeolocationSearch.getCoordinatesByIp;
+import static ru.fizteh.fivt.students.andrewgark.TwitterStream.GeolocationSearch.getCoordinatesByQuery;
+import static ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm.getRetweetsForm;
+import static ru.fizteh.fivt.students.andrewgark.TwitterStream.TSWordsForm.getTimeForm;
 
 public class TwitterStream {
     private static final Double RADIUS = 5.0;
     private static final Integer NUMBER_TWEETS = 100;
     private static final String SEPARATOR =
             "----------------------------------------------------------------------------------------";
-
 
     public static class ParameterException extends Exception {
         public ParameterException(String message) {
@@ -138,7 +138,8 @@ public class TwitterStream {
                 ie.printStackTrace();
             }
         } else {
-            time = getTimeForm(tweet) + " ";
+            LocalDateTime nowLocalDateTime = LocalDateTime.now();
+            time = getTimeForm(tweet, nowLocalDateTime) + " ";
         }
         System.out.println(SEPARATOR);
         String uName = tweet.getUser().getScreenName();
@@ -152,7 +153,7 @@ public class TwitterStream {
             text = m.group(2);
             System.out.println(time + "@" + uName + ": ретвитнул @" + uRTName + ": " + text);
         } else {
-            System.out.println(time + "@" + uName + ": " + text + retweetsForm(retweets));
+            System.out.println(time + "@" + uName + ": " + text + getRetweetsForm(retweets));
         }
     }
 }

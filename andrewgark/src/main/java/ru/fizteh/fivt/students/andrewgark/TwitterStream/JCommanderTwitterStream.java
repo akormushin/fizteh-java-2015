@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andrewgark;
+package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
 import com.beust.jcommander.Parameter;
 

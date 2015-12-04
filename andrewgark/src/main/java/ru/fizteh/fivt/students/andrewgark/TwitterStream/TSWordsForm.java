@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.andrewgark;
+package ru.fizteh.fivt.students.andrewgark.TwitterStream;
 
 import twitter4j.Status;
 
@@ -21,10 +21,9 @@ public class TSWordsForm {
     private static final String[] HOUR_FORMS = {"час", "часа", "часов"};
     private static final String[] DAY_FORMS = {"день", "дня", "дней"};
 
-    public static String getTimeForm(Status tweet) {
+    public static String getTimeForm(Status tweet, LocalDateTime nowLocalDateTime) {
         ZonedDateTime dateTime = tweet.getCreatedAt().toInstant().atZone(ZoneId.systemDefault());
         LocalDateTime tweetLocalDateTime = dateTime.toLocalDateTime();
-        LocalDateTime nowLocalDateTime = LocalDateTime.now();
         return "[" + getTimeBetweenForm(tweetLocalDateTime, nowLocalDateTime) + "]";
     }
 
@@ -51,7 +50,7 @@ public class TSWordsForm {
         }
     }
 
-    public static String retweetsForm(Integer retweets) {
+    public static String getRetweetsForm(Integer retweets) {
         if (retweets == 0) {
             return "";
         }
