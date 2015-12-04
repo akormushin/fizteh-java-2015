@@ -39,6 +39,7 @@
         <module>ladyae</module>
         <!--Add you module here-->
     <module>preidman</module>
+    <module>nikitarykov</module>
   </modules>
 
     <dependencies>
