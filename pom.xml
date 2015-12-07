@@ -20,10 +20,26 @@
     </properties>
 
     <modules>
+        <module>egiby</module>
         <module>akormushin</module>
+        <module>xmanatee</module>
+        <module>mamaevads</module>
+        <module>cache-nez</module>
+        <module>ocksumoron</module>
+        <module>zerts</module>
+        <module>thefacetakt</module>
+        <module>riazanovskiy</module>
+        <module>andrewgark</module>
+        <module>fminkin</module>
+        <module>sergmiller</module>
+        <module>zakharovas</module>
+        <module>zemen</module>
+		<module>w4r10ck1337</module>
         <!--Add you module here-->
-		<module>oshch</module>
-	
+	<module>oshch</module>
+        <module>ladyae</module>
+    <module>preidman</module>
+    <module>nikitarykov</module>
   </modules>
 
     <dependencies>
@@ -43,7 +59,7 @@
 
         <dependency>
             <groupId>org.hamcrest</groupId>
-            <artifactId>hamcrest-core</artifactId>
+            <artifactId>hamcrest-all</artifactId>
             <version>1.3</version>
             <scope>test</scope>
         </dependency>

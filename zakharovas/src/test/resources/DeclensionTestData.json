@@ -1,0 +1,41 @@
+{
+  "endings": [
+    "1",
+    "2",
+    "3"
+  ],
+  "tests": [
+    {
+      "number": 1,
+      "answer": "2"
+    },
+    {
+      "number": 2,
+      "answer": "3"
+    },
+    {
+      "number": 7,
+      "answer": "1"
+    },
+    {
+      "number": 10,
+      "answer": "1"
+    },
+    {
+      "number": 14,
+      "answer": "1"
+    },
+    {
+      "number": 27,
+      "answer": "1"
+    },
+    {
+      "number": 34,
+      "answer": "3"
+    },
+    {
+      "number": 111,
+      "answer": "1"
+    }
+  ]
+}

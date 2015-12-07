@@ -23,6 +23,13 @@
             <artifactId>jcommander</artifactId>
             <version>1.48</version>
         </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.4</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <developers>
