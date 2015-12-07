@@ -2,16 +2,13 @@ package ru.fizteh.fivt.students.oshch.moduletests;
 
 import com.beust.jcommander.JCommander;
 import ru.fizteh.fivt.students.oshch.moduletests.library.Parameters;
-import ru.fizteh.fivt.students.oshch.moduletests.library.SearchTweets;
 import ru.fizteh.fivt.students.oshch.moduletests.library.StatusPrinter;
-import ru.fizteh.fivt.students.oshch.moduletests.library.StreamTweets;
 import twitter4j.*;
 
 import java.io.IOException;
 
 import static ru.fizteh.fivt.students.oshch.moduletests.library.SearchTweets.search;
 import static ru.fizteh.fivt.students.oshch.moduletests.library.StreamTweets.stream;
-import static ru.fizteh.fivt.students.oshch.moduletests.library.TimeFormatter.printTime;
 
 public class TwitterStream {
     private static Parameters param;

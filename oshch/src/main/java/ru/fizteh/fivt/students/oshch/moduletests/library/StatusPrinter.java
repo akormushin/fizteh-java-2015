@@ -4,9 +4,6 @@ import twitter4j.Status;
 
 import static ru.fizteh.fivt.students.oshch.moduletests.library.TimeFormatter.printTime;
 
-/**
- * Created by 1 on 07.12.2015.
- */
 public class StatusPrinter {
     private static boolean isStream = false;
 

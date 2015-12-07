@@ -1,8 +1,6 @@
 package ru.fizteh.fivt.students.oshch.moduletests.library;
 
-import ru.fizteh.fivt.students.oshch.moduletests.*;
 import twitter4j.*;
-import twitter4j.TwitterStream;
 
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -36,8 +34,9 @@ public class StreamTweets {
         StatusAdapter listener = new StatusAdapter() {
             @Override
             public void onStatus(Status status) {
-                if (param.isHideRt() && status.isRetweet())
+                if (param.isHideRt() && status.isRetweet()) {
                     return;
+                }
                 printer.accept(status);
                 try {
                     TimeUnit.SECONDS.sleep(1);
