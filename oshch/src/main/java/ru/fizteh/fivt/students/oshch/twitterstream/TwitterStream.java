@@ -107,8 +107,9 @@ public class TwitterStream {
             result = twitter.search(query);
             List<Status> tweets = result.getTweets();
             for (Status status : tweets) {
-                if (status.isRetweet() && param.isHideRt())
+                if (status.isRetweet() && param.isHideRt()) {
                     continue;
+                }
                 printTime(status);
                 printStatus(status, param.isHideRt());
                 statusCount++;
@@ -162,8 +163,8 @@ public class TwitterStream {
                         + status.getRetweetedStatus().getUser().getScreenName()
                         + ANSI_RESET + ": "
                         + status.getRetweetedStatus().getText());
-                System.out.println("----------------------------------------" +
-                        "----------------------------------------");
+                System.out.println("----------------------------------------"
+                        +          "----------------------------------------");
             }
         } else {
             System.out.print(ANSI_GR
@@ -172,8 +173,8 @@ public class TwitterStream {
             if (status.getRetweetCount() != 0) {
                 System.out.print("(" + status.getRetweetCount() + " ретвитов)");
             }
-            System.out.println("\n----------------------------------------" +
-                    "----------------------------------------");
+            System.out.println("\n----------------------------------------"
+                    + "----------------------------------------");
         }
 
     }
@@ -203,35 +204,30 @@ public class TwitterStream {
                 @Override
                 public void onStatus(Status status) {
                     printStatus(status, param.isHideRt());
-                    if (!status.isRetweet() || !param.isHideRt())
+                    if (!status.isRetweet() || !param.isHideRt()) {
                         try {
                             TimeUnit.SECONDS.sleep(1);
-                        }
-                        catch (Exception e) {
+                        } catch (Exception e) {
                             System.err.println("Sleep error");
                         }
+                    }
                 }
             };
             try {
                 stream(param, listener);
-            }
-            catch (TwitterException e) {
+            } catch (TwitterException e) {
                 System.err.println("twitter error");
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 System.err.println("cant find api key");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("connection error");
             }
         } else {
             try {
                 search(param);
-            }
-            catch (TwitterException e) {
+            } catch (TwitterException e) {
                 System.err.println("twitter error");
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 System.err.println("connection error");
             }
 
