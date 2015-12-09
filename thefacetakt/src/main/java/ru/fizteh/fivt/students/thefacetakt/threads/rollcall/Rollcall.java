@@ -6,9 +6,8 @@ public class Rollcall {
     static final int GOOD_SEED = 3;
     public static void main(String[] args) {
         if (args.length < 1) {
-            System.err.println("Usage: Counter n, where n is a"
+            throw new IllegalArgumentException("Usage: Counter n, where n is a"
                     + " number of the threads");
-            return;
         }
         Rollcalled.setNumberOfThreads(Integer.parseInt(args[0]));
         Rollcalled.setRandom(new Random(GOOD_SEED));
