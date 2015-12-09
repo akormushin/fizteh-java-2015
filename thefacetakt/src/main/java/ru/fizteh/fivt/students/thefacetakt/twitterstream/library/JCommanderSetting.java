@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import com.beust.jcommander.Parameter;
 
@@ -9,9 +9,9 @@ import java.util.List;
 /**
  * Created by thefacetakt on 23.09.15.
  */
-class JCommanderSetting {
+public class JCommanderSetting {
 
-    static final String DEFAULT_LOCATION = "nearby";
+    public static final String DEFAULT_LOCATION = "nearby";
 
     @Parameter(names = {"--query", "-q"},
             description = "query or keywords for stream (required)",

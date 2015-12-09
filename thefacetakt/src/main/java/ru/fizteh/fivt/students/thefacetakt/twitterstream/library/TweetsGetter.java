@@ -1,8 +1,8 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.InvalidLocationException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.LocationDefinitionErrorException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.TwitterStreamException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.TwitterStreamException;
 import twitter4j.*;
 
 import java.net.MalformedURLException;
@@ -14,17 +14,17 @@ import static java.util.stream.Collectors.toList;
 /**
  * Created by thefacetakt on 11.10.15.
  */
-class TweetsGetter {
+public class TweetsGetter {
     static final double RADIUS = 10;
     static final String RADIUS_UNIT = "km";
 
     private PlaceLocationResolver geoResolver;
 
-    TweetsGetter(PlaceLocationResolver resolver) {
+    public TweetsGetter(PlaceLocationResolver resolver) {
         this.geoResolver = resolver;
     }
 
-    List<String> getTweetsOnce(JCommanderSetting jCommanderSettings,
+    public List<String> getTweetsOnce(JCommanderSetting jCommanderSettings,
                                       Location currentLocation,
                                       Twitter twitter)
             throws TwitterStreamException {
@@ -42,7 +42,7 @@ class TweetsGetter {
         query.setCount(jCommanderSettings.getLimit());
 
         for (int numberOfTry = 0; numberOfTry
-                < TwitterStream.MAX_NUMBER_OF_TRIES;
+                < PlaceLocationResolver.MAX_NUMBER_OF_TRIES;
              ++numberOfTry) {
             try {
 
@@ -53,7 +53,8 @@ class TweetsGetter {
                         .map(Formatter::formatTweet)
                         .collect(toList());
             } catch (TwitterException e) {
-                if (numberOfTry + 1 == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                if (numberOfTry + 1
+                        == PlaceLocationResolver.MAX_NUMBER_OF_TRIES) {
                     throw new TwitterStreamException("Error while search", e);
                 }
             }
@@ -62,7 +63,7 @@ class TweetsGetter {
                 + "TweetsOnce function");
     }
 
-    void getTwitterStream(JCommanderSetting jCommanderSetting,
+    public void getTwitterStream(JCommanderSetting jCommanderSetting,
                                  Location currentLocation,
                                  Consumer<String> tweetFunction,
                                  twitter4j.TwitterStream twitterStream) {
@@ -108,7 +109,8 @@ class TweetsGetter {
 
         twitterStream.filter(new FilterQuery().track(jCommanderSetting
                                 .getQueries().toArray(
-                                        new String[jCommanderSetting.getQueries().size()]
+                                        new String[jCommanderSetting
+                                                .getQueries().size()]
                                 )
                 )
         );

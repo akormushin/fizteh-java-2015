@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -11,11 +11,13 @@ import java.util.Date;
 
 class TimeFormatter {
 
-    static String formatTime(long currentTime, long timeToFormat) {
+    static String zonedFormatTime(long currentTime, long timeToFormat,
+                                  ZoneId zone) {
+
         LocalDateTime current = new Date(currentTime).toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+                .atZone(zone).toLocalDateTime();
         LocalDateTime tweetTime = new Date(timeToFormat).toInstant()
-                .atZone(ZoneId.systemDefault()).toLocalDateTime();
+                .atZone(zone).toLocalDateTime();
 
         if (ChronoUnit.MINUTES.between(tweetTime, current) < 2) {
             return "Только что";
@@ -38,5 +40,10 @@ class TimeFormatter {
         long n = ChronoUnit.DAYS.between(tweetTime, current);
         return String.valueOf(n) + " " + Declenser.daysDeclension(n)
                 + " назад";
+    }
+
+    static String formatTime(long currentTime, long timeToFormat) {
+        return zonedFormatTime(currentTime, timeToFormat,
+                ZoneId.systemDefault());
     }
 }

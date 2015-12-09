@@ -5,20 +5,17 @@ package ru.fizteh.fivt.students.thefacetakt.twitterstream;
  */
 
 import com.beust.jcommander.*;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.InvalidLocationException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.LocationDefinitionErrorException;
-import ru.fizteh.fivt.students.thefacetakt
-        .twitterstream.exceptions.NoKeyException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.TwitterStreamException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.*;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.NoKeyException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.TwitterStreamException;
 import twitter4j.*;
 
 import java.net.MalformedURLException;
 import java.util.*;
 
 public class TwitterStream {
-    static final int MAX_NUMBER_OF_TRIES = 2;
 
     private static PlaceLocationResolver geoResolver;
 
@@ -31,10 +28,10 @@ public class TwitterStream {
         }
     }
 
-    static Location resolveLocation(String passedLocation)
+    static ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location resolveLocation(String passedLocation)
             throws LocationDefinitionErrorException, InvalidLocationException,
             MalformedURLException {
-        Location result = null;
+        ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location result = null;
         if (passedLocation.equals(JCommanderSetting.DEFAULT_LOCATION)) {
             result = geoResolver.resolveCurrentLocation();
         } else {
@@ -72,7 +69,7 @@ public class TwitterStream {
             return;
         }
 
-        Location currentLocation = null;
+        ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location currentLocation = null;
         try {
             currentLocation = resolveLocation(
                     jCommanderSettings.getLocation()

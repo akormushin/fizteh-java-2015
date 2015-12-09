@@ -1,13 +1,9 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.InvalidLocationException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.LocationDefinitionErrorException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.NoKeyException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.QueryLimitException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.NoKeyException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.QueryLimitException;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
@@ -17,7 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-class PlaceLocationResolver {
+public class PlaceLocationResolver {
     static final String LOCATION_DEFINITION_ERROR
             = "Problem while location definition";
 
@@ -27,7 +23,10 @@ class PlaceLocationResolver {
     private String yandexMapsKey;
     private HttpReader httpReader;
 
-    PlaceLocationResolver(HttpReader newHttpReader) throws NoKeyException {
+    static final int MAX_NUMBER_OF_TRIES = 2;
+
+    public PlaceLocationResolver(HttpReader newHttpReader)
+            throws NoKeyException {
 
         Properties mapsKeys = new Properties();
         try (InputStream inputStream
@@ -105,14 +104,14 @@ class PlaceLocationResolver {
                         nameOfLocation);
             } catch (JSONException | IllegalStateException e) {
                 ++numberOfTries;
-                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                if (numberOfTries == MAX_NUMBER_OF_TRIES) {
                     throw new LocationDefinitionErrorException(
                             "Google: " + LOCATION_DEFINITION_ERROR
                                     + " : " + e.getMessage());
                 }
             }
         }
-        while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
+        while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
@@ -178,14 +177,14 @@ class PlaceLocationResolver {
                         nameOfLocation);
             } catch (JSONException | IllegalStateException e) {
                 ++numberOfTries;
-                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                if (numberOfTries == MAX_NUMBER_OF_TRIES) {
                     throw new LocationDefinitionErrorException(
                             "Yandex: " + LOCATION_DEFINITION_ERROR + " : "
                                     + e.getMessage());
                 }
             }
         }
-        while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
+        while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
@@ -248,13 +247,13 @@ class PlaceLocationResolver {
                         locationInfo.getString("city"));
             } catch (IllegalStateException | JSONException e) {
                 ++numberOfTries;
-                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                if (numberOfTries == MAX_NUMBER_OF_TRIES) {
                     throw new LocationDefinitionErrorException(
                             LOCATION_DEFINITION_ERROR);
                 }
             }
         }
-        while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
+        while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }

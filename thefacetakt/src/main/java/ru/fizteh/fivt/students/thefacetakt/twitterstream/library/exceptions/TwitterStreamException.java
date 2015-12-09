@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions;
 
 /**
  * Created by thefacetakt on 06.10.15.

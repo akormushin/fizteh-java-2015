@@ -1,14 +1,15 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import org.apache.commons.io.IOUtils;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.LocationDefinitionErrorException;
-import twitter4j.JSONObject;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.HttpReader;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.PlaceLocationResolver;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.TwitterStream;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.LocationDefinitionErrorException;
 
-import java.io.File;
 import java.io.InputStream;
-import java.util.Scanner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.*;

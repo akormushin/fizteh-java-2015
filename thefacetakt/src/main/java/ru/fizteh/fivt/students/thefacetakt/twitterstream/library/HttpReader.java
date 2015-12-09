@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,7 +11,7 @@ import java.net.URL;
  * Created by thefacetakt on 28.09.15.
  */
 
-class HttpReader {
+public class HttpReader {
 
     //http://stackoverflow.com/questions/941628/
     // urlconnection-filenotfoundexception-for-non-standard-http-port-sources

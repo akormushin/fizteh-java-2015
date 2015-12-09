@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import com.beust.jcommander.JCommander;
 import org.junit.Before;
@@ -7,7 +7,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.TwitterStreamException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.*;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.TwitterStreamException;
 import twitter4j.*;
 
 
@@ -31,7 +32,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TweetsGetterTest_once {
-    private Location MoscowLocation = new Location(55.7500, 37.6167, "Moscow");
+    private ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location MoscowLocation = new ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location(55.7500, 37.6167, "Moscow");
 
     @Mock
     private Twitter twitter;

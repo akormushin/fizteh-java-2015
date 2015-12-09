@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import java.io.PrintStream;
 import java.util.List;
@@ -6,10 +6,10 @@ import java.util.List;
 /**
  * Created by thefacetakt on 11.10.15.
  */
-class Printer {
+public class Printer {
     private PrintStream out;
 
-    Printer(PrintStream outStream) {
+    public Printer(PrintStream outStream) {
         this.out = outStream;
     }
 
@@ -21,12 +21,12 @@ class Printer {
         out.println();
     }
 
-    void print(String tweet) {
+    public void print(String tweet) {
         out.println(tweet);
         printSeparator();
     }
 
-    void printTweets(List<String> tweets) {
+    public void printTweets(List<String> tweets) {
         if (tweets.isEmpty()) {
             out.println("Не найдено ни одного твита");
         } else {

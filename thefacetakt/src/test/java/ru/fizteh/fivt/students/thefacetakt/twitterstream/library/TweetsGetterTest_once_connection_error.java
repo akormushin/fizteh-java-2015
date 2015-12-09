@@ -1,23 +1,19 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import com.beust.jcommander.JCommander;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.TwitterStreamException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.*;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.TwitterStreamException;
 import twitter4j.*;
-import twitter4j.TwitterStream;
-
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsCollectionContaining.hasItems;
-import static org.junit.Assert.*;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -29,7 +25,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public class TweetsGetterTest_once_connection_error {
 
-    private Location MoscowLocation = new Location(55.7500, 37.6167, "Moscow");
+    private ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location MoscowLocation = new ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location(55.7500, 37.6167, "Moscow");
 
     @Mock
     private Twitter twitter;

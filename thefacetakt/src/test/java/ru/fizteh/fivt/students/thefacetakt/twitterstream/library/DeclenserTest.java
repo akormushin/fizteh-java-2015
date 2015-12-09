@@ -1,9 +1,10 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Declenser;
 
 import java.util.HashMap;
 import java.util.Map;

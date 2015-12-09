@@ -1,9 +1,9 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 /**
  * Created by thefacetakt on 23.09.15.
  */
-final class Location {
+public final class Location {
     private final double latitude;
     private final double longitude;
     private final String name;

@@ -1,6 +1,7 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import org.junit.Test;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.nullValue;

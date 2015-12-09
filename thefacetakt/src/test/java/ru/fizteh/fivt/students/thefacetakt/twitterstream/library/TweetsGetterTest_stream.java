@@ -1,7 +1,6 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
 import com.beust.jcommander.JCommander;
-import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,7 +8,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.*;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.InvalidLocationException;
 import twitter4j.*;
 
 import java.util.ArrayList;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class TweetsGetterTest_stream {
-    private Location MoscowLocation = new Location(55.7500, 37.6167, "Moscow");
+    private ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location MoscowLocation = new ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location(55.7500, 37.6167, "Moscow");
     private int notMoscowTweets = 7;
 
     @Mock
@@ -73,11 +73,11 @@ public class TweetsGetterTest_stream {
                         case "Russia, Moscow":
                             return MoscowLocation;
                         case "Пермь":
-                            return new Location(58.0000, 56.3167, "Пермь");
+                            return new ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location(58.0000, 56.3167, "Пермь");
                         case "Омск":
-                            return new Location(54.9833, 73.3667, "Омск");
+                            return new ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location(54.9833, 73.3667, "Омск");
                         case "Красноярск":
-                            return new Location(56.0167, 93.0667, "Красноярск");
+                            return new ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location(56.0167, 93.0667, "Красноярск");
                         default:
                             throw new InvalidLocationException();
                     }
