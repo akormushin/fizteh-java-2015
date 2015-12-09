@@ -1,13 +1,9 @@
-package ru.fizteh.fivt.students.thefacetakt.twitterstream;
+package ru.fizteh.fivt.students.thefacetakt.twitterstream.library;
 
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.InvalidLocationException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.LocationDefinitionErrorException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.NoKeyException;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream
-        .exceptions.QueryLimitException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.InvalidLocationException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.LocationDefinitionErrorException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.NoKeyException;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.QueryLimitException;
 import twitter4j.JSONException;
 import twitter4j.JSONObject;
 
@@ -17,16 +13,20 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-class PlaceLocationResolver {
+public class PlaceLocationResolver {
     static final String LOCATION_DEFINITION_ERROR
             = "Problem while location definition";
 
     private Map<String, Location> cache
-            = new HashMap<String, Location>();
+            = new HashMap<>();
     private String googleMapsKey;
     private String yandexMapsKey;
+    private HttpReader httpReader;
 
-    PlaceLocationResolver() throws NoKeyException {
+    static final int MAX_NUMBER_OF_TRIES = 2;
+
+    public PlaceLocationResolver(HttpReader newHttpReader)
+            throws NoKeyException {
 
         Properties mapsKeys = new Properties();
         try (InputStream inputStream
@@ -41,10 +41,10 @@ class PlaceLocationResolver {
         if (googleMapsKey == null || yandexMapsKey == null) {
             throw new NoKeyException();
         }
+        httpReader = newHttpReader;
     }
 
-
-    private Location resolvePlaceLocationGoogle(String nameOfLocation)
+    Location resolvePlaceLocationGoogle(String nameOfLocation)
             throws InvalidLocationException, QueryLimitException,
             LocationDefinitionErrorException, MalformedURLException {
         int numberOfTries = 0;
@@ -67,7 +67,7 @@ class PlaceLocationResolver {
 
             try {
                 String currentInfo
-                        = HttpReader.httpGet(googleMapsURL.toString());
+                        = httpReader.httpGet(googleMapsURL.toString());
 
                 JSONObject locationInfo =
                         new JSONObject(currentInfo);
@@ -104,19 +104,19 @@ class PlaceLocationResolver {
                         nameOfLocation);
             } catch (JSONException | IllegalStateException e) {
                 ++numberOfTries;
-                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
+                if (numberOfTries == MAX_NUMBER_OF_TRIES) {
                     throw new LocationDefinitionErrorException(
                             "Google: " + LOCATION_DEFINITION_ERROR
                                     + " : " + e.getMessage());
                 }
             }
         }
-        while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
+        while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
 
-    private Location resolvePlaceLocationYandex(String nameOfLocation)
+    Location resolvePlaceLocationYandex(String nameOfLocation)
             throws InvalidLocationException, LocationDefinitionErrorException,
             MalformedURLException {
         int numberOfTries = 0;
@@ -128,9 +128,9 @@ class PlaceLocationResolver {
                 URI uri = new URI("https",
                         "geocode-maps.yandex.ru",
                         "/1.x/",
-                        "geocode=" + nameOfLocation
-                                + "&key=" + yandexMapsKey
-                                + "&format=json",
+                        "format=json"
+                        + "&geocode=" + nameOfLocation
+                                + "&key=" + yandexMapsKey,
                         null);
                 yandexMapsURL = uri.toURL();
             } catch (URISyntaxException e) {
@@ -142,7 +142,7 @@ class PlaceLocationResolver {
 
             try {
                 String currentInfo
-                        = HttpReader.httpGet(yandexMapsURL.toString());
+                        = httpReader.httpGet(yandexMapsURL.toString());
                 JSONObject locationInfo
                         = new JSONObject(currentInfo);
 
@@ -177,15 +177,14 @@ class PlaceLocationResolver {
                         nameOfLocation);
             } catch (JSONException | IllegalStateException e) {
                 ++numberOfTries;
-                if (numberOfTries == TwitterStream.MAX_NUMBER_OF_TRIES) {
-                    String additionalText = "";
+                if (numberOfTries == MAX_NUMBER_OF_TRIES) {
                     throw new LocationDefinitionErrorException(
                             "Yandex: " + LOCATION_DEFINITION_ERROR + " : "
                                     + e.getMessage());
                 }
             }
         }
-        while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
+        while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
@@ -231,36 +230,30 @@ class PlaceLocationResolver {
         int numberOfTries = 0;
 
         do {
-            URL whatIsMyCity;
+            URL whatIsMyCityURL = new URL("http://ipinfo.io/json");
 
-            whatIsMyCity = new URL("http://ipinfo.io/json");
-
-
-            try (BufferedReader in = new BufferedReader(new InputStreamReader(
-                    whatIsMyCity.openStream()))) {
-
-                String currentInfo;
-                StringBuilder responseStrBuilder = new StringBuilder();
-                while ((currentInfo = in.readLine()) != null) {
-                    responseStrBuilder.append(currentInfo);
-                }
-
+            try {
+                String currentInfo
+                        = httpReader.httpGet(whatIsMyCityURL.toString());
                 JSONObject locationInfo =
-                        new JSONObject(responseStrBuilder.toString());
+                        new JSONObject(currentInfo);
 
                 String[] coordinates = locationInfo
                         .getString("loc").split(",");
 
-                Location result = new Location(
+                return new Location(
                         Double.parseDouble(coordinates[0]),
                         Double.parseDouble(coordinates[1]),
                         locationInfo.getString("city"));
-                return result;
-            } catch (IOException | JSONException e) {
+            } catch (IllegalStateException | JSONException e) {
                 ++numberOfTries;
+                if (numberOfTries == MAX_NUMBER_OF_TRIES) {
+                    throw new LocationDefinitionErrorException(
+                            LOCATION_DEFINITION_ERROR);
+                }
             }
         }
-        while (numberOfTries < TwitterStream.MAX_NUMBER_OF_TRIES);
+        while (numberOfTries < MAX_NUMBER_OF_TRIES);
 
         throw new LocationDefinitionErrorException(LOCATION_DEFINITION_ERROR);
     }
