@@ -7,7 +7,7 @@ import java.util.List;
  * Created by thefacetakt on 09.12.15.
  */
 public class Main {
-    private static BlockingQueue<Integer> q = new BlockingQueue<>();
+    private static BlockingQueue<Integer> q = new BlockingQueue<>(1);
 
     static class Putter implements Runnable {
         private List<Integer> offer;

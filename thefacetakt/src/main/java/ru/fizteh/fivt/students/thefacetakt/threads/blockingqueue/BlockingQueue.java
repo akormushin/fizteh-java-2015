@@ -9,17 +9,18 @@ import java.util.*;
 
 public class BlockingQueue<T> {
     private Queue<T> q;
-    public static final int MAX_QUEUE_SIZE = 200;
+    private final int maxQueueSize;
 
-    BlockingQueue() {
+    BlockingQueue(int maxSize) {
         q = new LinkedList<>();
+        maxQueueSize = maxSize;
     }
 
     synchronized void offer(List<T> e) throws InterruptedException {
-        while (q.size() + e.size() > MAX_QUEUE_SIZE) {
+        while (q.size() + e.size() > maxQueueSize) {
             wait();
         }
-        e.stream().forEach(q::add);
+        q.addAll(e);
         notifyAll();
     }
 
@@ -39,7 +40,7 @@ public class BlockingQueue<T> {
             throws InterruptedException {
         long timeLeft = timeout;
         long currentTime = System.currentTimeMillis();
-        while (q.size() + e.size() > MAX_QUEUE_SIZE && timeLeft > 0) {
+        while (q.size() + e.size() > maxQueueSize && timeLeft > 0) {
             wait(timeLeft);
             long newCurrentTime = System.currentTimeMillis();
             timeLeft -= (newCurrentTime - currentTime);
@@ -48,7 +49,7 @@ public class BlockingQueue<T> {
         if (timeLeft <= 0) {
             return;
         }
-        e.stream().forEach(q::add);
+        q.addAll(e);
         notifyAll();
     }
 
