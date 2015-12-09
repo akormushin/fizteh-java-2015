@@ -1,12 +1,12 @@
-package threads.counter;
+package ru.fizteh.fivt.students.thefacetakt.threads.counter;
 
 /**
  * Created by thefacetakt on 05.12.15.
  */
 
 class Counted implements Runnable {
-    static Integer numberOfThreads;
-    static Integer last;
+    private static Integer numberOfThreads;
+    private static Integer last;
     private final Integer myNumber;
 
     Counted(Integer number) {
@@ -30,5 +30,17 @@ class Counted implements Runnable {
                 System.out.notifyAll();
             }
         }
+    }
+
+    public static Integer getNumberOfThreads() {
+        return numberOfThreads;
+    }
+
+    public static void setNumberOfThreads(Integer numberOfThreads) {
+        Counted.numberOfThreads = numberOfThreads;
+    }
+
+    public static void setLast(Integer last) {
+        Counted.last = last;
     }
 }

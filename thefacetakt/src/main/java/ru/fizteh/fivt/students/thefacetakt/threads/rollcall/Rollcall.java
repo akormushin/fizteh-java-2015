@@ -1,54 +1,44 @@
-package threads.rollcall;
+package ru.fizteh.fivt.students.thefacetakt.threads.rollcall;
 
 import java.util.Random;
 
-/**
- * Created by thefacetakt on 05.12.15.
- */
-class Rollcalled implements Runnable {
-    static Boolean everybodyReady;
-    static Random random;
-    static Integer calledCount = 0;
-    static Integer calledTime = 0;
-    static final Integer RANDOM_CAPACITY = 10;
-    Integer lastCalled;
-
-    Rollcalled() {
-        lastCalled = 0;
-    }
-    @Override
-    public void run() {
-        synchronized (System.out) {
-            if (!lastCalled.equals(calledTime)) {
-                if (random.nextInt(RANDOM_CAPACITY) == 1) {
-                    System.out.println("NO");
-                    everybodyReady = false;
-                }
-                ++calledCount;
-                System.out.notifyAll();
-            }
-        }
-    }
-}
-
 public class Rollcall {
+    static final int GOOD_SEED = 3;
     public static void main(String[] args) {
-        if (args.length < 2) {
+        if (args.length < 1) {
             System.err.println("Usage: Counter n, where n is a"
                     + " number of the threads");
             return;
         }
-        Integer numberOfThreads = Integer.parseInt(args[1]);
-        Rollcalled.everybodyReady = false;
-        Rollcalled.random = new Random();
-        for (int i = 0; i < numberOfThreads; ++i) {
+        Rollcalled.setNumberOfThreads(Integer.parseInt(args[0]));
+        Rollcalled.setRandom(new Random(GOOD_SEED));
+
+        for (int i = 0; i < Rollcalled.getNumberOfThreads(); ++i) {
             (new Thread(new Rollcalled())).start();
         }
-        synchronized (System.out) {
-            while (!Rollcalled.everybodyReady) {
-                Rollcalled.everybodyReady = true;
 
+        while (true) {
+            synchronized (System.out) {
+                while (Rollcalled.getCalledCount()
+                        != Rollcalled.getNumberOfThreads()) {
+                    try {
+                        System.out.wait();
+                    } catch (InterruptedException e) {
+                        System.err.printf("Interrupted\n");
+                        return;
+                    }
+                }
+                if (Rollcalled.isEverybodyReady()) {
+                    return;
+                }
+
+                System.out.println("Are you ready?");
+                Rollcalled.setCalledCount(0);
+                Rollcalled.setCalledTime(Rollcalled.getCalledTime() + 1);
+                Rollcalled.setEverybodyReady(true);
+                System.out.notifyAll();
             }
         }
+
     }
 }
