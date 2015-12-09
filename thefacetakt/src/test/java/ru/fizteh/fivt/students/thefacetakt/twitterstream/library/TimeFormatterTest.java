@@ -13,50 +13,38 @@ import static org.junit.Assert.*;
  */
 public class TimeFormatterTest {
 
+    static final ZoneId zone = ZoneId.of("Europe/Moscow");
+    static long date(int year, int month, int day,
+                     int hours, int minutes, int seconds) {
+        return ZonedDateTime.of(year, month, day, hours, minutes, seconds, 0,
+                zone)
+                .toInstant().toEpochMilli();
+    }
+
     @Test
     public void testZonedFormatTime() throws Exception {
-        ZoneId zone = ZoneId.of("Europe/Moscow");
+
         assertThat(TimeFormatter.zonedFormatTime(
-                LocalDate.of(1997, Month.FEBRUARY, 18)
-                        .atTime(23, 59, 59).atZone(zone)
-                        .toInstant().toEpochMilli(),
-                LocalDate.of(1997, Month.FEBRUARY, 18)
-                        .atTime(0, 0, 12).atZone(zone)
-                        .toInstant().toEpochMilli(),
+                date(1997, Month.FEBRUARY.getValue(), 18, 23, 59, 59),
+                date(1997, Month.FEBRUARY.getValue(), 18, 0, 0, 12),
                 zone), is("23 часа назад"));
         assertThat(TimeFormatter.zonedFormatTime(
-                LocalDate.of(1997, Month.FEBRUARY, 18)
-                        .atTime(12, 20, 00).atZone(zone)
-                        .toInstant().toEpochMilli(),
-                LocalDate.of(1997, Month.FEBRUARY, 18)
-                        .atTime(12, 18, 01).atZone(zone)
-                        .toInstant().toEpochMilli(),
+                date(1997, Month.FEBRUARY.getValue(), 18, 12, 20, 0),
+                date(1997, Month.FEBRUARY.getValue(), 18, 12, 20, 1),
                 zone), is("Только что"));
         assertThat(TimeFormatter.zonedFormatTime(
-                LocalDate.of(2012, Month.MARCH, 01)
-                        .atTime(12, 20, 00).atZone(zone)
-                        .toInstant().toEpochMilli(),
-                LocalDate.of(2012, Month.FEBRUARY, 28)
-                        .atTime(9, 18, 01).atZone(zone)
-                        .toInstant().toEpochMilli(),
+                date(2012, Month.MARCH.getValue(), 1, 12, 20, 0),
+                date(2012, Month.FEBRUARY.getValue(), 28, 9, 18, 1),
                 zone), is("2 дня назад"));
 
         assertThat(TimeFormatter.zonedFormatTime(
-                LocalDate.of(2013, Month.MARCH, 01)
-                        .atTime(12, 20, 00).atZone(zone)
-                        .toInstant().toEpochMilli(),
-                LocalDate.of(2013, Month.FEBRUARY, 28)
-                        .atTime(9, 18, 01).atZone(zone)
-                        .toInstant().toEpochMilli(),
+                date(2013, Month.MARCH.getValue(), 1, 12, 20, 0),
+                date(2013, Month.FEBRUARY.getValue(), 28, 9, 18, 1),
                 zone), is("вчера"));
 
         assertThat(TimeFormatter.zonedFormatTime(
-                LocalDate.of(1997, Month.FEBRUARY, 18)
-                        .atTime(12, 20, 01).atZone(zone)
-                        .toInstant().toEpochMilli(),
-                LocalDate.of(1997, Month.FEBRUARY, 18)
-                        .atTime(12, 18, 00).atZone(zone)
-                        .toInstant().toEpochMilli(),
+                date(1997, Month.FEBRUARY.getValue(), 18, 12, 20, 1),
+                date(1997, Month.FEBRUARY.getValue(), 18, 12, 18, 0),
                 zone), is("2 минуты назад"));
     }
 

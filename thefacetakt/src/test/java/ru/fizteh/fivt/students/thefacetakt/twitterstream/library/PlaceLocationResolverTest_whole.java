@@ -5,10 +5,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.HttpReader;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.Location;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.PlaceLocationResolver;
-import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.TwitterStream;
+import ru.fizteh.fivt.students.thefacetakt.twitterstream.TwitterStream;
 import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.InvalidLocationException;
 import ru.fizteh.fivt.students.thefacetakt.twitterstream.library.exceptions.LocationDefinitionErrorException;
 
