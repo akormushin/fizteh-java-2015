@@ -61,4 +61,5 @@
 22. CyclicBarier, CountDownLatch
 22. Взаимные блокировки и как с ними бороться.
 23. Race condition, data race, thread starvation, live lock.
+24. happens-before
 23. Thread, Runnable, Callable, ExecutorService, Future: запуск и остановка потоков
