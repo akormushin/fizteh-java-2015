@@ -28,6 +28,7 @@
         <module>ocksumoron</module>
         <module>zerts</module>
         <module>thefacetakt</module>
+        <module>loulett</module>
         <module>riazanovskiy</module>
         <module>andrewgark</module>
         <module>fminkin</module>
@@ -37,7 +38,10 @@
 		<module>w4r10ck1337</module>
         <module>nmakeenkov</module>
         <!--Add you module here-->
+        <module>ladyae</module>
+        <!--Add you module here-->
     <module>preidman</module>
+    <module>nikitarykov</module>
   </modules>
 
     <dependencies>
@@ -45,7 +49,7 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
-            <scope>test</scope>
+                <scope>test</scope>
         </dependency>
 
         <dependency>

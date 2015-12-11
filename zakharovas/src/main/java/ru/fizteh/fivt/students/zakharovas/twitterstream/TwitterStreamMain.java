@@ -3,19 +3,24 @@ package ru.fizteh.fivt.students.zakharovas.twitterstream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-import twitter4j.*;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.ArgumentSeparator;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.GeoLocator;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.TwitterSearchMode;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.TwitterStreamMode;
+import ru.fizteh.fivt.students.zakharovas.twitterstream.library.exceptions.EmptyResultException;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterStreamFactory;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 
 public class TwitterStreamMain {
 
     private static GeoLocator geoLocator;
 
     public static void main(String[] args) {
-        String[] separatedArgs = StringFormater.separateArguments(args);
+        String[] separatedArgs = ArgumentSeparator.separateArguments(args);
         CommandLineArgs commandLineArgs = new CommandLineArgs();
         JCommander jCommander = null;
         try {
@@ -52,6 +57,9 @@ public class TwitterStreamMain {
                 } catch (TwitterException | IllegalStateException e) {
                     System.err.println("Problems with search mode " + e.getMessage());
                     System.exit(1);
+                } catch (EmptyResultException e) {
+                    System.out.println(e.getMessage());
+                    System.exit(0);
                 }
             }
         }
@@ -60,75 +68,13 @@ public class TwitterStreamMain {
     private static void streamMode(CommandLineArgs commandLineArgs) {
         twitter4j.TwitterStream twitterStream =
                 TwitterStreamFactory.getSingleton();
-        Queue<Status> tweetQueue = new LinkedList<>();
-        StatusListener listener = new StatusAdapter() {
-            @Override
-            public void onStatus(Status tweet) {
-                if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
-                    tweetQueue.add(tweet);
-                }
-            }
-        };
-        twitterStream.addListener(listener);
-        FilterQuery query = new FilterQuery(String.join(" ", commandLineArgs.
-                getStringForQuery()));
-        query.locations(geoLocator.getLocationForStream());
-        twitterStream.filter(query);
-        while (true) {
-            while (!tweetQueue.isEmpty()) {
-                System.out.println(StringFormater.tweetForOutputWithoutDate(tweetQueue.poll()));
-            }
-            try {
-                Thread.sleep(Numbers.SECOND);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        new TwitterStreamMode(twitterStream, commandLineArgs, geoLocator, System.out).startStreaming();
     }
 
-    private static void searchMode(CommandLineArgs commandLineArgs) throws IllegalStateException, TwitterException {
-        String search = String.join(" ", commandLineArgs.getStringForQuery());
-
+    private static void searchMode(CommandLineArgs commandLineArgs) throws TwitterException,
+            IllegalStateException, EmptyResultException {
         Twitter twitter = TwitterFactory.getSingleton();
-        Query query = new Query(search);
-        query.setCount(Integer.MAX_VALUE);
-        query.geoCode(geoLocator.getLocationForSearch(), geoLocator.getRadius(), Query.KILOMETERS.toString());
-        List<Status> tweets;
-        while (true) {
-            try {
-                tweets = twitter.search(query).getTweets();
-                break;
-            } catch (TwitterException te) {
-                if (te.isCausedByNetworkIssue()) {
-                    System.err.println("Connection problem. Reconnecting");
-                    try {
-                        Thread.sleep(Numbers.SECOND);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    throw te;
-                }
-            }
-        }
-
-        //System.out.println(tweets.size());
-        List<Status> tweetsForOutput = new ArrayList<>();
-        for (Status tweet : tweets) {
-            if (tweetsForOutput.size() == commandLineArgs.getLimit()) {
-                break;
-            }
-            if (!commandLineArgs.getHideRetweets() || !tweet.isRetweet()) {
-                tweetsForOutput.add(tweet);
-            }
-        }
-        if (tweetsForOutput.isEmpty()) {
-            System.out.println("No tweets for this search has been found");
-            return;
-        }
-        for (Status tweet : tweetsForOutput) {
-            System.out.println(StringFormater.tweetForOutput(tweet));
-        }
+        List<String> results = new TwitterSearchMode(twitter, commandLineArgs, geoLocator).search();
 
     }
 

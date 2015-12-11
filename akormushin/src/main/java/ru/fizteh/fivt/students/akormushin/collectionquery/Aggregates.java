@@ -3,24 +3,57 @@ package ru.fizteh.fivt.students.akormushin.collectionquery;
 import java.util.function.Function;
 
 /**
- * Created by kormushin on 13.10.15.
+ * Aggregate functions.
+ *
+ * @author akormushin
  */
 public class Aggregates {
 
-    public static <C, T extends Comparable<T>> Function<C, T> max(Function<C, T> name) {
+    /**
+     * Maximum value for expression for elements of given collecdtion.
+     *
+     * @param expression
+     * @param <C>
+     * @param <T>
+     * @return
+     */
+    public static <C, T extends Comparable<T>> Function<C, T> max(Function<C, T> expression) {
         throw new UnsupportedOperationException();
     }
 
-    public static <C, T extends Comparable<T>> Function<C, T> min(Function<C, T> name) {
+    /**
+     * Minimum value for expression for elements of given collecdtion.
+     *
+     * @param expression
+     * @param <C>
+     * @param <T>
+     * @return
+     */
+    public static <C, T extends Comparable<T>> Function<C, T> min(Function<C, T> expression) {
         throw new UnsupportedOperationException();
     }
 
-
-    public static <C, T extends Comparable<T>> Function<C, T> count(Function<C, T> name) {
+    /**
+     * Number of items in source collection that turns this expression into not null.
+     *
+     * @param expression
+     * @param <C>
+     * @param <T>
+     * @return
+     */
+    public static <C, T extends Comparable<T>> Function<C, T> count(Function<C, T> expression) {
         throw new UnsupportedOperationException();
     }
 
-    public static <C, T extends Comparable<T>> Function<C, T> avg(Function<C, T> name) {
+    /**
+     * Average value for expression for elements of given collection.
+     *
+     * @param expression
+     * @param <C>
+     * @param <T>
+     * @return
+     */
+    public static <C, T extends Comparable<T>> Function<C, T> avg(Function<C, T> expression) {
         throw new UnsupportedOperationException();
     }
 

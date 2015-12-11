@@ -8,7 +8,7 @@ import java.util.stream.Stream;
 /**
  * Created by kormushin on 06.10.15.
  */
-public class SelectStmt<T, R> {
+public class SelectStmt<T, R> implements Query<R> {
 
     @SafeVarargs
     public SelectStmt(Function<T, R>... s) {
@@ -19,22 +19,24 @@ public class SelectStmt<T, R> {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Iterable<R> execute() {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public Stream<R> stream() {
         throw new UnsupportedOperationException();
     }
 
-    public class WhereStmt<T, R> {
+    public class WhereStmt<T, R> implements Query<R> {
         @SafeVarargs
         public final WhereStmt<T, R> groupBy(Function<T, ?>... expressions) {
             throw new UnsupportedOperationException();
         }
 
         @SafeVarargs
-        public final WhereStmt<T, R> orderBy(Comparator<T>... comparators) {
+        public final WhereStmt<T, R> orderBy(Comparator<R>... comparators) {
             throw new UnsupportedOperationException();
         }
 
@@ -47,6 +49,16 @@ public class SelectStmt<T, R> {
         }
 
         public UnionStmt union() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Iterable<R> execute() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Stream<R> stream() {
             throw new UnsupportedOperationException();
         }
     }
