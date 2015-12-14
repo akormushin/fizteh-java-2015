@@ -1,5 +1,5 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.fizteh.fivt.students</groupId>
@@ -22,12 +22,15 @@
     <modules>
         <module>egiby</module>
         <module>akormushin</module>
+        <!--Add you module here-->
+    	<module>okalitova</module>
         <module>xmanatee</module>
         <module>mamaevads</module>
         <module>cache-nez</module>
         <module>ocksumoron</module>
         <module>zerts</module>
         <module>thefacetakt</module>
+        <module>loulett</module>
         <module>riazanovskiy</module>
         <module>andrewgark</module>
         <module>fminkin</module>
@@ -37,6 +40,13 @@
 		<module>w4r10ck1337</module>
 		<module>preidman</module>
 		<module>Jettriangle</module>
+        <module>nmakeenkov</module>
+        <!--Add you module here-->
+	<module>oshch</module>
+        <module>ladyae</module>
+    <module>preidman</module>
+    <module>nikitarykov</module>
+    <module>duha666</module>
   </modules>
 
     <dependencies>
