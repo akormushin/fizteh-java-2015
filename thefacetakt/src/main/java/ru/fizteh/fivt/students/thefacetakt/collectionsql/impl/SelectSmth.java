@@ -47,7 +47,8 @@ public class SelectSmth<T, R> {
         distinct = newDistinct;
     }
 
-    public SelectSmth<T, R> orderBy(Comparator<R>... comparators) {
+    @SafeVarargs
+    public final SelectSmth<T, R> orderBy(Comparator<R>... comparators) {
         hugeComparator = new HugeComparator<>(comparators);
         return this;
     }
@@ -67,7 +68,8 @@ public class SelectSmth<T, R> {
         return this;
     }
 
-    public SelectSmth<T, R> groupBy(Function<T, ?>...
+    @SafeVarargs
+    public final SelectSmth<T, R> groupBy(Function<T, ?>...
                                             newGroupByFunctions) {
         this.groupByFunctions = newGroupByFunctions;
         if (newGroupByFunctions.length == 0) {
@@ -75,6 +77,18 @@ public class SelectSmth<T, R> {
         }
         this.distinct = true;
         return this;
+    }
+
+    @SuppressWarnings("unchecked")
+    R newInstance(Class[] returnClasses, Object[] arguments)
+            throws NoSuchMethodException, IllegalAccessException,
+            InvocationTargetException, InstantiationException {
+        if (resultClass != null) {
+            return resultClass
+                    .getConstructor(returnClasses)
+                    .newInstance(arguments);
+        }
+        return (R) new Tuple(arguments[0], arguments[1]);
     }
 
     public List<R> execute() throws NoSuchMethodException,
@@ -120,17 +134,18 @@ public class SelectSmth<T, R> {
                                     .apply(element));
                         }
                     }
-                }
+                } else {
                 ArrayList<Object> currentArrayList
-                        = superGrouping.get(key);
-                for (int i = 0; i < constructorFunctions.length; ++i) {
-                    if (constructorFunctions[i] instanceof Aggregator) {
-                        ((AggregatorVisitor) currentArrayList.get(i))
-                                .visit(element);
-                    }
-                    if (!distinct) {
-                        currentArrayList.add(constructorFunctions[i]
-                                .apply(element));
+                            = superGrouping.get(key);
+                    for (int i = 0; i < constructorFunctions.length; ++i) {
+                        if (constructorFunctions[i] instanceof Aggregator) {
+                            ((AggregatorVisitor) currentArrayList.get(i))
+                                    .visit(element);
+                        }
+                        if (!distinct) {
+                            currentArrayList.add(constructorFunctions[i]
+                                    .apply(element));
+                        }
                     }
                 }
             }
@@ -167,10 +182,7 @@ public class SelectSmth<T, R> {
                                 + " of operation");
                     }
                 }
-
-                R addItem = resultClass
-                        .getConstructor(returnClasses)
-                        .newInstance(arguments);
+                R addItem = newInstance(returnClasses, arguments);
                 if (havingPredicate == null
                         || havingPredicate.test(addItem)) {
                     result.add(addItem);
