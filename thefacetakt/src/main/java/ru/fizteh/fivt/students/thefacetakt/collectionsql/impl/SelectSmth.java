@@ -116,9 +116,11 @@ public class SelectSmth<T, R> {
         }
 
         for (T element : elements) {
+            boolean put = false;
             if (wherePredicate == null || wherePredicate.test(element)) {
                 Object key = groupByFunction.apply(element);
                 if (!superGrouping.containsKey(key)) {
+                    put = true;
                     ArrayList<Object> currentArrayList = new ArrayList<>();
 
                     superGrouping.put(key, currentArrayList);
@@ -134,20 +136,20 @@ public class SelectSmth<T, R> {
                                     .apply(element));
                         }
                     }
-                } else {
+                }
                 ArrayList<Object> currentArrayList
                             = superGrouping.get(key);
-                    for (int i = 0; i < constructorFunctions.length; ++i) {
-                        if (constructorFunctions[i] instanceof Aggregator) {
-                            ((AggregatorVisitor) currentArrayList.get(i))
-                                    .visit(element);
-                        }
-                        if (!distinct) {
-                            currentArrayList.add(constructorFunctions[i]
-                                    .apply(element));
-                        }
+                for (int i = 0; i < constructorFunctions.length; ++i) {
+                    if (constructorFunctions[i] instanceof Aggregator) {
+                        ((AggregatorVisitor) currentArrayList.get(i))
+                                .visit(element);
+                    }
+                    if (!distinct && !put) {
+                        currentArrayList.add(constructorFunctions[i]
+                                .apply(element));
                     }
                 }
+
             }
         }
         boolean breakFlag = false;

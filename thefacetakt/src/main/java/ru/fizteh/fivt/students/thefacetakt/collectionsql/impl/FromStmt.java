@@ -1,7 +1,5 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql.impl;
 
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.function.Function;
 
 
@@ -43,7 +41,7 @@ public final class FromStmt<T> {
                 constructorFunctions);
     }
 
-    public <S> JoinStmt<T, S> join(Iterable<S> secondIterable){
+    public <S> JoinStmt<T, S> join(Iterable<S> secondIterable) {
         return new JoinStmt<>(elements, secondIterable);
     }
 

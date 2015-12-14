@@ -1,19 +1,19 @@
 package ru.fizteh.fivt.students.thefacetakt.collectionsql;
 
-import ru.fizteh.fivt.students.thefacetakt.collectionsql.impl.PairIterable;
+
 import ru.fizteh.fivt.students.thefacetakt.collectionsql.impl.Tuple;
 
 import java.lang.reflect.InvocationTargetException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 
-import static ru.fizteh.fivt.students.thefacetakt.collectionsql.CollectionsQL.Student.student;
+
+import static ru.fizteh.fivt.students.thefacetakt.collectionsql.
+        CollectionsQL.Student.student;
 import static ru.fizteh.fivt.students.thefacetakt.collectionsql.Sources.list;
-import static ru.fizteh.fivt.students.thefacetakt.collectionsql.impl.FromStmt.from;
+import static ru.fizteh.fivt.students.thefacetakt.collectionsql.
+        impl.FromStmt.from;
 
 public class CollectionsQL {
 
@@ -43,10 +43,12 @@ public class CollectionsQL {
         }
 
         public long age() {
-            return ChronoUnit.YEARS.between(getDateOfBith(), LocalDateTime.now());
+            return ChronoUnit.YEARS.between(getDateOfBith(),
+                    LocalDateTime.now());
         }
 
-        public static Student student(String name, LocalDate dateOfBith, String group) {
+        public static Student student(String name, LocalDate dateOfBith,
+                                      String group) {
             return new Student(name, dateOfBith, group);
         }
     }
