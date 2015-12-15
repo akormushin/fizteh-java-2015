@@ -6,6 +6,8 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +16,18 @@ import java.util.Set;
 import static ru.fizteh.fivt.students.thefacetakt.miniorm
         .GoodNameResolver.isGood;
 
+@Table
+class MyOwnClass {
+    @Column
+    private Integer firstField;
+
+    @Column(name = "SecondColumn")
+    private String second;
+
+    @PrimaryKey
+    @Column
+    private Short key;
+}
 
 public class DatabaseService<T> implements Closeable{
     private static final String CONNECTION_NAME = "jdbc:h2:~/test";
@@ -27,16 +41,19 @@ public class DatabaseService<T> implements Closeable{
     private String tableName;
     private Class[] classes;
     private String[] columnNames;
-    private String pkName;
+    private int pkIndex = -1;
 
     String convert(String name) {
+        if ('a' <= name.charAt(0) && name.charAt(0) <= 'z') {
+            return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
+        }
         return CaseFormat.UPPER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
     }
 
     String getColumnName(Field f) {
         String name = f.getAnnotation(Column.class).name();
         if (name.equals("")) {
-            return convert(name);
+            return convert(f.getName());
         }
         return name;
     }
@@ -68,8 +85,8 @@ public class DatabaseService<T> implements Closeable{
                 classesList.add(f.getType());
                 fieldsList.add(name);
                 if (f.isAnnotationPresent(PrimaryKey.class)) {
-                    if (pkName == null) {
-                        pkName = name;
+                    if (pkIndex == -1) {
+                        pkIndex = classesList.size() - 1;
                     } else {
                         throw new
                                 IllegalArgumentException("Several @PrimaryKey");
@@ -104,10 +121,41 @@ public class DatabaseService<T> implements Closeable{
         init();
     }
 
+    void createTable() throws SQLException {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("CREATE TABLE IF NOT EXISTS ")
+                .append(tableName)
+                .append("(");
+        for (int i = 0; i < classes.length; ++i) {
+            if (i != 0) {
+                queryBuilder.append(", ");
+            }
+            queryBuilder.append(columnNames[i]).append(" ")
+                    .append(H2StringsResolver.resolve(classes[i]));
+            if (i == pkIndex) {
+                queryBuilder.append(" PRIMARY KEY");
+            }
+        }
+        queryBuilder.append(")");
+        try (Connection conn = pool.getConnection()) {
+            conn.createStatement().execute(queryBuilder.toString());
+        }
+        System.out.println(queryBuilder);
+    }
+
     @Override
     public void close() throws IOException {
         if (pool != null) {
             pool.dispose();
+        }
+    }
+
+    public static void main(String[] args) throws SQLException {
+        try (DatabaseService<MyOwnClass> db
+            = new DatabaseService<>(MyOwnClass.class)) {
+            db.createTable();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

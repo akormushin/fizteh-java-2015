@@ -3,6 +3,7 @@ package ru.fizteh.fivt.students.thefacetakt.miniorm;
 import java.sql.Date;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -12,6 +13,7 @@ import java.util.UUID;
 class H2StringsResolver {
     private static Map<Class, String> h2Mapper;
     static {
+        h2Mapper = new HashMap<>();
         h2Mapper.put(Integer.class, "INTEGER");
         h2Mapper.put(Boolean.class, "BOOLEAN");
         h2Mapper.put(Byte.class, "SHORT");
