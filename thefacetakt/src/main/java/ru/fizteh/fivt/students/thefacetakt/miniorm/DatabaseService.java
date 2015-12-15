@@ -2,23 +2,21 @@ package ru.fizteh.fivt.students.thefacetakt.miniorm;
 
 import com.google.common.base.CaseFormat;
 import org.h2.jdbcx.JdbcConnectionPool;
-
 import java.io.Closeable;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static ru.fizteh.fivt.students.thefacetakt.miniorm
         .GoodNameResolver.isGood;
 
 public class DatabaseService<T> implements Closeable {
-    private static final String CONNECTION_NAME = "jdbc:h2:~/test";
-    private static final String USERNAME = "test";
-    private static final String PASSWORD = "test";
+    private final String connectionName;
+    private final String username;
+
+    private final String password;
 
     private Class<T> clazz;
 
@@ -43,7 +41,7 @@ public class DatabaseService<T> implements Closeable {
         return name;
     }
 
-    void init() throws IllegalArgumentException {
+    void init() throws IllegalArgumentException, IOException {
         if (!clazz.isAnnotationPresent(Table.class)) {
             throw new IllegalArgumentException("no @Table annotation");
         }
@@ -96,12 +94,25 @@ public class DatabaseService<T> implements Closeable {
             throw new IllegalStateException("No H2 driver found");
         }
 
-        pool = JdbcConnectionPool.create(CONNECTION_NAME, USERNAME, PASSWORD);
+        pool = JdbcConnectionPool.create(connectionName, username, password);
     }
 
-    DatabaseService(Class<T> newClazz) {
+    DatabaseService(Class<T> newClazz, String properties) throws IOException {
+        Properties credits = new Properties();
+        try (InputStream inputStream
+                     = this.getClass().getResourceAsStream(properties)) {
+            credits.load(inputStream);
+        }
+        connectionName = credits.getProperty("connection_name");
+        username = credits.getProperty("username");
+        password = credits.getProperty("password");
+
         clazz = newClazz;
         init();
+    }
+
+    DatabaseService(Class<T> newClazz) throws IOException {
+        this(newClazz, "/h2.properties");
     }
 
     void createTable() throws SQLException {
@@ -186,8 +197,31 @@ public class DatabaseService<T> implements Closeable {
 
     public void update(T record) throws IllegalArgumentException,
             SQLException, IllegalAccessException {
-        delete(record);
-        insert(record);
+        if (pkIndex == -1) {
+            throw new IllegalArgumentException("NO @PrimaryKey");
+        }
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("UPDATE ").append(tableName).append(" SET ");
+        for (int i = 0; i < fields.length; ++i) {
+            if (i != 0) {
+                queryBuilder.append(", ");
+            }
+            queryBuilder.append(getColumnName(fields[i])).append(" = ?");
+        }
+        queryBuilder.append(" WHERE ").append(getColumnName(fields[pkIndex]))
+                .append(" = ?");
+
+
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement statement
+                    = conn.prepareStatement(queryBuilder.toString());
+            for (int i = 0; i < fields.length; ++i) {
+                statement.setObject(i + 1, fields[i].get(record));
+            }
+            statement.setObject(fields.length + 1, fields[pkIndex].get(record));
+            statement.execute();
+        }
     }
 
     public List<T> queryForAll() throws SQLException {

@@ -3,8 +3,11 @@ package ru.fizteh.fivt.students.thefacetakt.miniorm;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.anyOf;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -42,7 +45,7 @@ public class DatabaseServiceTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testIllegalClass_3() throws Exception {
+    public void testIllegalClass_3_0() throws Exception {
         @Table
         class X {
             @Column
@@ -50,6 +53,17 @@ public class DatabaseServiceTest {
         }
         DatabaseService<X> x = new DatabaseService<>(X.class);
         x.delete(new X());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testIllegalClass_3_1() throws Exception {
+        @Table
+        class X {
+            @Column
+            int y;
+        }
+        DatabaseService<X> x = new DatabaseService<>(X.class);
+        x.update(new X());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -74,9 +88,23 @@ public class DatabaseServiceTest {
     }
 
 
-    private static final String CONNECTION_NAME = "jdbc:h2:~/test";
-    private static final String USERNAME = "test";
-    private static final String PASSWORD = "test";
+    private static final String CONNECTION_NAME;
+    private static final String USERNAME;
+    private static final String PASSWORD;
+
+    static {
+        Properties credits = new Properties();
+        try (InputStream inputStream
+                     = DatabaseServiceTest.class
+                .getResourceAsStream("/h2test.properties")) {
+            credits.load(inputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        CONNECTION_NAME = credits.getProperty("connection_name");
+        USERNAME = credits.getProperty("username");
+        PASSWORD = credits.getProperty("password");
+    }
 
     @Table
     static class MyClass {
@@ -109,7 +137,8 @@ public class DatabaseServiceTest {
     public void bigTest() throws Exception {
 
 
-        DatabaseService<MyClass> x = new DatabaseService<>(MyClass.class);
+        DatabaseService<MyClass> x = new DatabaseService<>(MyClass.class,
+                "/h2test.properties");
         JdbcConnectionPool pool = JdbcConnectionPool
                 .create(CONNECTION_NAME, USERNAME, PASSWORD);
         Connection tmp;

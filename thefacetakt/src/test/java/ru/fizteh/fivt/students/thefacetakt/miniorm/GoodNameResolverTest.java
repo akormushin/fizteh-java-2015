@@ -15,7 +15,7 @@ public class GoodNameResolverTest {
     public void testIsGood() throws Exception {
         assertThat(isGood("abaCabaDaba9_01"), is(true));
         assertThat(isGood("ADMIN' OR 1=1"), is(false));
-        assertThat(isGood("WHERE"), is(false));
+        assertThat(isGood("WHERE"), is(true));
         assertThat(isGood("WHERES"), is(true));
     }
 }
