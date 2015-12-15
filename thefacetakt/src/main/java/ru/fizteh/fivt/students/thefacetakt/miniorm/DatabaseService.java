@@ -162,7 +162,7 @@ public class DatabaseService<T> implements Closeable{
         }
     }
 
-    void insert(T record) throws SQLException, IllegalAccessException {
+    public void insert(T record) throws SQLException, IllegalAccessException {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("INSERT INTO ").append(tableName).append(" (");
         for (int i = 0; i < fields.length; ++i) {
@@ -191,7 +191,7 @@ public class DatabaseService<T> implements Closeable{
         }
     }
 
-    void delete(T record) throws IllegalAccessException, SQLException {
+    public void delete(T record) throws IllegalAccessException, SQLException {
         if (pkIndex == -1) {
             throw new IllegalArgumentException("NO @PrimaryKey");
         }
@@ -211,7 +211,12 @@ public class DatabaseService<T> implements Closeable{
         }
     }
 
-    List<T> queryForAll() throws SQLException {
+    public void update(T record) throws SQLException, IllegalAccessException {
+        delete(record);
+        insert(record);
+    }
+
+    public List<T> queryForAll() throws SQLException {
         List<T> result = new ArrayList<>();
 
         StringBuilder queryBuilder = new StringBuilder();
@@ -244,6 +249,40 @@ public class DatabaseService<T> implements Closeable{
         return result;
     }
 
+    public <K> T queryById(K key) throws SQLException {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT * FROM ").append(tableName)
+                .append(" WHERE ").append(fields[pkIndex].getName())
+                .append(" = ?");
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement statement
+                    = conn.prepareStatement(queryBuilder.toString());
+            statement.setString(1, key.toString());
+
+            try (ResultSet rs = statement.executeQuery()) {
+                rs.next();
+                T record = clazz.newInstance();
+                for (int i = 0; i < fields.length; ++i) {
+                    if (fields[i].getClass()
+                            .isAssignableFrom(Number.class)) {
+                        Long val = rs.getLong(i + 1);
+                        fields[i].set(record, val);
+                    } else if (fields[i].getType() != String.class) {
+                        fields[i].set(record, rs.getObject(i + 1));
+                    } else {
+                        Clob data = rs.getClob(i + 1);
+                        fields[i].set(record,
+                                data.getSubString(1, (int) data.length()));
+                    }
+                }
+                return record;
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new IllegalArgumentException("wrong class");
+            }
+        }
+
+    }
+
     @Override
     public void close() throws IOException {
         if (pool != null) {
@@ -259,6 +298,7 @@ public class DatabaseService<T> implements Closeable{
             db.delete(new MyOwnClass(1, "2", (short) 3));
             db.insert(new MyOwnClass());
             db.insert(new MyOwnClass(1, "2", (short) 3));
+            System.out.println(db.queryById(1));
             db.queryForAll().forEach(System.out::println);
             db.delete(new MyOwnClass());
             db.dropTable();
