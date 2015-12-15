@@ -16,8 +16,8 @@ class H2StringsResolver {
         h2Mapper = new HashMap<>();
         h2Mapper.put(Integer.class, "INTEGER");
         h2Mapper.put(Boolean.class, "BOOLEAN");
-        h2Mapper.put(Byte.class, "SHORT");
-        h2Mapper.put(Short.class, "TINYINT");
+        h2Mapper.put(Byte.class, "TINYINT");
+        h2Mapper.put(Short.class, "SMALLINT");
         h2Mapper.put(Long.class, "BIGINT");
         h2Mapper.put(Double.class, "DOUBLE");
         h2Mapper.put(Float.class, "FLOAT");

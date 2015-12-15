@@ -6,9 +6,7 @@ import org.h2.jdbcx.JdbcConnectionPool;
 import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -28,6 +26,20 @@ class MyOwnClass {
     @PrimaryKey
     @Column
     private Short key = 1;
+
+    @Override
+    public String toString() {
+        return firstField + " " + second + " " + key;
+    }
+
+    MyOwnClass() {
+    }
+
+    MyOwnClass(int f, String s, Short k) {
+        firstField = f;
+        second = s;
+        key = k;
+    }
 }
 
 public class DatabaseService<T> implements Closeable{
@@ -179,6 +191,59 @@ public class DatabaseService<T> implements Closeable{
         }
     }
 
+    void delete(T record) throws IllegalAccessException, SQLException {
+        if (pkIndex == -1) {
+            throw new IllegalArgumentException("NO @PrimaryKey");
+        }
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("DELETE FROM ").append(tableName)
+                .append(" WHERE ").append(fields[pkIndex].getName())
+                .append(" = ?");
+
+        System.out.println(queryBuilder.toString()
+                + fields[pkIndex].get(record).toString());
+
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement statement
+                    = conn.prepareStatement(queryBuilder.toString());
+            statement.setString(1, fields[pkIndex].get(record).toString());
+            statement.execute();
+        }
+    }
+
+    List<T> queryForAll() throws SQLException {
+        List<T> result = new ArrayList<>();
+
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("SELECT * FROM ").append(tableName);
+
+        try (Connection conn = pool.getConnection()) {
+            try (ResultSet rs = conn.createStatement()
+                    .executeQuery(queryBuilder.toString())) {
+                while (rs.next()) {
+                    T record = clazz.newInstance();
+                    for (int i = 0; i < fields.length; ++i) {
+                        if (fields[i].getClass()
+                                .isAssignableFrom(Number.class)) {
+                            Long val = rs.getLong(i + 1);
+                            fields[i].set(record, val);
+                        } else if (fields[i].getType() != String.class) {
+                            fields[i].set(record, rs.getObject(i + 1));
+                        } else {
+                            Clob data = rs.getClob(i + 1);
+                            fields[i].set(record,
+                                    data.getSubString(1, (int) data.length()));
+                        }
+                    }
+                    result.add(record);
+                }
+            } catch (InstantiationException | IllegalAccessException e) {
+                throw new IllegalArgumentException("wrong class");
+            }
+        }
+        return result;
+    }
+
     @Override
     public void close() throws IOException {
         if (pool != null) {
@@ -190,7 +255,12 @@ public class DatabaseService<T> implements Closeable{
         try (DatabaseService<MyOwnClass> db
             = new DatabaseService<>(MyOwnClass.class)) {
             db.createTable();
+            db.delete(new MyOwnClass());
+            db.delete(new MyOwnClass(1, "2", (short) 3));
             db.insert(new MyOwnClass());
+            db.insert(new MyOwnClass(1, "2", (short) 3));
+            db.queryForAll().forEach(System.out::println);
+            db.delete(new MyOwnClass());
             db.dropTable();
         } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
