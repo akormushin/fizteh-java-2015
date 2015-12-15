@@ -7,6 +7,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -19,14 +20,14 @@ import static ru.fizteh.fivt.students.thefacetakt.miniorm
 @Table
 class MyOwnClass {
     @Column
-    private Integer firstField;
+    private Integer firstField = 0;
 
     @Column(name = "SecondColumn")
-    private String second;
+    private String second = "abacaba";
 
     @PrimaryKey
     @Column
-    private Short key;
+    private Short key = 1;
 }
 
 public class DatabaseService<T> implements Closeable{
@@ -39,8 +40,7 @@ public class DatabaseService<T> implements Closeable{
     private JdbcConnectionPool pool;
 
     private String tableName;
-    private Class[] classes;
-    private String[] columnNames;
+    private Field[] fields;
     private int pkIndex = -1;
 
     String convert(String name) {
@@ -73,8 +73,7 @@ public class DatabaseService<T> implements Closeable{
         }
 
         Set<String> names = new HashSet<>();
-        List<Class> classesList = new ArrayList<>();
-        List<String> fieldsList = new ArrayList<>();
+        List<Field> fieldsList = new ArrayList<>();
         for (Field f: clazz.getDeclaredFields()) {
             if (f.isAnnotationPresent(Column.class)) {
                 String name = getColumnName(f);
@@ -82,11 +81,12 @@ public class DatabaseService<T> implements Closeable{
                 if (!isGood(name)) {
                     throw new IllegalArgumentException("Bad column name");
                 }
-                classesList.add(f.getType());
-                fieldsList.add(name);
+
+                f.setAccessible(true);
+                fieldsList.add(f);
                 if (f.isAnnotationPresent(PrimaryKey.class)) {
                     if (pkIndex == -1) {
-                        pkIndex = classesList.size() - 1;
+                        pkIndex = fieldsList.size() - 1;
                     } else {
                         throw new
                                 IllegalArgumentException("Several @PrimaryKey");
@@ -102,10 +102,8 @@ public class DatabaseService<T> implements Closeable{
             throw new IllegalArgumentException("Duplicate columns");
         }
 
-        classes = new Class[classesList.size()];
-        classes = classesList.toArray(classes);
-        columnNames = new String[fieldsList.size()];
-        columnNames = fieldsList.toArray(columnNames);
+        fields = new Field[fieldsList.size()];
+        fields = fieldsList.toArray(fields);
 
         try {
             Class.forName("org.h2.Driver");
@@ -126,12 +124,12 @@ public class DatabaseService<T> implements Closeable{
         queryBuilder.append("CREATE TABLE IF NOT EXISTS ")
                 .append(tableName)
                 .append("(");
-        for (int i = 0; i < classes.length; ++i) {
+        for (int i = 0; i < fields.length; ++i) {
             if (i != 0) {
                 queryBuilder.append(", ");
             }
-            queryBuilder.append(columnNames[i]).append(" ")
-                    .append(H2StringsResolver.resolve(classes[i]));
+            queryBuilder.append(getColumnName(fields[i])).append(" ")
+                    .append(H2StringsResolver.resolve(fields[i].getType()));
             if (i == pkIndex) {
                 queryBuilder.append(" PRIMARY KEY");
             }
@@ -152,6 +150,35 @@ public class DatabaseService<T> implements Closeable{
         }
     }
 
+    void insert(T record) throws SQLException, IllegalAccessException {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("INSERT INTO ").append(tableName).append(" (");
+        for (int i = 0; i < fields.length; ++i) {
+            if (i != 0) {
+                queryBuilder.append(", ");
+            }
+            queryBuilder.append(getColumnName(fields[i])).append(" ");
+        }
+        queryBuilder.append(") VALUES (");
+        for (int i = 0; i < fields.length; ++i) {
+            if (i != 0) {
+                queryBuilder.append(", ");
+            }
+            queryBuilder.append("?");
+        }
+        queryBuilder.append(")");
+        System.out.println(queryBuilder);
+
+        try (Connection conn = pool.getConnection()) {
+            PreparedStatement statement
+                    = conn.prepareStatement(queryBuilder.toString());
+            for (int i = 0; i < fields.length; ++i) {
+                statement.setString(i + 1, fields[i].get(record).toString());
+            }
+            statement.execute();
+        }
+    }
+
     @Override
     public void close() throws IOException {
         if (pool != null) {
@@ -163,8 +190,9 @@ public class DatabaseService<T> implements Closeable{
         try (DatabaseService<MyOwnClass> db
             = new DatabaseService<>(MyOwnClass.class)) {
             db.createTable();
+            db.insert(new MyOwnClass());
             db.dropTable();
-        } catch (IOException e) {
+        } catch (IOException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
