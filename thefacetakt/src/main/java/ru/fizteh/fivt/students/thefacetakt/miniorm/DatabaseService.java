@@ -143,6 +143,15 @@ public class DatabaseService<T> implements Closeable{
         System.out.println(queryBuilder);
     }
 
+    void dropTable() throws SQLException {
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("DROP TABLE IF EXISTS ")
+                .append(tableName);
+        try (Connection conn = pool.getConnection()) {
+            conn.createStatement().execute(queryBuilder.toString());
+        }
+    }
+
     @Override
     public void close() throws IOException {
         if (pool != null) {
@@ -154,6 +163,7 @@ public class DatabaseService<T> implements Closeable{
         try (DatabaseService<MyOwnClass> db
             = new DatabaseService<>(MyOwnClass.class)) {
             db.createTable();
+            db.dropTable();
         } catch (IOException e) {
             e.printStackTrace();
         }
