@@ -27,7 +27,7 @@ class H2StringsResolver {
         h2Mapper.put(UUID.class, "UUID");
     }
 
-    String resolve(Class clazz) {
+    public static String resolve(Class clazz) {
         if (clazz.isArray()) {
             return "ARRAY";
         }

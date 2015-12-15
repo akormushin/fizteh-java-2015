@@ -52,7 +52,7 @@ class GoodNameResolver {
     }
 
     static final Pattern p = Pattern.compile("[A-Za-z_-]*");
-    Boolean isGood(String name) {
+    public static Boolean isGood(String name) {
         return !h2Keywords.contains(name) && p.matcher(name).find();
     }
 }
