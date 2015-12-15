@@ -15,7 +15,7 @@ import java.util.Set;
 import static ru.fizteh.fivt.students.thefacetakt.miniorm
         .GoodNameResolver.isGood;
 
-public class DatabaseService<T> implements Closeable{
+public class DatabaseService<T> implements Closeable {
     private static final String CONNECTION_NAME = "jdbc:h2:~/test";
     private static final String USERNAME = "test";
     private static final String PASSWORD = "test";

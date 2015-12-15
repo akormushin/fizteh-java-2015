@@ -2,7 +2,6 @@ package ru.fizteh.fivt.students.thefacetakt.miniorm;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.regex.Pattern;
 
 /**
  * Created by thefacetakt on 15.12.15.
