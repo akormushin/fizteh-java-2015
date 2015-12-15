@@ -15,33 +15,6 @@ import java.util.Set;
 import static ru.fizteh.fivt.students.thefacetakt.miniorm
         .GoodNameResolver.isGood;
 
-@Table
-class MyOwnClass {
-    @Column
-    private Integer firstField = 0;
-
-    @Column(name = "SecondColumn")
-    private String second = "abacaba";
-
-    @PrimaryKey
-    @Column
-    private Short key = 1;
-
-    @Override
-    public String toString() {
-        return firstField + " " + second + " " + key;
-    }
-
-    MyOwnClass() {
-    }
-
-    MyOwnClass(int f, String s, Short k) {
-        firstField = f;
-        second = s;
-        key = k;
-    }
-}
-
 public class DatabaseService<T> implements Closeable{
     private static final String CONNECTION_NAME = "jdbc:h2:~/test";
     private static final String USERNAME = "test";
@@ -55,7 +28,7 @@ public class DatabaseService<T> implements Closeable{
     private Field[] fields;
     private int pkIndex = -1;
 
-    String convert(String name) {
+    static String convert(String name) {
         if ('a' <= name.charAt(0) && name.charAt(0) <= 'z') {
             return CaseFormat.LOWER_CAMEL.to(CaseFormat.LOWER_UNDERSCORE, name);
         }
@@ -70,7 +43,7 @@ public class DatabaseService<T> implements Closeable{
         return name;
     }
 
-    void init() {
+    void init() throws IllegalArgumentException {
         if (!clazz.isAnnotationPresent(Table.class)) {
             throw new IllegalArgumentException("no @Table annotation");
         }
@@ -150,7 +123,7 @@ public class DatabaseService<T> implements Closeable{
         try (Connection conn = pool.getConnection()) {
             conn.createStatement().execute(queryBuilder.toString());
         }
-        System.out.println(queryBuilder);
+
     }
 
     void dropTable() throws SQLException {
@@ -179,19 +152,20 @@ public class DatabaseService<T> implements Closeable{
             queryBuilder.append("?");
         }
         queryBuilder.append(")");
-        System.out.println(queryBuilder);
+
 
         try (Connection conn = pool.getConnection()) {
             PreparedStatement statement
                     = conn.prepareStatement(queryBuilder.toString());
             for (int i = 0; i < fields.length; ++i) {
-                statement.setString(i + 1, fields[i].get(record).toString());
+                statement.setObject(i + 1, fields[i].get(record));
             }
             statement.execute();
         }
     }
 
-    public void delete(T record) throws IllegalAccessException, SQLException {
+    public void delete(T record) throws IllegalArgumentException,
+            IllegalAccessException, SQLException {
         if (pkIndex == -1) {
             throw new IllegalArgumentException("NO @PrimaryKey");
         }
@@ -200,18 +174,18 @@ public class DatabaseService<T> implements Closeable{
                 .append(" WHERE ").append(fields[pkIndex].getName())
                 .append(" = ?");
 
-        System.out.println(queryBuilder.toString()
-                + fields[pkIndex].get(record).toString());
+
 
         try (Connection conn = pool.getConnection()) {
             PreparedStatement statement
                     = conn.prepareStatement(queryBuilder.toString());
-            statement.setString(1, fields[pkIndex].get(record).toString());
+            statement.setObject(1, fields[pkIndex].get(record));
             statement.execute();
         }
     }
 
-    public void update(T record) throws SQLException, IllegalAccessException {
+    public void update(T record) throws IllegalArgumentException,
+            SQLException, IllegalAccessException {
         delete(record);
         insert(record);
     }
@@ -249,7 +223,8 @@ public class DatabaseService<T> implements Closeable{
         return result;
     }
 
-    public <K> T queryById(K key) throws SQLException {
+    public <K> T queryById(K key) throws IllegalArgumentException,
+            SQLException {
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("SELECT * FROM ").append(tableName)
                 .append(" WHERE ").append(fields[pkIndex].getName())
@@ -287,23 +262,6 @@ public class DatabaseService<T> implements Closeable{
     public void close() throws IOException {
         if (pool != null) {
             pool.dispose();
-        }
-    }
-
-    public static void main(String[] args) throws SQLException {
-        try (DatabaseService<MyOwnClass> db
-            = new DatabaseService<>(MyOwnClass.class)) {
-            db.createTable();
-            db.delete(new MyOwnClass());
-            db.delete(new MyOwnClass(1, "2", (short) 3));
-            db.insert(new MyOwnClass());
-            db.insert(new MyOwnClass(1, "2", (short) 3));
-            System.out.println(db.queryById(1));
-            db.queryForAll().forEach(System.out::println);
-            db.delete(new MyOwnClass());
-            db.dropTable();
-        } catch (IOException | IllegalAccessException e) {
-            e.printStackTrace();
         }
     }
 }
