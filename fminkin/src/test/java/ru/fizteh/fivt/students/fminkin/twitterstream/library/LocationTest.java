@@ -18,18 +18,18 @@ public class LocationTest {
     static final String NAME = "Лондон";
 
     @Test
-    public void LocationTest() {
-        Location Moscow = new Location(LATITUDE, LONGTITUDE, NAME);
-        assertThat(Moscow.getLatitude(), is(LATITUDE));
-        assertThat(Moscow.getLongitude(), is(LONGTITUDE));
-        assertThat(Moscow.getName(), is(NAME));
+    public void locationTest() {
+        Location london = new Location(LATITUDE, LONGTITUDE, NAME);
+        assertThat(london.getLatitude(), is(LATITUDE));
+        assertThat(london.getLongitude(), is(LONGTITUDE));
+        assertThat(london.getName(), is(NAME));
     }
 
     @Test
-    public void LocationTestNullName() {
-        Location Moscow = new Location(LATITUDE, LONGTITUDE);
-        assertThat(Moscow.getLatitude(), is(LATITUDE));
-        assertThat(Moscow.getLongitude(), is(LONGTITUDE));
-        assertThat(Moscow.getName(), is(nullValue()));
+    public void locationTestNullName() {
+        Location london = new Location(LATITUDE, LONGTITUDE);
+        assertThat(london.getLatitude(), is(LATITUDE));
+        assertThat(london.getLongitude(), is(LONGTITUDE));
+        assertThat(london.getName(), is(nullValue()));
     }
 }

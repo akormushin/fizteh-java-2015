@@ -4,7 +4,6 @@ import junit.framework.TestCase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.fizteh.fivt.students.fminkin.twitterstream.library.RussianDeclense;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -98,5 +97,4 @@ public class RussianDeclenseTest extends TestCase {
             assertThat(RussianDeclense.getRetweet(value), is(correct.get(value)));
         }
     }
-
 }

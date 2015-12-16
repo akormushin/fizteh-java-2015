@@ -1,19 +1,10 @@
 package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 
-import ru.fizteh.fivt.students.fminkin.twitterstream.*;
-import ru.fizteh.fivt.students.fminkin.twitterstream.library.*;
 import twitter4j.*;
 import twitter4j.GeoLocation;
 import twitter4j.TwitterStream;
-import java.net.MalformedURLException;
-import java.util.Collections;
 import java.util.List;
-
-
 import static java.util.stream.Collectors.toList;
-
-import java.util.Formatter;
-import java.util.List;
 import java.util.function.Consumer;
 
 /*
@@ -22,8 +13,7 @@ import java.util.function.Consumer;
 
 public class SearchTweets {
     public static final Integer DIAGONAL_BOX_NUMBER = 4;
-    public static final Integer SLEEP_TIME = 1000;
-    public static final Integer SYMBOLS_BEFORE_NAME = 3;
+    public static final Integer SLEEP_TIME = 0;
     public static final Integer RAD = 5;
     public static final String METRIC_CHAR = "km";
 
@@ -37,11 +27,11 @@ public class SearchTweets {
                     return;
                 }
                 func.accept(formatTweet(tweet));
-//            try {
-//                Thread.sleep(SLEEP_TIME);
-//            } catch (InterruptedException e) {
-//                System.err.println("Tweet Listener exception");
-//            }
+            try {
+                Thread.sleep(SLEEP_TIME);
+            } catch (InterruptedException e) {
+                System.err.println("Tweet Listener exception");
+            }
         }
     });
         double lat1 = curLoc.getLatitude() - DIAGONAL_BOX_NUMBER;
@@ -52,18 +42,18 @@ public class SearchTweets {
         twitterStream.filter(new FilterQuery().track(jcc.getQueries().toArray(
                 new String[jcc.getQueries().size()])).locations(loc));
     }
-    public static String formatTweet(Status tweet){
+    public static String formatTweet(Status tweet) {
         String s = "@" + tweet.getUser().getScreenName() + ": ";
         if (!tweet.isRetweet()) {
-            s+= tweet.getText();
+            s += tweet.getText();
 
             Integer n = tweet.getRetweetCount();
             if (n != 0) {
-                s +="(" + n + " " + RussianDeclense.getRetweet(n) + ")";
+                s += "(" + n + " " + RussianDeclense.getRetweet(n) + ")";
             }
         } else {
             s += "ретвитнул ";
-            s+= tweet.getRetweetedStatus().getUser().getScreenName() + ": ";
+            s += tweet.getRetweetedStatus().getUser().getScreenName() + ": ";
             tweet = tweet.getRetweetedStatus();
             s += tweet.getText();
         }

@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 import com.beust.jcommander.JCommander;
-import org.hamcrest.CoreMatchers;
-import org.hamcrest.Matchers;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -25,7 +24,6 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import ru.fizteh.fivt.students.fminkin.twitterstream.library.*;
 
 
 
@@ -34,19 +32,19 @@ import ru.fizteh.fivt.students.fminkin.twitterstream.library.*;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class SearchTest {
-    private Location LondonLocation = new Location(51.5073509, -0.1277583, "London");
+    private Location londonLocation = new Location(51.5073509, -0.1277583, "London");
 
     @Mock
     private Twitter twitter;
     @Mock
     private twitter4j.TwitterStream twitterStream;
 
-    private static List<Status> LondonStatuses;
+    private static List<Status> londonStatuses;
     @Mock
-    GeoLocation g = new GeoLocation();
+    private GeoLocation g = new GeoLocation();
     @BeforeClass
     public static void loadSampleData() {
-        LondonStatuses = Twitter4jTestUtils.tweetsFromJson("/tweets.json");
+        londonStatuses = Twitter4jTestUtils.tweetsFromJson("/tweets.json");
     }
 
 
@@ -59,9 +57,9 @@ public class SearchTest {
     @Before
     public void setUp() throws Exception {
         when(g.getLocationGoogle("London", new JSonReader()))
-                .thenReturn(LondonLocation);
+                .thenReturn(londonLocation);
         QueryResult q = mock(QueryResult.class);
-        when(q.getTweets()).thenReturn(LondonStatuses);
+        when(q.getTweets()).thenReturn(londonStatuses);
 
         QueryResult emptyQueryResult = mock(QueryResult.class);
         when(emptyQueryResult.getTweets()).thenReturn(new ArrayList<>());
@@ -76,23 +74,23 @@ public class SearchTest {
     public void testGetTweetsOnce() throws Exception {
         SearchTweets search = new SearchTweets();
         List<Status> tw = search.search(setUpJCommanderSettings("-q", "hello", "-p", "London"),
-                LondonLocation, twitter);
+                londonLocation, twitter);
         List<String> tweets = tw.
                 stream().map(Status::getText).collect(Collectors.toList());
         assertThat(tweets.size(), is(100));
-        assertThat(tweets, hasItems("@Juange18 hello! We don't but we usually suggest you call " +
-                "us 10-15mins before you arrive so we can try to reserve you a table 02037208825"));
+        assertThat(tweets, hasItems("@Juange18 hello! We don't but we usually suggest you call "
+                + "us 10-15mins before you arrive so we can try to reserve you a table 02037208825"));
     }
 
     @Test
     public void testGetTweetsOnceWithoutRT() throws Exception {
         SearchTweets search = new SearchTweets();
         List<String> tweets = search.search(setUpJCommanderSettings("-q", "hello", "-p", "London",
-                "--hideRetweets"), LondonLocation, twitter)
+                "--hideRetweets"), londonLocation, twitter)
                 .stream().map(Status::getText).collect(Collectors.toList());
         assertThat(tweets.size(), is(42));
-        assertThat(tweets, hasItems("@Juange18 hello! We don't but we usually suggest you call " +
-                "us 10-15mins before you arrive so we can try to reserve you a table 02037208825"));
+        assertThat(tweets, hasItems("@Juange18 hello! We don't but we usually suggest you call "
+                + "us 10-15mins before you arrive so we can try to reserve you a table 02037208825"));
         assertThat(tweets, not(hasItem("this is basically a retweet")));
 
     }
@@ -100,8 +98,9 @@ public class SearchTest {
     @Test
     public void testGetTweetsOnceEmptyResults() throws Exception {
         SearchTweets search = new SearchTweets();
-        List<Status> tweets = search.search(setUpJCommanderSettings("-q", "ну такой строки я думаю точно нет"),
-                LondonLocation, twitter);
+        List<Status> tweets = search.search(setUpJCommanderSettings("-q", "ну такой строки я "
+                        + "думаю точно нет"),
+                londonLocation, twitter);
         assertThat(tweets.size(), is(0));
     }
 }

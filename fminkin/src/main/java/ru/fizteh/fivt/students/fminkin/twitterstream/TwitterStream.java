@@ -61,7 +61,7 @@ public class TwitterStream {
             if (jcc.isStream()) {
                 tweetSearch.handleStream(jcc, loc, new TwitterStreamFactory().getInstance(), s -> {
                     System.out.println(s);
-                    for (int i = 0; i < ru.fizteh.fivt.students.fminkin.twitterstream.TwitterStream.MINUSES_COUNT; ++i) {
+                    for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
                         System.out.print("-");
                     }
                     System.out.println();
@@ -72,7 +72,7 @@ public class TwitterStream {
                 List<Status> tweets = tweetSearch.search(jcc, loc,  new TwitterFactory().getInstance());
                 if (tweets.isEmpty()) {
                     System.out.println("Нет результатов");
-                    for (int i = 0; i < ru.fizteh.fivt.students.fminkin.twitterstream.TwitterStream.MINUSES_COUNT; ++i) {
+                    for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
                         System.out.print("-");
                     }
                     System.out.println();

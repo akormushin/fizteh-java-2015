@@ -1,7 +1,7 @@
 package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 import org.apache.commons.io.IOUtils;
 import org.json.JSONException;
-import org.json.JSONObject;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -13,16 +13,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import ru.fizteh.fivt.students.fminkin.twitterstream.TwitterStream;
-import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import java.io.InputStream;
-import java.net.URISyntaxException;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 /**
  * Created by Федор on 15.12.2015.
  */

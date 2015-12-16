@@ -1,7 +1,6 @@
 package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 
 import com.beust.jcommander.JCommander;
-import org.hamcrest.core.IsNot;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -9,8 +8,6 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
-import ru.fizteh.fivt.students.fminkin.twitterstream.library.Location;
-import ru.fizteh.fivt.students.fminkin.twitterstream.library.JCommanderConfig;
 import twitter4j.*;
 
 import java.io.IOException;
@@ -23,7 +20,6 @@ import static org.hamcrest.core.IsCollectionContaining.hasItems;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -33,15 +29,15 @@ import static org.mockito.Mockito.when;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class HandleStreamTest {
-    private Location LondonLocation = new Location(51.5073509, -0.1277583, "London");
+    private Location londonLocation = new Location(51.5073509, -0.1277583, "London");
     @Mock
-    twitter4j.TwitterStream twitterStream;
-    private static List<Status> LondonStatuses;
+    private twitter4j.TwitterStream twitterStream;
+    private static List<Status> londonStatuses;
     @Mock
-    GeoLocation g = new GeoLocation();
+    private GeoLocation g = new GeoLocation();
     @BeforeClass
     public static void loadSampleData() {
-        LondonStatuses = twitter4j.Twitter4jTestUtils.tweetsFromJson("/tweets.json");
+        londonStatuses = twitter4j.Twitter4jTestUtils.tweetsFromJson("/tweets.json");
     }
 
     JCommanderConfig setUpJCommanderSettings(String... args) {
@@ -57,7 +53,7 @@ public class HandleStreamTest {
         doNothing().when(twitterStream).addListener((StatusListener)
                 statusCaptor.capture());
         doAnswer(invocation -> {
-            LondonStatuses.forEach(s -> statusCaptor.getValue().onStatus(s));
+            londonStatuses.forEach(s -> statusCaptor.getValue().onStatus(s));
             return null;
         }).when(twitterStream).filter(any(FilterQuery.class));
 
@@ -66,9 +62,9 @@ public class HandleStreamTest {
                 .then(invocation -> {
                     switch (invocation.getArguments()[0].toString()) {
                         case "Лондон, Великобритания":
-                            return LondonLocation;
+                            return londonLocation;
                         case "London, Great Britain":
-                            return LondonLocation;
+                            return londonLocation;
                         default:
                             throw new IOException();
                     }
@@ -80,7 +76,7 @@ public class HandleStreamTest {
         ArrayList<String> tweets = new ArrayList<>();
         SearchTweets search = new SearchTweets();
         search.handleStream(setUpJCommanderSettings("-q", "hello", "-p",
-                "Лондон", "-s"), LondonLocation, twitterStream, tweets::add);
+                "Лондон", "-s"), londonLocation, twitterStream, tweets::add);
         assertThat(tweets.size(), is(100));
         assertThat(tweets, hasItems("@BelAndNevCafe: @Juange18 hello! We don't but we usually suggest you call "
                 + "us 10-15mins before you arrive so we can try to reserve you a table 02037208825"));
@@ -92,7 +88,7 @@ public class HandleStreamTest {
         SearchTweets search = new SearchTweets();
         search.handleStream(setUpJCommanderSettings("-q", "hello", "-p",
                         "Лондон", "-s", "--hideRetweets"),
-                LondonLocation, twitterStream, tweets::add);
+                londonLocation, twitterStream, tweets::add);
         assertThat(tweets.size(), is(42));
         assertThat(tweets, hasItems("@BelAndNevCafe: @Juange18 hello! We don't but we usually suggest you call "
                 + "us 10-15mins before you arrive so we can try to reserve you a table 02037208825"));

@@ -15,10 +15,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import org.apache.commons.io.IOUtils;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import sun.plugin.javascript.navig.JSObject;
 
 /**
  * Created by Федор on 15.12.2015.
@@ -60,8 +56,8 @@ public class GeoLocationTestSpontaneous {
     public void testGeoLocation() throws Exception {
         JSonReader j = mock(JSonReader.class);
         when(j.readJsonFromUrl(anyString())).then(invocation -> {
-            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api/geocode/" +
-                    "json?address=London&key="));
+            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps"
+                    + "/api/geocode/json?address=London&key="));
             return correctGoogleResponce;
         });
         GeoLocation g = new GeoLocation();
@@ -74,8 +70,8 @@ public class GeoLocationTestSpontaneous {
     public void testGetLocationGoogleBadSyntax() throws Exception {
         JSonReader j = mock(JSonReader.class);
         when(j.readJsonFromUrl(anyString())).then(invocation -> {
-            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api/geocode/" +
-                    "json?address=Лондон&key="));
+            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api/geocode/"
+                    + "json?address=Лондон&key="));
             return new JSONObject("bu");
         });
         GeoLocation g = new GeoLocation();
@@ -86,8 +82,8 @@ public class GeoLocationTestSpontaneous {
     public void testResolvePlaceLocationGoogleNoResults() throws Exception {
         JSonReader j = mock(JSonReader.class);
         when(j.readJsonFromUrl(anyString())).then(invocation -> {
-            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api/geocode/" +
-                    "json?address=Лондон&key="));
+            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api/geocode/"
+                    + "json?address=Лондон&key="));
             return zeroResultsGoogleResponce;
         });
         GeoLocation g = new GeoLocation();
@@ -98,9 +94,8 @@ public class GeoLocationTestSpontaneous {
     public void testResolvePlaceLocationGoogleQueryLimit() throws Exception {
         JSonReader j = mock(JSonReader.class);
         when(j.readJsonFromUrl(anyString())).then(invocation -> {
-            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api" +
-                    "/geocode/" +
-                    "json?address=Лондон&key="));
+            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api"
+                    + "/geocode/json?address=Лондон&key="));
             return queryLimitGoogleResponce;
         });
         GeoLocation g = new GeoLocation();
@@ -111,9 +106,8 @@ public class GeoLocationTestSpontaneous {
     public void testResolvePlaceLocationGoogleBadKey() throws Exception {
         JSonReader j = mock(JSonReader.class);
         when(j.readJsonFromUrl(anyString())).then(invocation -> {
-            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api" +
-                    "/geocode/" +
-                    "json?address=Лондон&key="));
+            assertThat((String) invocation.getArguments()[0], startsWith("https://maps.googleapis.com/maps/api"
+                    + "/geocode/json?address=Лондон&key="));
             return badKeyGoogleResponce;
         });
         GeoLocation g = new GeoLocation();
