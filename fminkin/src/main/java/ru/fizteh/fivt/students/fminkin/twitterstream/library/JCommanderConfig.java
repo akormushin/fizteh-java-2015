@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.fminkin.twitterstream;
+package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 
 import com.beust.jcommander.Parameter;
 import java.util.ArrayList;

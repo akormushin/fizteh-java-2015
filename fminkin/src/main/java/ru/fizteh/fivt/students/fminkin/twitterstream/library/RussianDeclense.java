@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.fminkin.twitterstream;
+package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 
 /**
  * Created by Федор on 28.09.2015.
@@ -11,7 +11,7 @@ public class RussianDeclense {
     public static final Integer MODULE_VALUE_FOURTH = 4;
     static final String[] HOURS = {"час", "часа", "часов"};
     static final String[] DAYS = {"день", "дня", "дней"};
-    static final String[] MINUTES = {"минута", "минуты",
+    static final String[] MINUTES = {"минуту", "минуты",
             "минут"};
     static final String[] RETWEETS = {"ретвит", "ретвита",
             "ретвитов"};

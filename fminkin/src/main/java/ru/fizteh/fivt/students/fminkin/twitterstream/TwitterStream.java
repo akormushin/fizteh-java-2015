@@ -2,8 +2,13 @@ package ru.fizteh.fivt.students.fminkin.twitterstream;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.ParameterException;
-
+import ru.fizteh.fivt.students.fminkin.twitterstream.library.*;
+import ru.fizteh.fivt.students.fminkin.twitterstream.library.GeoLocation;
+import ru.fizteh.fivt.students.fminkin.twitterstream.library.Location;
+import ru.fizteh.fivt.students.fminkin.twitterstream.library.TimeAlign;
 import twitter4j.*;
+
+import java.util.List;
 import java.util.Scanner;
 
 /**
@@ -36,9 +41,10 @@ public class TwitterStream {
             jc.usage();
             return;
         }
-        Location loc = new Location();
+        Location loc = new Location(0, 0, null);
+        GeoLocation g = new GeoLocation();
         try {
-            loc = GeoLocation.getLocationGoogle(jcc.getLocation());
+            loc = g.getLocationGoogle(jcc.getLocation(), new JSonReader());
         } catch (Throwable e) {
             System.out.println("IOException has occured");
             e.printStackTrace();
@@ -53,14 +59,35 @@ public class TwitterStream {
         SearchTweets tweetSearch = new SearchTweets();
         try {
             if (jcc.isStream()) {
-                tweetSearch.handleStream(jcc, loc);
+                tweetSearch.handleStream(jcc, loc, new TwitterStreamFactory().getInstance(), s -> {
+                    System.out.println(s);
+                    for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
+                        System.out.print("-");
+                    }
+                    System.out.println();
+                });
+
                 waitCtrlD();
             } else {
-                tweetSearch.search(jcc, loc);
-                tweetSearch.search(jcc, loc);
+                List<Status> tweets = tweetSearch.search(jcc, loc,  new TwitterFactory().getInstance());
+                if (tweets.isEmpty()) {
+                    System.out.println("Нет результатов");
+                    for (int i = 0; i < TwitterStream.MINUSES_COUNT; ++i) {
+                        System.out.print("-");
+                    }
+                    System.out.println();
+                }
+                for (Status tweet : tweets) {
+                    if (!tweet.isRetweet() || !jcc.isRetweetsHidden()) {
+                        System.out.print("[" + TimeAlign.formatTime(
+                                System.currentTimeMillis(), tweet.getCreatedAt().getTime()) + "] ");
+                        tweetSearch.printTweet(tweet);
+                    }
+                }
             }
         } catch (Throwable e) {
-            System.out.println("tweetSeartch Failed\n");
+            System.out.println(e.getMessage());
+            System.out.println("tweetSearch Failed\n");
             return;
         }
 

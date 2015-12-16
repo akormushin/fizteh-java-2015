@@ -1,5 +1,4 @@
-package ru.fizteh.fivt.students.fminkin.twitterstream;
-
+package ru.fizteh.fivt.students.fminkin.twitterstream.library;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,7 +9,7 @@ import java.nio.charset.Charset;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class JsonReader {
+public class JSonReader {
     private static String readAll(Reader rd) throws IOException {
         StringBuilder sb = new StringBuilder();
         int cp;
@@ -19,7 +18,7 @@ public class JsonReader {
         }
         return sb.toString();
     }
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+    public JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
         InputStream is = new URL(url).openStream();
         try {
             BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
