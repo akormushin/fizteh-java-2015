@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.nmakeenkov.twitterstream;
+package ru.fizteh.fivt.students.nmakeenkov.twitterstream.library;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -17,6 +17,8 @@ import org.json.JSONObject;
 import com.google.common.collect.Maps;
 
 public class MyMaps {
+    private static final long SLEEP_TIME = 200;
+
     private static String encodeParams(final Map<String, String> params) {
         final String paramsUrl = Joiner.on('&').join(
                 Iterables.transform(params.entrySet(),
@@ -57,7 +59,8 @@ public class MyMaps {
                 read = true;
                 location = response.
                         getJSONArray("results").getJSONObject(0);
-            } catch (IOException ex) { }
+                Thread.sleep(SLEEP_TIME);
+            } catch (Exception ex) { }
         }
         location = location.getJSONObject("geometry");
 
@@ -75,13 +78,9 @@ public class MyMaps {
         return ans;
     }
 
-    public static double[] getMyCoords() throws JSONException {
-        while (true) {
-            try {
-                JSONObject response = JsonReader.
-                        read("http://ipinfo.io/json");
-                return getCoordsByPlace(response.getString("city"));
-            } catch (IOException ex) { }
-        }
+    public static double[] getMyCoords() throws JSONException, IOException {
+        JSONObject response = JsonReader.
+                read("http://ipinfo.io/json");
+        return getCoordsByPlace(response.getString("city"));
     }
 }

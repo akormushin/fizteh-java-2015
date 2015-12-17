@@ -1,11 +1,11 @@
-package ru.fizteh.fivt.students.nmakeenkov.twitterstream;
+package ru.fizteh.fivt.students.nmakeenkov.twitterstream.library;
 
 public class Utils {
-    private static final long JUST_NOW = 2 * 60; // 2 minutes
-    private static final long MILLIS_PER_SECOND = 1000;
-    private static final long SECS_PER_MIN = 60;
-    private static final long MINS_PER_HOUR = 60;
-    private static final long HOURS_PER_DAY = 60;
+    public static final long JUST_NOW = 2 * 60; // 2 minutes
+    public static final long MILLIS_PER_SECOND = 1000;
+    public static final long SECS_PER_MIN = 60;
+    public static final long MINS_PER_HOUR = 60;
+    public static final long HOURS_PER_DAY = 60;
     private static final int MY_10 = 10;
     private static final int MY_11 = 11;
     private static final int MY_5 = 5;
@@ -35,35 +35,36 @@ public class Utils {
         return ans + " ";
     }
 
-    public static void printTime(long time) {
-        long dt = System.currentTimeMillis() - time;
+    public static String getTimeDifference(long timeOfTweet, long currentTime) {
+        long dt = currentTime - timeOfTweet;
         dt /= MILLIS_PER_SECOND;
-        System.out.print("[");
+        StringBuilder ans = new StringBuilder("[");
         if (dt <= JUST_NOW) {
-            System.out.print("только что");
+            ans.append("только что");
         } else {
             dt /= SECS_PER_MIN;
             if (dt < MINS_PER_HOUR) {
-                System.out.print(timeToString(dt, 0) + "назад");
+                ans.append(timeToString(dt, 0)).append("назад");
             } else {
                 dt /= MINS_PER_HOUR;
-                long todayStarted = System.currentTimeMillis()
+                long todayStarted = currentTime
                         / MILLIS_PER_SECOND;
                 todayStarted /= SECS_PER_MIN * MINS_PER_HOUR;
                 todayStarted %= HOURS_PER_DAY;
                 if (dt < todayStarted) {
-                    System.out.print(timeToString(dt, 1) + "назад");
+                    ans.append(timeToString(dt, 1)).append("назад");
                 } else {
                     if (dt < todayStarted + HOURS_PER_DAY) {
-                        System.out.print("вчера");
+                        ans.append("вчера");
                     } else {
-                        System.out.print(timeToString(dt / HOURS_PER_DAY, 2)
-                                + "назад");
+                        ans.append(timeToString(dt / HOURS_PER_DAY, 2)).
+                                append("назад");
                     }
                 }
             }
         }
-        System.out.print("]");
+        ans.append("]");
+        return ans.toString();
     }
 
     private static final double EARTH_RADIUS = 6371.0;
@@ -71,5 +72,14 @@ public class Utils {
                                      double lat2, double lng2) {
         return EARTH_RADIUS * Math.acos(Math.sin(lat1) * Math.sin(lat2)
                 + Math.cos(lat1) * Math.cos(lat2) * Math.cos(lng1 - lng2));
+    }
+
+    public static boolean mySleep(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            return false;
+        }
+        return true;
     }
 }

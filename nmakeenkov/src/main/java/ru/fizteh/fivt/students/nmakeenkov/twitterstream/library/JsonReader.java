@@ -1,4 +1,4 @@
-package ru.fizteh.fivt.students.nmakeenkov.twitterstream;
+package ru.fizteh.fivt.students.nmakeenkov.twitterstream.library;
 
 import java.io.BufferedReader;
 import java.io.IOException;
