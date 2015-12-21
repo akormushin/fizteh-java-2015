@@ -6,6 +6,7 @@ import java.time.temporal.ChronoUnit;
 public class Counter {
     private static volatile int activeThread;
     private static volatile boolean stopCount;
+    private static Object monitor;
 
     private static class MyThread extends Thread {
         private int myNumber;
@@ -14,14 +15,19 @@ public class Counter {
         @Override
         public void run() {
             while (true) {
-                while (myNumber != activeThread) {
-                    Thread.yield();
-                    if (stopCount) {
-                        return;
+                synchronized (monitor) {
+                    while (myNumber != activeThread) {
+                        try {
+                            monitor.wait(1000);
+                        } catch (Exception ex) { }
+                        if (stopCount) {
+                            return;
+                        }
                     }
+                    System.out.println("Thread-" + myNumber);
+                    activeThread = nextNumber;
+                    monitor.notifyAll();
                 }
-                System.out.println(new StringBuilder("Thread-").append(myNumber));
-                activeThread = nextNumber;
             }
         }
 
@@ -32,13 +38,14 @@ public class Counter {
     }
 
     public static void main(String[] args) {
+        monitor = new Object();
         LocalDateTime timeStarted = LocalDateTime.now();
         int n = 0;
         long time = -1;
         try {
-            n = new Integer(args[0]);
+            n = Integer.valueOf(args[0]);
             if (args.length > 1) {
-                time = new Long(args[1]);
+                time = Long.valueOf(args[1]);
             }
             if (n <= 0 || (time < 0 && time != -1)) {
                 throw new Exception();
@@ -54,8 +61,8 @@ public class Counter {
         }
         activeThread = 1;
         if (time != -1) {
-            while (ChronoUnit.SECONDS.between(timeStarted, LocalDateTime.now()) < time - 1) { //
-                // rounding causes -1
+            while (ChronoUnit.SECONDS.between(timeStarted, LocalDateTime.now())
+                    < time - 1) { // rounding causes -1
                 try {
                     Thread.sleep(ChronoUnit.SECONDS.between(timeStarted, LocalDateTime.now()));
                 } catch (InterruptedException ex) { }
